@@ -1,6 +1,7 @@
 { ... }:
 {
   services = {
+    # https://github.com/DoTheEvo/selfhosted-apps-docker/tree/master/prometheus_grafana_loki
     # https://xeiaso.net/blog/prometheus-grafana-loki-nixos-2020-11-20
     promtail = {
       enable = true;
@@ -36,17 +37,6 @@
         # Also acquire ACME cert
       };
       */
-      webExternalUrl = "prometheus.samgrayson.me";
-      # TODO: proxy ${services.prometheus.webExternalUrl} to localhost:${services.prometheus.port}
-      # Also acquire ACME cert
-      /*
-alert: Error
-expr: 
-
-alert: ManyWarnings
-annotations:
-  description:
-*/
       exporters = {
         node = {
           enable = true;

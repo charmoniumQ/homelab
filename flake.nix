@@ -24,16 +24,14 @@
     let
       hosts = [ "home-server" ];
     in rec {
-      # packages = {
-      #   x86_64-linux = builtins.listToAttrs (builtins.map (host: {
-      #     name = "${host}-qemu";
-      #     value = nixos-generators.nixosGenerate {
-      #       system = "x86_64-linux";
-      #       modules = [ self.nixosConfigurations.${host}.modules ];
-      #       format = "vm";
-      #     };
-      #   }) hosts);
-      # };
+      packages = {
+        x86_64-linux = builtins.listToAttrs (builtins.map (host: {
+          name = "${host}-qemu";
+          value = self.nixosConfigurations.${host}.config.system.build.vm;
+        }) hosts);
+      };
+
+      # https://github.com/LongerHV/nixos-configuration/tree/e4a0a7e1018195f29d027b178013061efb5a8f8a/modules/nixos/homelab
       nixosConfigurations = builtins.listToAttrs (builtins.map (host: {
         name = host;
         value = nixpkgs.lib.nixosSystem {
@@ -48,3 +46,4 @@
       }) hosts);
     };
 }
+# rsync -avz ../homelab sysadmin@10.0.0.12: && ssh -t sysadmin@10.0.0.12 env --chdir=homelab sudo nixos-rebuild switch --flake .#home-server

@@ -4,17 +4,17 @@ This is a set of configuration variables that will be applied to every host at m
 { ... }:
 {
   networking = {
-    useDHCP = /* TODO */ true;
-    domain = /* TODO */ "example.com";
+    useDHCP = true;
+    domain = "samgrayson.me";
   };
   time = {
-    timeZone = /* TODO */ "America/Chicago";
+    timeZone = "America/Chicago";
   };
   sysadmin = {
-    email = /* TODO */ "admin@example.com";
+    email = "sam+acme@samgrayson.me";
     sshKeys = [
-	  /* TODO */
-      "ssh-ed25519 AAAA.... admin@laptop"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDWwABCkuyQy2cqP7wppkQbMgfZqCWmQ18FHrh9P18C8 sam@laptop"
     ];
+    hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
   };
 }

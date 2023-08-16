@@ -1,22 +1,30 @@
 { config, lib, ... }:
 {
-  options.reverse-proxy.domains = {
-    datasets = lib.mkOption {
-      description = "Set a reverse proxy from reverse-proxy.<name> to reverse-proxy.<name>.<upstream>";
-      type = types.attrsOf (types.submodule {
-        options = {
-          upstream = lib.mkOption {
-            type = types.str;
+  options = {
+    reverseProxy = {
+      domains =  lib.mkOption {
+        description = "Set a reverse proxy from https://{reverse-proxy.{name}} to http://{reverse-proxy.{name}.host}:{reverse-proxy.{name}.port}";
+        type = lib.types.attrsOf (lib.types.submodule {
+          options = {
+            host = lib.mkOption {
+              type = lib.types.str;
+              description = "Upstream host to forward to.";
+                default = "";
+            };
+            port = lib.mkOption {
+              type = lib.types.int;
+              description = "Upstream port to forward to.";
+            };
+            healthcheck = lib.mkOption {
+              type = lib.types.boolean;
+              default = true;
+              description = "Whether to check the status of of downstream continuously";
+              /* TODO: implement */
+            };
           };
-          healthcheck = lib.mkOption {
-            type = types.boolean;
-            default = true;
-            description = "Whether to check the status of of downstream continuously";
-            /* TODO: implement */
-          };
-        };
-      });
-      default = { };
+        });
+        default = { };
+      };
     };
   };
   config = {
@@ -30,7 +38,21 @@
     */
       caddy = {
         enable = true;
-        email = ;
+        email = config.sysadmin.email;
+        virtualHosts = builtins.mapAttrs (name: opts: {
+          extraConfig = ''
+            reverse_proxy ${opts.host}:${builtins.toString opts.port}
+          '';
+        }) config.reverseProxy.domains;
+      };
+    };
+    networking = {
+      firewall = {
+        enable = true;
+        allowedTCPPorts = builtins.sort
+          builtins.lessThan
+          (lib.lists.unique
+            (config.networking.firewall.allowedTCPPorts ++ [ 80 443 ]));
       };
     };
   };
