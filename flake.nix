@@ -20,30 +20,42 @@
       };
     };
   };
-  outputs = { self, nixpkgs, agenix, nixos-generators, ... }:
-    let
-      hosts = [ "home-server" ];
-    in rec {
+  outputs = { self, nixpkgs, agenix, nixos-generators, ... }@inputs:
+    {
       packages = {
-        x86_64-linux = builtins.listToAttrs (builtins.map (host: {
-          name = "${host}-qemu";
-          value = self.nixosConfigurations.${host}.config.system.build.vm;
-        }) hosts);
+        x86_64-linux = {
+          home-server-qemu = self.nixosConfigurations.home-server.config.system.build.vm;
+        };
+      };
+
+      nixopsConfigurations = {
+        default = {
+          inherit nixpkgs;
+          network = {
+            description = "My homelab network.";
+            storage = {
+              legacy = {
+                databasefile = "~/.local/share/nixops/deployments.nixops";
+              };
+            };
+          };
+          home-server = {config, ...}@attrs: ((import ./hosts/home-server) (attrs // { pkgs = nixpkgs; })) // {
+            deployment = {
+              targetHost = config.localIP;
+              targetUser = config.sysadmin.username;
+            };
+          };
+        };
       };
 
       # https://github.com/LongerHV/nixos-configuration/tree/e4a0a7e1018195f29d027b178013061efb5a8f8a/modules/nixos/homelab
-      nixosConfigurations = builtins.listToAttrs (builtins.map (host: {
-        name = host;
-        value = nixpkgs.lib.nixosSystem {
+      nixosConfigurations = {
+        home-server = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
-          modules = [
-            agenix.nixosModules.default
-            ./base.nix
-            ./site.nix
-            (./hosts + "/${host}")
-          ];
+          specialArgs = inputs;
+          modules = [ ./hosts/home-server ];
         };
-      }) hosts);
+      };
     };
 }
 # rsync -avz ../homelab sysadmin@10.0.0.12: && ssh -t sysadmin@10.0.0.12 env --chdir=homelab sudo nixos-rebuild switch --flake .#home-server

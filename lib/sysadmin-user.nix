@@ -1,58 +1,15 @@
-/*
-This file has "base" OS services and settings that are not host-specific, network-specific, or application-specific, but applications may depend on this.
-E.g., SSH, log monitoring, ZFS, boot params, ...
-*/
-
-{ config, pkgs, lib, ... }:
+{ config, lib, ... }:
 {
   config = {
-    system = {
-      stateVersion = "23.11";
-      autoUpgrade = {
-        enable = true;
-        allowReboot = true;
-        dates = "daily";
-        channel = "https://channels.nixos.org/nixos-23.11";
-      };
-      # TODO: enable
-      # usbguard = {
-      #   enable = true;
-      # };
-    };
     nix = {
-      enable = true;
-      package = pkgs.nixUnstable;
-      channel = {
-        enable = true;
-      };
       settings = {
-        experimental-features = [ "nix-command" "flakes" ];
-      };
-      gc = {
-        automatic = true;
-        dates = "weekly";
-      };
-      optimise = {
-        automatic = true;
-        dates = [
-          "weekly"
-        ];
-      };
-    };
-    nixpkgs = {
-      config = {
-        allowUnfree = true;
-      };
-    };
-    services = {
-      openssh = {
-        enable = true;
+        trusted-users = [ "${config.sysadmin.username}" ];
       };
     };
     users = {
       mutableUsers = false;
       users = {
-        sysadmin = {
+        "${config.sysadmin.username}" = {
           isNormalUser = true;
           createHome = true;
           extraGroups = [ "wheel" ];
@@ -65,22 +22,19 @@ E.g., SSH, log monitoring, ZFS, boot params, ...
         };
       };
     };
-    environment = {
-      systemPackages = [
-        pkgs.gitMinimal # Needed to make Nix flakes work
-      ];
-    };
     security = {
       sudo = {
-        # For the same reasons we have sysadmin.hashedPassword
-        extraConfig = ''
-          Defaults:ALL timestamp_timeout=0
-        '';
+        wheelNeedsPassword = false;
       };
     };
   };
   options = {
     sysadmin = {
+      username = lib.mkOption {
+        type = lib.types.str;
+        description = "UNIX username for the system administrator.";
+        default = "sysadmin";
+      };
       email = lib.mkOption {
         type = lib.types.str;
         description = "Email for alerts and ACME.";

@@ -2,7 +2,7 @@
 {
   services = {
     nextcloud = {
-      enable = false;
+      enable = true;
       hostName = "nextcloud.${config.networking.domain}";
       https = false;
       appstoreEnable = false;
@@ -59,7 +59,6 @@
         };
       };
     };
-    /*
     prometheus = {
       exporters = {
         nextcloud = {
@@ -67,6 +66,12 @@
         };
       };
     };
-    */
+  };
+  fastCgi = {
+    domains = {
+      "${config.services.nextcloud.hostName}" = {
+        socket = config.services.phpfpm.pools.nextcloud.socket;
+      };
+    };
   };
 }

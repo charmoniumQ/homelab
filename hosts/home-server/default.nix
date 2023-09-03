@@ -1,3 +1,7 @@
+/*
+This module contains all and only information specific to one particular host.
+Most of it comes from nixos-generate.
+*/
 { config, modulesPath, lib, pkgs, ... }:
 let
   # TODO: use by-uuid
@@ -24,13 +28,21 @@ in
   imports = [
     (modulesPath + "/profiles/headless.nix")
     # (modulesPath + "/profiles/qemu-guest.nix")
-    ../../applications/reverse-proxy.nix
-    # ../../applications/log-collection.nix
-    # ../../applications/log-storage.nix
-    # ../../applications/unbound.nix
-    # ../../applications/ddclient.nix
-    # ../../applications/nextcloud.nix
+    ../site.nix
+    ../../lib/localIP.nix
+    ../../lib/nix-conf.nix
+    ../../lib/ssh.nix
+    ../../lib/sysadmin-user.nix
+    ../../lib/agenix.nix
+    ../../lib/reverse-proxy.nix
+    ../../lib/caddy.nix
+    ../../lib/unbound.nix
+    ../../lib/log-collection.nix
+    ../../lib/log-storage-and-querying
+    # ../../lib/ddclient.nix
+    ../../lib/nextcloud.nix
   ];
+
   hardware = {
     enableAllFirmware = true;
     cpu = {
@@ -48,14 +60,15 @@ in
       nvidiaSettings = true;
     };
   };
+
   networking = {
-    hostName = "homeserver";
+    hostName = "home-server";
     hostId = "0decdc86";
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 ];
     };
   };
+
   boot = {
     kernelPackages = pkgs.zfs.latestCompatibleLinuxPackages;
     initrd = {
@@ -104,9 +117,11 @@ in
       };
     };
   };
+
   console = {
     enable = true;
   };
+
   fileSystems = {
     "/boot" = {
       device = "bpool/boot";
@@ -137,31 +152,15 @@ in
       ];
     };
   }) (enumerate disks)));
+
   swapDevices = builtins.map (disk: {
     device = "${disk}-part${swapPart}";
   }) disks;
+
   nixpkgs = {
     hostPlatform = "x86_64-linux";
   };
-
-
-  /* Testing */
-  services.grafana = {
-    enable = true;
-    settings = {
-      server = {
-        domain = "grafana.local.samgrayson.me";
-        http_port = 2342;
-        http_addr = "127.0.0.1";
-      };
-    };
-  };
-  reverseProxy = {
-    domains = {
-      ":2000" = {
-        host = config.services.grafana.settings.server.http_addr;
-        port = config.services.grafana.settings.server.http_port;
-      };
-    };
-  };
+  localIP = "10.0.0.12";
+  prometheusIP = config.localIP;
+  hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID2OwUfcZINCrf8UT5g3qgH5T4xhda56yx6+4EIzIX9h root@homeserver";
 }

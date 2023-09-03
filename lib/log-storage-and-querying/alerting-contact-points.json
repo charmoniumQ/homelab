@@ -1,0 +1,34 @@
+{
+  "template_files": {},
+  "template_file_provenances": {},
+  "alertmanager_config": {
+    "route": {
+      "receiver": "charmonium_grafana_alertbot",
+      "group_by": [
+        "grafana_folder",
+        "alertname"
+      ]
+    },
+    "templates": null,
+    "receivers": [
+      {
+        "name": "charmonium_grafana_alertbot",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "f7f397d3-fa8c-4cba-988e-c7d2aea18fde",
+            "name": "charmonium_grafana_alertbot",
+            "type": "telegram",
+            "disableResolveMessage": false,
+            "settings": {
+              "chatid": "-913090860",
+              "disable_notification": false
+            },
+            "secureFields": {
+              "bottoken": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
