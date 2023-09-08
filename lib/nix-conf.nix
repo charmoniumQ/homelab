@@ -6,6 +6,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
   config = {
     system = {
       stateVersion = "23.11";
+      # TODO: enable
       autoUpgrade = {
         enable = true;
         allowReboot = true;
@@ -17,10 +18,6 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
           "-L" # print build logs
         ];
       };
-      # TODO: enable
-      # usbguard = {
-      #   enable = true;
-      # };
     };
     nix = {
       enable = true;

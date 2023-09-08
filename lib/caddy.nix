@@ -11,6 +11,7 @@
     caddy = {
       enable = true;
       email = config.sysadmin.email;
+      # TODO: this
       virtualHosts = (
         builtins.mapAttrs (name: opts: {
           extraConfig = ''
@@ -18,7 +19,7 @@
             reverse_proxy ${lib.optionalString opts.internalOnly "@internal"} ${opts.host}:${builtins.toString opts.port}
           '';
         }) config.reverseProxy.domains
-      ) ++ (
+      ) // (
         builtins.mapAttrs (name: opts: {
           extraConfig = ''
             @internal remote_ip private_ranges
@@ -27,14 +28,14 @@
         }) config.fastCgi.domains
       );
     };
-    prometheus = {
-      exporters = {
-        caddy = {
-          enable = true;
-          port = 3523;
-        };
-      };
-    };
+    # prometheus = {
+    #   exporters = {
+    #     caddy = {
+    #       enable = true;
+    #       port = 3523;
+    #     };
+    #   };
+    # };
   };
   networking = {
     firewall = {

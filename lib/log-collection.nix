@@ -11,15 +11,19 @@
         exporters = {
           node = {
             enable = true;
-            port = 1681;
+            port = 31681;
           };
           smartctl = {
             enable = true;
-            port = 5738;
+            port = 25738;
           };
           systemd = {
             enable = true;
-            port = 6823;
+            port = 56823;
+          };
+          zfs = {
+            enable = true;
+            port = 17418;
           };
         };
         scrapeConfigs = [{
@@ -27,7 +31,7 @@
           static_configs = [ {
             targets =
               lib.attrsets.mapAttrsToList
-                (name: value: "${config.prometheusIP}:${toString config.prometheusPort}")
+                (name: value: "localhost:${toString value.port}")
                 exporters;
           } ];
         }];

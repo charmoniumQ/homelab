@@ -34,18 +34,17 @@
             #   url = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=unbound&showintro=0&mimetype=plaintext&useip=127.0.0.1";
             #   hash = "sha256-4qEOK/NUghXGR/ozmTOPzjNXlReEzQufMmQHBmepr9o=";
             # });
-            local-zone = lib.strings.concatStrings (
-              builtins.map
-                (domain: "\"${domain}.\" transparent\n")
-                (builtins.attrNames config.reverseProxy.domains)
-            );
-            local-data = lib.strings.concatStrings (
-              builtins.map
-                (domain: "\"${domain}. IN A ${config.localIP}\"\n")
-                (builtins.attrNames config.reverseProxy.domains)
-            );
             tls-system-cert = true;
-          };
+          } // (lib.attrsets.optionalAttrs ((config.reverseProxy.domains) != {}) {
+            local-zone = builtins.map
+              (domain: "\"${domain}.\" transparent\n")
+              (builtins.attrNames config.reverseProxy.domains)
+            ;
+            local-data = builtins.map
+              (domain: "\"${domain}. IN A ${config.localIP}\"\n")
+              (builtins.attrNames config.reverseProxy.domains)
+            ;
+          });
           forward-zone = [
             {
               name = ".";
