@@ -5,6 +5,29 @@ sudo rm --recursive --force /var/lib/nextcloud
 sudo --user postgres psql --command 'DROP DATABASE nextcloud;'
 */
 { config, pkgs, lib, ... }:
+let
+  makeNextcloudApp = {
+    pname
+    , version
+    , hash
+    , url ? "https://github.com/nextcloud-releases/${pname}/releases/download/${version}/${pname}-${version}.tar.gz"
+  }:
+    pkgs.stdenv.mkDerivation {
+      src = pkgs.fetchurl { inherit url hash; };
+      inherit pname;
+      inherit version;
+      buildPhase = ''
+        mkdir $out
+        cp --recursive * $out
+      '';
+      checkPhase = ''
+      if [ ! -f "$out/appinfo/info.xml" ]; then
+        echo "appinfo/info.xml doesn't exist in $out, aborting!"
+        exit 2
+      fi
+    '';
+    };
+in
 {
   config = {
     services = {
@@ -52,12 +75,13 @@ sudo --user postgres psql --command 'DROP DATABASE nextcloud;'
         #   enable = true;
         # };
         extraApps = {
-          # calendar = pkgs.fetchFromGitHub {
-          #   owner = "nextcloud";
-          #   repo = "calendar";
-          #   rev = "v4.4.3";
-          #   hash = "sha256-Xw2toEkvIE/UaUBzJdBitA21F0RqNkctQqDzIrFMm84=";
-          # };
+          # See https://github.com/helsinki-systems/nc4nix/blob/main/27.json
+          calendar = makeNextcloudApp {
+            pname = "calendar";
+            version = "v4.4.5";
+            hash = "sha256-X3CQ/gnyaRMCd2czp9sY4l40g/YXzDPhoIyCHkYD0lE=";
+            # sha256 = "fcc12b7e0700b4bbf4bbd401a6f792d0d35179c94a89c501f4fc7e52dbcc173b";
+          };
           # twofactor_totp = pkgs.fetchFromGitHub {
           #   owner = "nextcloud";
           #   repo = "twofactor_totp";
