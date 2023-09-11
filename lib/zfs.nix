@@ -1,25 +1,26 @@
+{ config, ... }:
 {
   services = {
     zfs = {
       autoScrub = {
-        enable = true;
-        interval = "weekly";
+        enable = config.automaticMaintenance.enable;
+        interval = config.automaticMaintenance.time;
       };
       trim = {
-        enable = true;
-        interval = "weekly";
+        enable = config.automaticMaintenance.enable;
+        interval = config.automaticMaintenance.time;
       };
-    };
-    zed = {
-      settings = {
-        ZED_DEBUG_LOG = "/var/log/zed.debug.log";
+      zed = {
+        settings = {
+          ZED_DEBUG_LOG = "/var/log/zed.debug.log";
+        };
       };
     };
     prometheus = {
       exporters = {
         zfs = {
-          enable = true;
-          port = 9428;
+          enable = config.services.prometheus.enable;
+          port = 49328;
         };
       };
     };

@@ -31,12 +31,12 @@
   options = {
     sysadmin = {
       username = lib.mkOption {
-        type = lib.types.str;
+        type = lib.types.strMatching "[a-z0-9.-]+";
         description = "UNIX username for the system administrator.";
         default = "sysadmin";
       };
       email = lib.mkOption {
-        type = lib.types.str;
+        type = lib.types.strMatching "[a-z0-9.+-]+@[a-z0-9.-]+";
         description = "Email for alerts and ACME.";
       };
       sshKeys = lib.mkOption {

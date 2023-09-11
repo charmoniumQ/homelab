@@ -1,16 +1,17 @@
 /*
 Configures NixOS system updates, Nixpkgs channel, and Nix command.
 */
-{ pkgs, self, ... }:
+{ pkgs, self, config, ... }:
 {
+  imports = [ ./automatic-maintenance.nix ];
   config = {
     system = {
       stateVersion = "23.11";
       # TODO: enable
       autoUpgrade = {
-        enable = true;
-        allowReboot = true;
-        dates = "daily";
+        enable = config.automaticMaintenance.enable;
+        allowReboot = config.automaticMaintenance.enable;
+        dates = config.automaticMaintenance.time;
         flake = self.outPath;
         flags = [
           "--update-input"
@@ -29,13 +30,13 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
         experimental-features = [ "nix-command" "flakes" ];
       };
       gc = {
-        automatic = true;
-        dates = "weekly";
+        automatic = config.automaticMaintenance.enable;
+        dates = config.automaticMaintenance.time;
       };
       optimise = {
-        automatic = true;
+        automatic = config.automaticMaintenance.enable;
         dates = [
-          "weekly"
+          config.automaticMaintenance.time
         ];
       };
     };

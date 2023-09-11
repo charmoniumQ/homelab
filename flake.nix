@@ -38,6 +38,8 @@
         default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
           packages = [
             nixpkgs.legacyPackages.x86_64-linux.colmena
+            nixpkgs.legacyPackages.x86_64-linux.pwgen
+            agenix.packages.x86_64-linux.default
           ];
         };
       };
@@ -52,6 +54,7 @@
       };
       home-server = {
         deployment = {
+          # targetHost = "73.45.141.155";
           targetHost = "10.0.0.12";
           targetPort = 22;
           targetUser = "sysadmin";

@@ -17,4 +17,11 @@ This is a set of configuration variables that will be applied to every host at m
     ];
     hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
   };
+  services = {
+    prometheus = {
+      # This port should be the same for all nodes on the network
+      # So we will maintain it here.
+      port = 24712;
+    };
+  };
 }

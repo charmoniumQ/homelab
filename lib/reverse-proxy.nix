@@ -1,18 +1,21 @@
 { config, lib, ... }:
 {
-  options = {
-    fastCgi = {
-      domains = lib.mkOption {
-        description = "Set a proxy to fastCGI https://{reverse-proxy.{name}} to unix://{reverse-proxy.{name}.socket}";
-        type = lib.types.attrsOf (lib.types.submodule {
-          socket = lib.mkOption {
-            type = lib.types.str;
-            description = "Socket of a Fast CGI process; try `config.services.phpfpm.pools.{pool}.socket`";
-          };
-        });
-        default = { };
+  imports = [
+    ./dns.nix
+  ];
+  config = {
+    dns = {
+      localDomains = builtins.attrNames config.reverseProxy.domains;
+    };
+    networking = {
+      firewall = {
+        allowedTCPPorts = lib.lists.optionals
+          ([] != (builtins.attrNames config.reverseProxy.domains))
+          [ 80 443 ];
       };
     };
+  };
+  options = {
     reverseProxy = {
       domains = lib.mkOption {
         description = "Set a reverse proxy from https://{reverse-proxy.{name}} to http://{reverse-proxy.{name}.host}:{reverse-proxy.{name}.port}";
@@ -35,7 +38,7 @@
               type = lib.types.boolean;
               default = true;
               description = "Whether to check the status of of downstream continuously";
-              /* TODO: implement */
+              # TODO: implement
             };
           };
         });

@@ -38,11 +38,11 @@
           } // (lib.attrsets.optionalAttrs ((config.reverseProxy.domains) != {}) {
             local-zone = builtins.map
               (domain: "\"${domain}.\" transparent\n")
-              (builtins.attrNames config.reverseProxy.domains)
+              config.dns.localDomains
             ;
             local-data = builtins.map
               (domain: "\"${domain}. IN A ${config.localIP}\"\n")
-              (builtins.attrNames config.reverseProxy.domains)
+              config.dns.localDomains
             ;
           });
           forward-zone = [
@@ -61,18 +61,6 @@
       nameservers = [ "127.0.0.1" ];
       firewall = {
         allowedUDPPorts = [ 53 ];
-      };
-    };
-  };
-  options = {
-    dns = {
-      servers = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        description = "DNS servers to forward requests to";
-        default = [
-          "1.1.1.1@853#cloudflare-dns.com"
-          "1.0.0.1@853#cloudflare-dns.com"
-        ];
       };
     };
   };
