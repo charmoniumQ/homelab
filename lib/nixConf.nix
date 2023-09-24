@@ -3,7 +3,6 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
 */
 { pkgs, self, config, ... }:
 {
-  imports = [ ./automatic-maintenance.nix ];
   config = {
     system = {
       stateVersion = "23.11";

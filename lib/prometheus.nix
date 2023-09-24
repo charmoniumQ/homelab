@@ -2,7 +2,7 @@
 # https://xeiaso.net/blog/prometheus-grafana-loki-nixos-2020-11-20
 # https://blog.roberthallam.org/2022/09/monitoring-zfs-latencies-in-proxmox-part-1/
 
-{ lib, config, ... }:
+{ lib, config, pkgs, ... }:
 {
   config = {
     services = {
@@ -10,16 +10,16 @@
       prometheus = {
         exporters = {
           node = {
-            enable = true;
-            port = 31681;
+            enable = config.services.prometheus.enable;
+            port = lib.trivial.warn "Move this port number to a hash" 31681;
           };
           smartctl = {
-            enable = true;
-            port = 25738;
+            enable = config.services.prometheus.enable;
+            port = lib.trivial.warn "Move this port number to a hash" 25738;
           };
           systemd = {
-            enable = true;
-            port = 56823;
+            enable = config.services.prometheus.enable;
+            port = lib.trivial.warn "Move this port number to a hash" 56823;
           };
         };
         scrapeConfigs = [{
@@ -35,12 +35,133 @@
         }];
       };
     };
+    systemd = {
+      services = {
+        prometheus-journald-exporter = (
+          let
+            jctl-cfg = config.services.prometheus.exporters.journald-exporter;
+            python = pkgs.python311.withPackages(ps: [ps.prometheus-client]);
+            main-py = ./prometheus-journald-exporter.py;
+            config-json = pkgs.writeText "prometheus-journald-exporter.json" (builtins.toJSON {
+              port = jctl-cfg.port;
+              frequencyMinutes = jctl-cfg.frequencyMinutes;
+              units = builtins.mapAttrs
+                (unit: unitConf: lib.attrsets.filterAttrs (unitConfOption: value: !builtins.isNull value) unitConf)
+                jctl-cfg.units
+              ;
+            });
+          in lib.attrsets.optionalAttrs jctl-cfg.enable {
+            wantedBy = [ "multi-user.target" ];
+            after = [ "network.target" ];
+            serviceConfig = {
+              DynamicUser = true;
+              Group = "systemd-journal";
+              ExecStart = "${python}/bin/python ${main-py} ${config-json}";
+              LogsDirectory = "prometheus-journal-exporter";
+            };
+          }
+        );
+      };
+    };
   };
   options = {
-    prometheus = {
-      ip = lib.mkOption {
-        type = lib.types.str;
-        description = "IP address of prometheus instance";
+    services = {
+      prometheus = {
+        ip = lib.mkOption {
+          type = lib.types.str;
+          description = "IP address of prometheus instance";
+        };
+        exporters = {
+          journald-exporter = {
+            enable = lib.mkOption {
+              type = lib.types.bool;
+              default = config.services.prometheus.enable;
+              description = "Whether to enable the journald-exporter";
+            };
+            frequencyMinutes = lib.mkOption {
+              type = lib.types.int;
+              default = 30;
+              description = "Frequency to check jouranlctl for logs.";
+            };
+            port = lib.mkOption {
+              type = lib.types.int;
+              default = 32813;
+              description = "Port on which the journald exporter will listen";
+            };
+            units = lib.mkOption {
+              type = lib.types.attrsOf (lib.types.submodule {
+                options = {
+                  priority = lib.mkOption {
+                    type = lib.types.nullOr (lib.types.enum [ "emerg" "alert" "crit" "err" "warning" "notice" "info" "debug" ]);
+                    description = "Count all messages with a priority equal or more severe.";
+                    default = null;
+                   };
+                  since = lib.mkOption {
+                    type = lib.types.nullOr lib.types.str;
+                    description = "We will only count logs after this Systemd date/time";
+                    default = null;
+                   };
+                  filters_regex = lib.mkOption {
+                    type = lib.types.nullOr (lib.types.listOf lib.types.str);
+                    description = "Ignore logs matching this regex";
+                    default = null;
+                  };
+                  enable = lib.mkOption {
+                    type = lib.types.nullOr lib.types.bool;
+                    description = "Whether to log messages from this unit";
+                    default = null;
+                  };
+                };
+              });
+              default = {
+                "sshd.service" = {
+                  filters_regex = [
+                    "fatal: Timeout before authentication for "
+                    "error: PAM: Authentication failure for "
+                    "error: Protocol major versions differ: 2 vs\. 1"
+                    "error: kex_exchange_identification: read: Connection reset by peer"
+                    "error: kex_exchange_identification: Connection closed by remote host"
+                    "error: kex_exchange_identification: banner line contains invalid characters"
+                    "error: kex_exchange_identification: client sent invalid protocol identifier"
+                  ];
+                };
+                "dbus.service" = {
+                  filters_regex = [
+                    "The maximum number of pending replies for"
+                  ];
+                };
+                "redis-nextcloud.service" = {
+                  filters_regex = [
+                    "oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo"
+                    "just started"
+                    "Configuration loaded"
+                    "Server initialized"
+                    "User requested shutdown..."
+                    "Redis is now ready to exit, bye bye..."
+                  ];
+                };
+                "prometheus-journald-exporter.service" = {
+                  since = "2023-09-14";
+                };
+                "system.slice" = {
+                  enable = false;
+                };
+                "user-1000.slice" = {
+                  enable = false;
+                };
+                "-.slice" = {
+                  enable = false;
+                };
+                "init.scope" = {
+                  enable = false;
+                };
+                default = {
+                  since = "2023-09-22 16:00:00";
+                };
+              };
+            };
+          };
+        };
       };
     };
   };

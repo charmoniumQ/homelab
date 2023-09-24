@@ -18,46 +18,47 @@
     };
     prometheus = {
       enable = true;
+      port = lib.trivial.warn "Move this port number to a hash" 24712;
     };
     grafana = {
       enable = true;
         settings = {
           server = {
-            domain = "grafana.${config.networking.domain}";
-            http_port = 23432;
+            http_port = lib.trivial.warn "Move this port number to a hash" 23432;
           };
         };
       # TODO: make alerting-contact-points.json private
     };
     nextcloud = {
       enable = true;
-      hostName = "nextcloud.${config.networking.domain}";
       config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-        adminpassFile = config.age.secrets.nextcloud-adminpass.path;
-      };
-      smtp = {
-        enable = true;
-        security = "ssl";
-        authentication = true;
-        passwordJsonFile = config.age.secrets.nextcloud-smtp-pass.path;
-        host = "mail.runbox.com";
-        port = 465;
-        fromUser = "sam";
-        fromDomain = "samgrayson.me";
+        adminpassFile = config.age.secrets.nextcloudAdminpass.path;
       };
     };
+    vaultwarden = {
+      enable = true;
+      admin_token_file = config.age.secrets.vaultwarden-admin-token.path;
+    };
+  };
+  dns = {
+    localDomains = [
+      "home.samgrayson.me"
+    ];
   };
   age = {
-    secrets = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-      nextcloud-smtp-pass = {
-        file = ../../secrets/nextcloud-smtp-pass.age;
-        owner = config.services.phpfpm.pools.nextcloud.user;
-        group = config.services.phpfpm.pools.nextcloud.group;
+    secrets = {
+      smtpPass = {
+        file = ../../secrets/smtp-pass.age;
       };
-      nextcloud-adminpass = {
+    } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
+      nextcloudAdminpass = {
         file = ../../secrets/nextcloud-adminpass.age;
         owner = config.services.phpfpm.pools.nextcloud.user;
         group = config.services.phpfpm.pools.nextcloud.group;
+      };
+    } // lib.attrsets.optionalAttrs config.services.vaultwarden.enable {
+      vaultwarden-admin-token = {
+        file = ../../secrets/vaultwarden-admin-token.age;
       };
     };
   };

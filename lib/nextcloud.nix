@@ -10,8 +10,9 @@ let
     pname
     , version
     , hash
-    , url ? "https://github.com/nextcloud-releases/${pname}/releases/download/${version}/${pname}-${version}.tar.gz"
+    , url
   }:
+    # TODO: Compile these with Composer and NPM by hand instead of relying on external repository.
     pkgs.stdenv.mkDerivation {
       src = pkgs.fetchurl { inherit url hash; };
       inherit pname;
@@ -32,6 +33,7 @@ in
   config = {
     services = {
       nextcloud = {
+        hostName = "nextcloud.${config.networking.domain}";
         https = true;
         appstoreEnable = false;
         database = {
@@ -50,25 +52,27 @@ in
           trustedProxies = [ "${config.localIP}" ];
           defaultPhoneRegion = "US";
         };
-        extraOptions =
-          let smtp = config.services.nextcloud.smtp; in
-          {} // lib.attrsets.optionalAttrs smtp.enable {
-            mail_smtpmode = "smtp";
-            mail_sendmailmode = "smtp";
-            mail_smtpsecure = smtp.security;
-            mail_smtphost = smtp.host;
-            mail_smtpport = builtins.toString smtp.port;
-            mail_from_address = smtp.fromUser;
-            mail_domain = smtp.fromDomain;
-            mail_smtpauth = if smtp.authentication then 1 else 0;
-          } // lib.attrsets.optionalAttrs (smtp.enable && smtp.authentication) {
-            mail_smtpname = smtp.username;
-          }
-        ;
+        phpOptions = {
+          "opcache.jit" = "1255";
+          "opcache.jit_buffer_size" = "128M";
+          "opcache.interned_strings_buffer" = "16";
+          # https://spot13.com/pmcalculator/
+        };
+        extraOptions = lib.attrsets.optionalAttrs config.externalSmtp.enable ({
+          mail_smtpmode = "smtp";
+          mail_sendmailmode = "smtp";
+          mail_smtpsecure = config.externalSmtp.security;
+          mail_smtphost = config.externalSmtp.host;
+          mail_smtpport = builtins.toString config.externalSmtp.port;
+          mail_from_address = config.externalSmtp.fromUser;
+          mail_domain = config.externalSmtp.fromDomain;
+          mail_smtpauth = if config.externalSmtp.authentication then 1 else 0;
+        } // lib.attrsets.optionalAttrs config.externalSmtp.authentication{
+          mail_smtpname = config.externalSmtp.username;
+        });
         secretFile =
-          let smtp = config.services.nextcloud.smtp; in
-          if smtp.enable && smtp.authentication
-          then smtp.passwordJsonFile
+          if config.externalSmtp.enable && config.externalSmtp.authentication
+          then "/run/secrets/nextcloud-smtp.json"
           else null
         ;
         # notify_push = {
@@ -76,41 +80,33 @@ in
         # };
         extraApps = {
           # See https://github.com/helsinki-systems/nc4nix/blob/main/27.json
-          calendar = makeNextcloudApp {
+          calendar = makeNextcloudApp rec {
             pname = "calendar";
-            version = "v4.4.5";
-            hash = "sha256-X3CQ/gnyaRMCd2czp9sY4l40g/YXzDPhoIyCHkYD0lE=";
-            # sha256 = "fcc12b7e0700b4bbf4bbd401a6f792d0d35179c94a89c501f4fc7e52dbcc173b";
+            version = "4.5.0";
+            hash = "sha256-McoYHnNBoOUjxL5RE3R9l7DwK3BHPvQ8VKhjef2e2kg=";
+            url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}-v${version}.tar.gz";
           };
-          # twofactor_totp = pkgs.fetchFromGitHub {
-          #   owner = "nextcloud";
-          #   repo = "twofactor_totp";
-          #   rev = "v27.0.1";
-          #   hash = "sha256-k02rXLSXJEC3GCY1MF2b2zCmat4J1/4DGmYVMkQ7QQY=";
+          notes = makeNextcloudApp rec {
+            pname = "notes";
+            version = "4.8.1";
+            hash = "sha256-BfH1W+7TWKZRuAAhKQEQtlv8ePTtJQvZQVMMu3zULR4=";
+            url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}.tar.gz";
+          };
+          contacts = makeNextcloudApp rec {
+            pname = "contacts";
+            version = "5.3.2";
+            hash = "sha256-1jQ+pyLBPU7I4wSPkmezJq7ukrQh8WPErG4J6Ps3LR4=";
+            url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}-v${version}.tar.gz";
+          };
+          # memories = makeNextcloudApp {
+          #   pname = "memories";
+          #   version = "v5.2.1";
+          #   hash = "sha256-qu+LrohAVBpTj/t14BinT2ExDF8uifcfEpc4YB+Q9Pw=";
           # };
-          # nextcloud-breeze-dark = pkgs.fetchFromGitHub {
-          #   owner = "mwalbeck";
-          #   repo = "nextcloud-breeze-dark";
-          #   rev = "v26.0.0";
+          # nextcloud-breeze-dark = makeNextcloudApp {
+          #   pname = "nextcloud-breeze-dark";
+          #   version = "v26.0.0";
           #   hash = "sha256-CKgs/IqwebPIxvcItF0Z/ynEAgcE0jhyVkxJ603QARc=";
-          # };
-          # memories = pkgs.fetchFromGitHub {
-          #   owner = "pulsejet";
-          #   repo = "memories";
-          #   rev = "v5.2.1";
-          #   hash = "sha256-qU+LrohAVBpTj/t14BinT2ExDF8uifcfEpc4YB+Q9Pw=";
-          # };
-          # notes = pkgs.fetchFromGitHub {
-          #   owner = "nextcloud";
-          #   repo = "notes";
-          #   rev = "v4.8.1";
-          #   hash = "sha256-P6hFrsh7Axfq8rPJIx7WjGcGaTfHuo3oNV7n5RkpvyU=";
-          # };
-          # richdocuments = pkgs.fetchFromGitHub {
-          #   owner = "nextcloud";
-          #   repo = "richdocuments";
-          #   rev = "v8.1.0";
-          #   hash = "sha256-5le3HTww2njQ6VMhPSHlKTf0a4EgCbUezli8Pry5eyc=";
           # };
         };
       };
@@ -190,6 +186,13 @@ in
           };
         };
       };
+      redis = {
+        # https://github.com/jemalloc/jemalloc/issues/1328
+        # (Suggested for Background Saving: http://redis.io/topics/faq) .
+        vmOverCommit = true;
+      };
+      # TODO: write fail2ban filter and jail for Caddy/Nextcloud
+      # https://www.ericlight.com/moving-to-the-caddy-web-server.html
     };
     users = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       groups = {
@@ -198,14 +201,19 @@ in
         };
       };
     };
-    dns = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-      localDomains = [ "${config.services.nextcloud.hostName}" ];
-    };
     environment = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       systemPackages = [
         pkgs.zstd
         pkgs.gzip
       ];
+    };
+    generatedFiles = lib.attrsets.optionalAttrs (config.services.nextcloud.enable && config.externalSmtp.enable && config.externalSmtp.authentication) {
+      "nextcloud-smtp.json" = {
+        name = "nextcloud-smtp.json";
+        script = ''echo {\"mail_smtppassword\":\"$(cat ${config.externalSmtp.passwordFile})\"}'';
+        user = config.services.phpfpm.pools.nextcloud.user;
+        group = config.services.phpfpm.pools.nextcloud.group;
+      };
     };
     # runtimeTests = {
     #   tests = {
@@ -220,50 +228,5 @@ in
     #     };
     #   };
     # };
-  };
-  options = {
-    services = {
-      nextcloud = {
-        smtp = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            description = "Whether to allow Nextcloud server to send emails to users using the specified SMTP server.";
-          };
-          security = lib.mkOption {
-            type = lib.types.enum [ "" "ssl" "starttls" ];
-            description = "Security protocl used to access SMTP server.";
-          };
-          authentication = lib.mkOption {
-            type = lib.types.bool;
-            description = "Whether this SMTP server requires authentication.";
-          };
-          username = lib.mkOption {
-            type = lib.types.nonEmptyStr;
-            description = "Username with which to log in to the SMTP server. Defaults to \${fromUser}@\${fromDomain}";
-            default = "${config.services.nextcloud.smtp.fromUser}@${config.services.nextcloud.smtp.fromDomain}";
-          };
-          passwordJsonFile = lib.mkOption {
-            type = lib.types.path;
-            description = "File of the password with which to log in to the SMTP server. Should be in the form of a JSON file like: {\"mail_smtppassword\": \"password\"} where password is replaced with the actual password.";
-          };
-          host = lib.mkOption {
-            type = lib.types.strMatching "[a-z0-9.-]+";
-            description = "Hostname of SMTP server to use.";
-          };
-          port = lib.mkOption {
-            type = lib.types.port;
-            description = "Port of SMTP server to use.";
-          };
-          fromUser = lib.mkOption {
-            type = lib.types.nonEmptyStr;
-            description = "The user-half of the \"from\" email address.";
-          };
-          fromDomain = lib.mkOption {
-            type = lib.types.nonEmptyStr;
-            description = "The domain-half of the \"from\" email address to use.";
-          };
-        };
-      };
-    };
   };
 }

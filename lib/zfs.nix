@@ -1,4 +1,4 @@
-{ config, ... }:
+{ lib, config, ... }:
 {
   services = {
     zfs = {
@@ -20,7 +20,7 @@
       exporters = {
         zfs = {
           enable = config.services.prometheus.enable;
-          port = 49328;
+          port = lib.trivial.warn "Move this port number to a hash" 49328;
         };
       };
     };

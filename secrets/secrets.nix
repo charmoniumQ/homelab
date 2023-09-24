@@ -1,9 +1,10 @@
 let
-  sysadminKey = builtins.elemAt (import ../hosts/site.nix {}).sysadmin.sshKeys 0;
+  sysadminKey = builtins.elemAt (import ../hosts/site.nix { config = null; }).sysadmin.sshKeys 0;
   hostKey = (import ../hosts/home-server/hardware-configuration.nix { lib = null; pkgs = null; }).hostKey;
 in {
   "nextcloud-adminpass.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "nextcloud-smtp-pass.age" = { publicKeys = [ sysadminKey hostKey ]; };
+  "smtp-pass.age" = { publicKeys = [ sysadminKey hostKey ]; };
+  "vaultwarden-admin-token.age" = { publicKeys = [sysadminKey hostKey]; };
 }
 
 /*

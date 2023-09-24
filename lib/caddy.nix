@@ -8,12 +8,18 @@
       */
       caddy = {
         email = config.sysadmin.email;
+        extraConfig = ''
+          encode zstd gzip
+        '';
         virtualHosts = (
           builtins.mapAttrs (name: opts: {
             extraConfig = ''
-             header Strict-Transport-Security max-age=15552000;
-             ${lib.optionalString opts.internalOnly "@internal remote_ip private_ranges"}
-             reverse_proxy ${lib.optionalString opts.internalOnly "@internal"} ${opts.host}:${builtins.toString opts.port}
+              header Strict-Transport-Security max-age=15552000;
+              ${lib.optionalString opts.internalOnly "@internal remote_ip private_ranges"}
+              reverse_proxy ${lib.optionalString opts.internalOnly "@internal"} ${opts.host}:${builtins.toString opts.port} {
+                ${opts.extraProxyConfig}
+              }
+              ${opts.extraHostConfig}
            '';
           }) config.reverseProxy.domains
         );

@@ -6,8 +6,7 @@
       grafana = {
         settings = {
           server = {
-            # domain = config.services.grafana.hostname;
-            # http_port = config.services.grafana._port;
+            domain = "grafana.${config.networking.domain}";
             root_url = "https://${config.services.grafana.settings.server.domain}";
             # This gets reverseProxied from https://${domain} to http://127.0.0.1:${builtins.toString http_port}
             protocol = "http";
@@ -38,14 +37,14 @@
             };
           };
           dashboards = {
-            path = ./dashboards;
+            path = ./grafana/dashboards;
           };
           alerting = {
             rules = {
-              path = ./alerting-rules.yaml;
+              path = lib.trivial.warn "Put SMTP notifs in here maybe?" ./grafana/alerting-rules.yaml;
             };
             contactPoints = {
-              path = ./alerting-contact-points.json;
+              path = ./grafana/alerting-contact-points.json;
             };
           };
         };
@@ -54,8 +53,8 @@
     reverseProxy = {
       domains = {
         "${config.services.grafana.settings.server.domain}" = {
-          internalOnly = true;
           port = config.services.grafana.settings.server.http_port;
+          internalOnly = false;
         };
       };
     };

@@ -13,7 +13,7 @@
           isNormalUser = true;
           createHome = true;
           extraGroups = [ "wheel" ];
-          initialHashedPassword = config.sysadmin.hashedPassword;
+          initialHashedPassword = lib.trivial.warn "Move this to a hashedPasswordFile" config.sysadmin.hashedPassword;
           openssh = {
             authorizedKeys = {
               keys = config.sysadmin.sshKeys;

@@ -15,20 +15,24 @@ Options that the user will likely not need to change will be set here.
 {
   imports =
     [ ./agenix.nix
-      ./automatic-maintenance.nix
+      ./automaticMaintenance.nix
       ./caddy.nix
       ./dns.nix
-      ./grafana
+      ./externalSmtp.nix
+      ./fail2ban.nix
+      ./generatedFiles.nix
+      ./grafana.nix
       ./loki.nix
-      ./networked-node.nix
+      ./networkedNode.nix
       ./nextcloud.nix
-      ./nix-conf.nix
-      ./runtime-tests.nix
+      ./nixConf.nix
+      ./runtimeTests.nix
       ./prometheus.nix
       ./promtail.nix
-      ./reverse-proxy.nix
+      ./reverseProxy.nix
       ./ssh.nix
-      ./sysadmin-user.nix
+      ./sysadmin.nix
+      ./vaultwarden.nix
       ./unbound.nix
       ./zfs.nix
     ];

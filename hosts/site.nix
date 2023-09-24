@@ -1,7 +1,7 @@
 /*
 This is a set of configuration variables that will be applied to every host at my site.
 */
-{ ... }:
+{ config, ... }:
 {
   networking = {
     useDHCP = true;
@@ -17,11 +17,14 @@ This is a set of configuration variables that will be applied to every host at m
     ];
     hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
   };
-  services = {
-    prometheus = {
-      # This port should be the same for all nodes on the network
-      # So we will maintain it here.
-      port = 24712;
-    };
+  externalSmtp = {
+    enable = true;
+    security = "ssl";
+    authentication = true;
+    passwordFile = config.age.secrets.smtpPass.path;
+    host = "mail.runbox.com";
+    port = 465;
+    fromUser = "sam";
+    fromDomain = "samgrayson.me";
   };
 }

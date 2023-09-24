@@ -4,28 +4,24 @@
     systemd = {
       services = builtins.mapAttrs
         (name: value: {
-          "runtime-test-${lib.strings.toLower name}" = {
-            wantedBy = [ "multi-user.target" ];
-            after = value.after;
-            script = value.script;
-            serviceConfig = {
-              Type = "oneshot";
-              User = value.user;
-            };
+          wantedBy = [ "multi-user.target" ];
+          after = value.after;
+          script = value.script;
+          serviceConfig = {
+            Type = "oneshot";
+            User = value.user;
           };
         })
         config.runtimeTests.tests
       ;
       timers = builtins.mapAttrs 
         (name: value: {
-          "runtime-test-${lib.strings.toLower name}" = {
-            wantedBy = [ "timers.target" ];
-            timerConfig = {
-              Unit = "runtime-test-${lib.strings.toLower name}";
-              Persistent = true;
-              OnCalendar = if builtins.isNull value.date then config.runtimeTests.defaultDate else value.date;
-              AccuracySec = if builtins.isNull value.accuracySec then config.runtimeTests.defaultAccuracySec else value.accuracySec;
-            };
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            Unit = "runtime-test-${lib.strings.toLower name}";
+            Persistent = true;
+            OnCalendar = if builtins.isNull value.date then config.runtimeTests.defaultDate else value.date;
+            AccuracySec = if builtins.isNull value.accuracySec then config.runtimeTests.defaultAccuracySec else value.accuracySec;
           };
         })
         config.runtimeTests.tests
@@ -55,10 +51,12 @@
             };
             date = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
+              default = null;
               description = "If not null, when to run the tests; otherwise use runtimeTests.defaultDate. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html>";
             };
             accuracySec = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
+              default = null;
               description = "If not null, allows Systemd to coalesce this event with nearby events at most $accuracySec away; otherwise use runtimeTests.defaultAccuracySec. <https://www.freedesktop.org/software/systemd/man/systemd.timer.html#AccuracySec=>";
             };
           };

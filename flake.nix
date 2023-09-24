@@ -54,14 +54,12 @@
       };
       home-server = {
         deployment = {
-          # targetHost = "73.45.141.155";
           targetHost = "10.0.0.12";
+          # targetHost = "nextcloud.samgrayson.me";
           targetPort = 22;
           targetUser = "sysadmin";
         };
-        imports = [
-          ./hosts/home-server
-        ];
+        imports = [ ./hosts/home-server ];
       };
     };
   };

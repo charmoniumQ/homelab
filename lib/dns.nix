@@ -11,7 +11,7 @@
         ];
       };
       localDomains = lib.mkOption {
-        type = lib.types.listOf (lib.types.strMatching "[a-z0-9.-]+");
+        type = lib.types.listOf (lib.types.strMatching "[a-z0-9][a-z0-9.-]+[a-z0-9]");
         description = "Additional DNS names to route to this host";
         default = [ ];
       };

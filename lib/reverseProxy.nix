@@ -22,23 +22,34 @@
         type = lib.types.attrsOf (lib.types.submodule {
           options = {
             host = lib.mkOption {
-              type = lib.types.str;
+              type = lib.types.strMatching "[a-z0-9][a-z0-9.-]+[a-z0-9]";
               description = "Upstream host to forward to.";
               default = "127.0.0.1";
             };
+            extraProxyConfig = lib.mkOption {
+              type = lib.types.lines;
+              description = "Additional configuration options to place in this server block.";
+              default = "";
+            };
+            extraHostConfig = lib.mkOption {
+              type = lib.types.lines;
+              description = "Additional configuration options to place in this server block.";
+              default = "";
+            };
             port = lib.mkOption {
-              type = lib.types.int;
+              type = lib.types.port;
               description = "Upstream port to forward to.";
             };
             internalOnly = lib.mkOption {
               type = lib.types.bool;
               description = "Whether or not too accept connections on the WAN.";
+              default = false;
             };
             healthcheck = lib.mkOption {
               type = lib.types.boolean;
               default = true;
               description = "Whether to check the status of of downstream continuously";
-              # TODO: implement
+              # TODO: implement healthchecks
             };
           };
         });
