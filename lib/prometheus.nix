@@ -41,7 +41,6 @@
           let
             jctl-cfg = config.services.prometheus.exporters.journald-exporter;
             python = pkgs.python311.withPackages(ps: [ps.prometheus-client]);
-            main-py = ./prometheus-journald-exporter.py;
             config-json = pkgs.writeText "prometheus-journald-exporter.json" (builtins.toJSON {
               port = jctl-cfg.port;
               frequencyMinutes = jctl-cfg.frequencyMinutes;
@@ -56,8 +55,8 @@
             serviceConfig = {
               DynamicUser = true;
               Group = "systemd-journal";
-              ExecStart = "${python}/bin/python ${main-py} ${config-json}";
-              LogsDirectory = "prometheus-journal-exporter";
+              ExecStart = "${python}/bin/python -u ${./prometheus-journald-exporter.py} ${config-json}";
+              LogsDirectory = "prometheus-journald-exporter";
             };
           }
         );
@@ -140,8 +139,13 @@
                     "Redis is now ready to exit, bye bye..."
                   ];
                 };
-                "prometheus-journald-exporter.service" = {
-                  since = "2023-09-14";
+                "vaultwarden.service" = {
+                  filters_regex = [
+                    # This sometimes happens when the postgres server is starting up.
+                    # If vaultwarden *truly* can't connect, it will cause the systemd service to fail,
+                    # which we will see in a different alert.
+                    "Can't connect to database, retrying: DieselCon."
+                  ];
                 };
                 "system.slice" = {
                   enable = false;
@@ -156,7 +160,7 @@
                   enable = false;
                 };
                 default = {
-                  since = "2023-09-22 16:00:00";
+                  since = "2023-09-30 05:00:00";
                 };
               };
             };

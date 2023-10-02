@@ -6,6 +6,7 @@ This is a set of configuration variables that will be applied to every host at m
   networking = {
     useDHCP = true;
     domain = "samgrayson.me";
+    enableIPv6 = false;
   };
   time = {
     timeZone = "America/Chicago";
@@ -26,5 +27,11 @@ This is a set of configuration variables that will be applied to every host at m
     port = 465;
     fromUser = "sam";
     fromDomain = "samgrayson.me";
+  };
+  locale = {
+    unit_system = "us_customary";
+    country = "US";
+    lang = "en-US";
+    locationJsonFile = config.age.secrets.locationJson.path;
   };
 }

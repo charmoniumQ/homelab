@@ -18,7 +18,7 @@
         (name: value: {
           wantedBy = [ "timers.target" ];
           timerConfig = {
-            Unit = "runtime-test-${lib.strings.toLower name}";
+            Unit = "runtime-test-${name}.service";
             Persistent = true;
             OnCalendar = if builtins.isNull value.date then config.runtimeTests.defaultDate else value.date;
             AccuracySec = if builtins.isNull value.accuracySec then config.runtimeTests.defaultAccuracySec else value.accuracySec;

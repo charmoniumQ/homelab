@@ -2,13 +2,16 @@
 let
   cfg = config.externalSmtp;
   pyScript = ''
-    import smtplib, pathlib
+    import smtplib, pathlib, time
+    delay = 20
+    retries = 5
     security = "${cfg.security}"
-    for _ in range(10):
+    for _ in range(retries):
       try:
         server = (smtplib.SMTP_SSL if security == "ssl" else smtplib.SMTP)("${cfg.host}", ${builtins.toString cfg.port})
       except Exception as exc:
         exc2 = exc
+        time.sleep(delay)
       else:
         exc2 = None
         break

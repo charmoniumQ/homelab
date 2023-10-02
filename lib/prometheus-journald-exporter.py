@@ -78,6 +78,7 @@ for _ in range(10):
         ["systemctl", "show", "*", "--property=Id", "--value"],
         capture_output=True,
         text=True,
+        check=False,
     )
     if units_proc.returncode != 0:
         print(units_proc.stdout)
@@ -123,11 +124,11 @@ def loop() -> None:
                         capture_output=True,
                         text=True,
                 ).stdout.split("\n")
-                if line.strip() and "-- No entries --" != line and not any(re.search(filter, line) for filter in unit_config.filters_regex)
+                if line.strip() and not (line.startswith("--") and line.endswith("--")) and not any(re.search(filter, line) for filter in unit_config.filters_regex)
             ]
             if lines:
                 command = " | ".join([
-                    " ".join(command),
+                    " ".join(map(shlex.quote, command)),
                     *[f"pcregrep --invert-match {shlex.quote(filter)}" for filter in unit_config.filters_regex],
                 ])
                 (config.logs_dir / unit.replace(".", "-")).write_text("\n".join(["$ " + command, *lines]))

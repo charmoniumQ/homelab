@@ -39,6 +39,9 @@
       enable = true;
       admin_token_file = config.age.secrets.vaultwarden-admin-token.path;
     };
+    home-assistant = {
+      enable = true;
+    };
   };
   dns = {
     localDomains = [
@@ -49,6 +52,9 @@
     secrets = {
       smtpPass = {
         file = ../../secrets/smtp-pass.age;
+      };
+      locationJson = {
+        file = ../../secrets/location.json.age;
       };
     } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       nextcloudAdminpass = {

@@ -5,6 +5,7 @@ in {
   "nextcloud-adminpass.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "smtp-pass.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "vaultwarden-admin-token.age" = { publicKeys = [sysadminKey hostKey]; };
+  "location.json.age" = { publicKeys = [ sysadminKey hostKey ]; };
 }
 
 /*

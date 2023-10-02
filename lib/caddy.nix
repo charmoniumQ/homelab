@@ -8,9 +8,6 @@
       */
       caddy = {
         email = config.sysadmin.email;
-        extraConfig = ''
-          encode zstd gzip
-        '';
         virtualHosts = (
           builtins.mapAttrs (name: opts: {
             extraConfig = ''
