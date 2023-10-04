@@ -55,8 +55,7 @@
       home-server = {
         deployment = {
           targetHost = "10.0.0.12";
-          # targetHost = "nextcloud.samgrayson.me";
-          targetPort = 22;
+          # targetHost = "home.samgrayson.me";
           targetUser = "sysadmin";
         };
         imports = [ ./hosts/home-server ];

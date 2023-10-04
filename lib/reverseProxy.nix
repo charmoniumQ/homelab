@@ -19,6 +19,7 @@
     reverseProxy = {
       domains = lib.mkOption {
         description = "Set a reverse proxy from https://{reverse-proxy.{name}} to http://{reverse-proxy.{name}.host}:{reverse-proxy.{name}.port}";
+        default = { };
         type = lib.types.attrsOf (lib.types.submodule {
           options = {
             host = lib.mkOption {
@@ -53,7 +54,6 @@
             };
           };
         });
-        default = { };
       };
     };
   };

@@ -5,21 +5,32 @@
 { lib, config, pkgs, ... }:
 {
   config = {
+    environment = {
+      defaultPackages = [ pkgs.htop ];
+    };
     services = {
       # https://gist.github.com/rickhull/895b0cb38fdd537c1078a858cf15d63e
       prometheus = {
+        listenAddress = "127.0.0.1";
+        port = lib.trivial.warn "Move this port number to a hash" 26434;
+        globalConfig = {
+          scrape_interval = "2m";
+        };
         exporters = {
           node = {
             enable = config.services.prometheus.enable;
             port = lib.trivial.warn "Move this port number to a hash" 31681;
+            listenAddress = "127.0.0.1";
           };
           smartctl = {
             enable = config.services.prometheus.enable;
             port = lib.trivial.warn "Move this port number to a hash" 25738;
+            listenAddress = "127.0.0.1";
           };
           systemd = {
             enable = config.services.prometheus.enable;
             port = lib.trivial.warn "Move this port number to a hash" 56823;
+            listenAddress = "127.0.0.1";
           };
         };
         scrapeConfigs = [{
@@ -40,7 +51,7 @@
         prometheus-journald-exporter = (
           let
             jctl-cfg = config.services.prometheus.exporters.journald-exporter;
-            python = pkgs.python311.withPackages(ps: [ps.prometheus-client]);
+            python = pkgs.python311.withPackages(ps: [ps.prometheus-client ps.retry]);
             config-json = pkgs.writeText "prometheus-journald-exporter.json" (builtins.toJSON {
               port = jctl-cfg.port;
               frequencyMinutes = jctl-cfg.frequencyMinutes;
@@ -66,10 +77,6 @@
   options = {
     services = {
       prometheus = {
-        ip = lib.mkOption {
-          type = lib.types.str;
-          description = "IP address of prometheus instance";
-        };
         exporters = {
           journald-exporter = {
             enable = lib.mkOption {
@@ -160,7 +167,7 @@
                   enable = false;
                 };
                 default = {
-                  since = "2023-09-30 05:00:00";
+                  since = "2023-10-02 22:20:00";
                 };
               };
             };

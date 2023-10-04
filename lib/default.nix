@@ -16,8 +16,10 @@ Options that the user will likely not need to change will be set here.
   imports = [
     ./agenix.nix
     ./automaticMaintenance.nix
+    ./backups.nix
     ./caddy.nix
     ./dns.nix
+    ./dyndns.nix
     ./externalSmtp.nix
     ./fail2ban.nix
     ./generatedFiles.nix

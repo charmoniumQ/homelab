@@ -28,6 +28,20 @@ let
       fi
     '';
     };
+  cfg = config.services.nextcloud;
+  # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-apps/nextcloud.nix#L51C3-L62C6
+  occ = pkgs.writeScriptBin "nextcloud-occ" ''
+    #! ${pkgs.runtimeShell}
+    cd ${cfg.package}
+    sudo=exec
+    if [[ "$USER" != nextcloud ]]; then
+      sudo='exec /run/wrappers/bin/sudo -u nextcloud --preserve-env=NEXTCLOUD_CONFIG_DIR --preserve-env=OC_PASS'
+    fi
+    export NEXTCLOUD_CONFIG_DIR="${cfg.datadir}/config"
+    $sudo \
+      ${cfg.phpPackage}/bin/php \
+      occ "$@"
+  '';
 in
 {
   config = {
@@ -44,6 +58,8 @@ in
           redis = true;
           memcached = false;
         };
+        logLevel = 2 /* warning */;
+        logType = lib.trivial.warn "Move syslog to systemd once we install php-systemd" "syslog";
         configureRedis = true;
         enableImagemagick = true;
         config = {
@@ -52,6 +68,9 @@ in
           trustedProxies = [ "${config.localIP}" ];
           defaultPhoneRegion = "US";
         };
+        # phpExtraExtensions = all: [
+        #   all.php-systemd
+        # ];
         phpOptions = {
           "opcache.jit" = "1255";
           "opcache.jit_buffer_size" = "128M";
@@ -110,7 +129,7 @@ in
           # };
         };
       };
-      phpfpm = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
+      phpfpm = lib.attrsets.optionalAttrs cfg.enable {
         pools = {
           nextcloud = {
             settings = {
@@ -123,9 +142,9 @@ in
       nginx = {
         enable = false;
       };
-      caddy = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
+      caddy = lib.attrsets.optionalAttrs cfg.enable {
         virtualHosts = {
-          "${config.services.nextcloud.hostName}" = {
+          "${cfg.hostName}" = {
             extraConfig = ''
             # https://github.com/NixOS/nixpkgs/issues/243203#issue-1802143563
             # https://caddy.community/t/example-docker-nextcloud-fpm-caddy-v2-webserver/9407
@@ -138,16 +157,15 @@ in
             redir /.well-known/webfinger /index.php/.well-known/webfinger
             redir /.well-known/nodeinfo  /index.php/.well-known/nodeinfo
 
-
-            # root /store-apps/* ${config.services.nextcloud.home}
+            # root /store-apps/* ${cfg.home}
             @store_apps path_regexp ^/store-apps
-            root @store_apps ${config.services.nextcloud.home}
+            root @store_apps ${cfg.home}
 
-            # root /nix-apps/* ${config.services.nextcloud.home}
+            # root /nix-apps/* ${cfg.home}
             @nix_apps path_regexp ^/nix-apps
-            root @nix_apps ${config.services.nextcloud.home}
+            root @nix_apps ${cfg.home}
 
-            root * ${config.services.nextcloud.package}
+            root * ${cfg.package}
 
             @davClnt {
               header_regexp User-Agent ^DavClnt
@@ -194,20 +212,39 @@ in
       # TODO: write fail2ban filter and jail for Caddy/Nextcloud
       # https://www.ericlight.com/moving-to-the-caddy-web-server.html
     };
-    users = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
+    backups = {
+      volumes = {
+        nextcloud = {
+          # https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html
+          filesystem = {
+            paths = [ "${cfg.datadir}/data" ];
+          };
+          postgresql = {
+            databases = [ cfg.config.dbname ];
+          };
+          services = [ ];
+          enterMaintenanceMode = "${occ}/bin/nextcloud-occ maintenance:mode --on";
+          exitMaintenanceMode = "${occ}/bin/nextcloud-occ maintenance:mode --off";
+          keep_daily = 6;
+          keep_monthly = 5;
+          keep_yearly = 5;
+        };
+      };
+    };
+    users = lib.attrsets.optionalAttrs cfg.enable {
       groups = {
         nextcloud = {
           members = [ "nextcloud" config.services.caddy.user ];
         };
       };
     };
-    environment = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
+    environment = lib.attrsets.optionalAttrs cfg.enable {
       systemPackages = [
         pkgs.zstd
         pkgs.gzip
       ];
     };
-    generatedFiles = lib.attrsets.optionalAttrs (config.services.nextcloud.enable && config.externalSmtp.enable && config.externalSmtp.authentication) {
+    generatedFiles = lib.attrsets.optionalAttrs (cfg.enable && config.externalSmtp.enable && config.externalSmtp.authentication) {
       "nextcloud-smtp.json" = {
         name = "nextcloud-smtp.json";
         script = ''echo {\"mail_smtppassword\":\"$(cat ${config.externalSmtp.passwordFile})\"}'';

@@ -1,6 +1,8 @@
 { pkgs, config, lib, ... }:
 let
   cfg = config.services.home-assistant;
+  userName = "hass";
+  dbName = "hass";
 in {
   config = {
     services = {
@@ -9,7 +11,6 @@ in {
         configWritable = true;
         config = {
           default_config = {};
-          amcrest = [ ];
           homeassistant = {
             name = "Home";
           #   # latitude = "!secret latitude;
@@ -22,7 +23,9 @@ in {
             external_url = "https://${cfg.hostname}";
             internal_url = "https://${cfg.hostname}";
           };
-          
+          recorder = {
+            db_url = "postgresql://${userName}@/${dbName}?host=/run/postgresql";
+          };
           lovelace = {
             # mode = "yaml";
             mode = "storage";
@@ -40,20 +43,18 @@ in {
           pywizlight
           pymetno
         ];
-        extraComponents = [
-          "amcrest"
-          "ffmpeg"
-        ];
       };
       postgresql = {
         enable = true;
-        ensureDatabases = [ "hass" ];
-        ensureUsers = [{
-          name = "hass";
-          ensurePermissions = {
-            "DATABASE hass" = "ALL PRIVILEGES";
-          };
-        }];
+        ensureDatabases = [ dbName ];
+        ensureUsers = [
+          {
+            name = userName;
+            ensurePermissions = {
+              "DATABASE ${dbName}" = "ALL PRIVILEGES";
+            };
+          }
+        ];
       };
     };
     reverseProxy = {

@@ -61,6 +61,23 @@
         group = config.users.groups.vaultwarden.name;
       };
     };
+    backups = {
+      volumes = {
+        # https://github.com/dani-garcia/vaultwarden/wiki/Backing-up-your-vault
+        vaultwarden = {
+          filesystem = {
+            paths = [ "/var/lib/bitwarden_rs/attachments" ];
+          };
+          postgresql = {
+            databases = [ dbName];
+          };
+          services = [ "vaultwarden" ];
+          keep_daily = 3;
+          keep_monthly = 3;
+          keep_yearly = 3;
+        };
+      };
+    };
   };
   options = {
     services = {

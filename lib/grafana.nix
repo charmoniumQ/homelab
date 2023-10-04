@@ -7,6 +7,7 @@
         server = {
           domain = "grafana.${config.networking.domain}";
           root_url = "https://${config.services.grafana.settings.server.domain}";
+          http_port = lib.trivial.warn "Move this port number to a hash" 23432;
           # This gets reverseProxied from https://${domain} to http://127.0.0.1:${builtins.toString http_port}
           protocol = "http";
           http_addr = "127.0.0.1";

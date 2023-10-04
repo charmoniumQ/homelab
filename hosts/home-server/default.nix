@@ -1,14 +1,11 @@
 { config, lib, ... }:
-{
+let
+  secrets = config.age.secrets;
+in {
   imports = [
     ./hardware-configuration.nix
     ../site.nix
-    ../../lib
   ];
-  automaticMaintenance = {
-    enable = true;
-    time = "Sat, 04:30:00 America/Chicago";
-  };
   services = {
     nginx = {
       enable = false;
@@ -18,34 +15,45 @@
     };
     prometheus = {
       enable = true;
-      port = lib.trivial.warn "Move this port number to a hash" 24712;
     };
     grafana = {
       enable = true;
-        settings = {
-          server = {
-            http_port = lib.trivial.warn "Move this port number to a hash" 23432;
-          };
-        };
       # TODO: make alerting-contact-points.json private
     };
     nextcloud = {
       enable = true;
       config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-        adminpassFile = config.age.secrets.nextcloudAdminpass.path;
+        adminpassFile = secrets.nextcloudAdminpass.path;
       };
     };
     vaultwarden = {
       enable = true;
-      admin_token_file = config.age.secrets.vaultwarden-admin-token.path;
+      admin_token_file = secrets.vaultwarden-admin-token.path;
     };
     home-assistant = {
       enable = true;
     };
+    dyndns = {
+      entries = [
+        {
+          protocol = "namecheap";
+          server = "dynamicdns.park-your-domain.com";
+          host = "*";
+          passwordFile = secrets.namecheapPassword.path;
+        }
+      ];
+    };
   };
-  dns = {
+  backups = {
+    enable = true;
+    passwordFile = secrets.resticPassword.path;
+    environmentFile = secrets.resticEnvironmentFile.path;
+    remoteRepo = "b2:charmonium-backups:home-server";
+  };
+  dns = { # TODO: rename dns -> localDns
     localDomains = [
       "home.samgrayson.me"
+      # Note that reverse proxy domains are already added
     ];
   };
   age = {
@@ -55,6 +63,15 @@
       };
       locationJson = {
         file = ../../secrets/location.json.age;
+      };
+      namecheapPassword = {
+        file = ../../secrets/namecheapPassword.age;
+      };
+      resticPassword = {
+        file = ../../secrets/resticPassword.age;
+      };
+      resticEnvironmentFile = {
+        file = ../../secrets/restic.env.age;
       };
     } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       nextcloudAdminpass = {

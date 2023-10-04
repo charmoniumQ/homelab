@@ -1,22 +1,14 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.externalSmtp;
+  python = pkgs.python311;
   pyScript = ''
     import smtplib, pathlib, time
-    delay = 20
-    retries = 5
     security = "${cfg.security}"
-    for _ in range(retries):
-      try:
-        server = (smtplib.SMTP_SSL if security == "ssl" else smtplib.SMTP)("${cfg.host}", ${builtins.toString cfg.port})
-      except Exception as exc:
-        exc2 = exc
-        time.sleep(delay)
-      else:
-        exc2 = None
-        break
-    if exc2 is not None:
-      raise exc2
+    Constructor = (smtplib.SMTP_SSL if security == "ssl" else smtplib.SMTP)
+    def get_server():
+      return Constructor("${cfg.host}", ${builtins.toString cfg.port})
+    server = get_server()
     if security == "startls":
       server.starttls()
     server.login("${cfg.username}", pathlib.Path("${cfg.passwordFile}").read_text())
@@ -27,8 +19,8 @@ in {
   config = {
     runtimeTests = {
       tests = lib.attrsets.optionalAttrs cfg.enable {
-        "externalSmtpTest" = {
-          script = "${pkgs.python311}/bin/python ${builtins.toFile "externalSmtpTest.py" pyScript}";
+        "external-smtp-test" = {
+          script = "${python}/bin/python ${builtins.toFile "externalSmtpTest.py" pyScript}";
           date = "daily";
         };
       };

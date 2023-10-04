@@ -13,6 +13,7 @@ import subprocess
 import pathlib
 import enum
 import dataclasses
+import retry
 
 
 class Priority(enum.StrEnum):
@@ -73,24 +74,19 @@ config = Config(
 )
 
 
-for _ in range(10):
-    units_proc = subprocess.run(
+@retry.retry(subprocess.CalledProcessError, tries=10, delay=10)
+def get_systemd_units_raw() -> str:
+    return subprocess.run(
         ["systemctl", "show", "*", "--property=Id", "--value"],
         capture_output=True,
         text=True,
-        check=False,
-    )
-    if units_proc.returncode != 0:
-        print(units_proc.stdout)
-        print(units_proc.stderr)
-        time.sleep(3)
-        continue
-    else:
-        break
-units_proc.check_returncode()
+        check=True,
+    ).stdout
+
+
 units = set(
     line.strip()
-    for line in units_proc.stdout.split("\n")
+    for line in get_systemd_units_raw().split("\n")
     if "." in line
 )
 

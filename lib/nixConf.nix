@@ -1,7 +1,7 @@
 /*
 Configures NixOS system updates, Nixpkgs channel, and Nix command.
 */
-{ pkgs, self, config, ... }:
+{ pkgs, lib, self, config, ... }:
 {
   config = {
     system = {
@@ -10,7 +10,9 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
       autoUpgrade = {
         enable = config.automaticMaintenance.enable;
         allowReboot = config.automaticMaintenance.enable;
-        dates = config.automaticMaintenance.time;
+        dates = config.automaticMaintenance.weeklyTime;
+        persistent = true;
+        randomizedDelaySec = config.automaticMaintenance.randomizedDelay;
         flake = self.outPath;
         flags = [
           "--update-input"
@@ -26,17 +28,28 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
         enable = true;
       };
       settings = {
+        substituters = [
+          "https://nix-community.cachix.org"
+          "https://cache.nixos.org/"
+        ];
+        trusted-public-keys = [
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        ];
         experimental-features = [ "nix-command" "flakes" ];
       };
       gc = {
         automatic = config.automaticMaintenance.enable;
-        dates = config.automaticMaintenance.time;
+        dates = config.automaticMaintenance.weeklyTime;
+        persistent = true;
+        randomizedDelaySec = config.automaticMaintenance.randomizedDelay;
       };
       optimise = {
         automatic = config.automaticMaintenance.enable;
-        dates = [
-          config.automaticMaintenance.time
-        ];
+        dates = [ (
+          lib.trivial.warn
+            "See if this can take randomizedDelay"
+            config.automaticMaintenance.weeklyTime
+        ) ];
       };
     };
     nixpkgs = {

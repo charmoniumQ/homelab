@@ -4,11 +4,17 @@
     zfs = {
       autoScrub = {
         enable = config.automaticMaintenance.enable;
-        interval = config.automaticMaintenance.time;
+        interval =
+          lib.trivial.warn
+            "See if this can take randomizedDelay"
+            config.automaticMaintenance.weeklyTime;
       };
       trim = {
         enable = config.automaticMaintenance.enable;
-        interval = config.automaticMaintenance.time;
+        interval =
+          lib.trivial.warn
+            "See if this can take randomizedDelay"
+            config.automaticMaintenance.weeklyTime;
       };
       zed = {
         settings = {

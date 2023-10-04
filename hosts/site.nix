@@ -3,6 +3,9 @@ This is a set of configuration variables that will be applied to every host at m
 */
 { config, ... }:
 {
+  imports = [
+    ../lib
+  ];
   networking = {
     useDHCP = true;
     domain = "samgrayson.me";
@@ -15,6 +18,7 @@ This is a set of configuration variables that will be applied to every host at m
     email = "sam+acme@samgrayson.me";
     sshKeys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDWwABCkuyQy2cqP7wppkQbMgfZqCWmQ18FHrh9P18C8 sam@laptop"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP5wkgmvprQC0v8p4UfmRDosFwqA8Sq4suRhLa/bC5YO JuiceSSH"
     ];
     hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
   };
@@ -33,5 +37,11 @@ This is a set of configuration variables that will be applied to every host at m
     country = "US";
     lang = "en-US";
     locationJsonFile = config.age.secrets.locationJson.path;
+  };
+  automaticMaintenance = {
+    enable = true;
+    weeklyTime = "Sat 03:00:00";
+    dailyTime = "02:30:00";
+    randomizedDelay = "4h";
   };
 }
