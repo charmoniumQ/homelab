@@ -1,45 +1,19 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.backups;
-  pg_dump = "${config.services.postgresql.package}/bin/pg_dump";
-  postgres_url = "postgres://%2Frun%2Fpostgresql";
-  sudo = "${pkgs.sudo}/bin/sudo";
-  resticBackups = builtins.mapAttrs (name: cfg: {
+  jsonCfg = (pkgs.formats.json {}).generate "cfg.json" cfg;
+  python_ = pkgs.python311;
+  python = "${python_}/bin/python";
+  script = pkgs.writeText "script.py" (builtins.readFile ./backups.py);
+  resticBackups = builtins.mapAttrs (volume: volumeCfg: {
     initialize = true;
-    backupPrepareCommand = builtins.concatStringsSep "\n" (
-      [
-        "set -ex"
-        "rm --recursive --force /tmp/snapshots"
-        "mkdir --parents /var/lib/backups"
-        cfg.enterMaintenanceMode
-      ]
-      ++ (builtins.map
-        (service: "systemctl stop ${service}")
-        cfg.services)
-      ++ (builtins.map
-        (dbName: ''
-          mkdir --parents /tmp/snapshots/${dbName}
-          chown postgres /tmp/snapshots /tmp/snapshots/${dbName}
-          ${sudo} -u postgres ${pg_dump} --format=directory --file=/tmp/snapshots/${dbName}  ${postgres_url}/${dbName}
-          chown root /tmp/snapshots /tmp/snapshots/${dbName}
-        '')
-        cfg.postgresql.databases)
-    );
-    backupCleanupCommand = builtins.concatStringsSep "\n" (
-      [
-        "set -ex"
-        "rm --recursive --force /tmp/snapshots"
-        cfg.exitMaintenanceMode
-      ]
-      ++ (builtins.map
-        (service: "systemctl start ${service}\n")
-        cfg.services)
-    );
+    backupPrepareCommand = "${python} ${jsonCfg} prepare ${volume}";
+    backupCleanupCommand = "${python} ${jsonCfg} cleanup ${volume}";
     paths = (
-      cfg.filesystem.paths
+      volumeCfg.filesystem.paths
       ++ (builtins.map
         (dbName: "/tmp/snapshots/${dbName}")
-        cfg.postgresql.databases)
+        volumeCfg.postgresql.databases)
     );
     environmentFile = config.backups.environmentFile;
     repository = cfg.localRepo;
@@ -109,6 +83,16 @@ in {
         description = "Location of local repository for weekly and yearly backups";
         default = "/var/lib/remote-backups";
       };
+      sudo = lib.mkOption {
+        type = lib.types.package;
+        description = "Package in which to find sudo";
+        default = "${pkgs.sudo}";
+      };
+      package = lib.mkOption {
+        type = lib.types.package;
+        description = "Package in which to find pg_dump";
+        default = "${pkgs.postgresql}";
+      };
       volumes = lib.mkOption {
         description = "Set of things to backup";
         default = { };
@@ -119,6 +103,11 @@ in {
                 type = lib.types.listOf lib.types.str;
                 description = "Databases to backup";
                 default = [ ];
+              };
+              url = lib.mkOption {
+                type = lib.types.strMatching "postgres://[-a-zA-Z0-9@:%._\+~#=]{1,256}";
+                description = "URL in which to find postgres databases";
+                default = "postgres://%2Frun%2Fpostgresql";
               };
             };
             filesystem = {

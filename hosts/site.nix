@@ -36,7 +36,6 @@ This is a set of configuration variables that will be applied to every host at m
     unit_system = "us_customary";
     country = "US";
     lang = "en-US";
-    locationJsonFile = config.age.secrets.locationJson.path;
   };
   automaticMaintenance = {
     enable = true;

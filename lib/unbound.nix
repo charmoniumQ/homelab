@@ -1,12 +1,6 @@
 { pkgs, lib, config, ... }:
 {
   config = {
-    environment = {
-      systemPackages = [
-        # If things go sideways, we wouldn't even be able to resolve Nix packages, so let's just pre-install a DNS debugging tool, `drill`.
-        pkgs.ldns
-      ];
-    };
     services = {
       unbound = {
         enable = true;

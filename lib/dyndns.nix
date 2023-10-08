@@ -1,20 +1,18 @@
 { config, pkgs, lib, ... }:
-{
+let
+  cfg = config.services.dyndns;
+  jsonCfg = (pkgs.formats.json {}).generate "cfg.json" cfg;
+  python_ = pkgs.python311.withPackages (pypkgs: [ pypkgs.requests pypkgs.retry ]);
+  python = "${python_}/bin/python";
+  script = pkgs.writeText "script.py" (builtins.readFile ./dyndns.py);
+in {
   config = {
     systemd = {
       services = {
         "dyndns" = {
           wantedBy = [ "multi-user.target" ];
           after = [ "network-online.target" ];
-          script =
-            "ip=$(${pkgs.curl}/bin/curl ${config.services.dyndns.ipProvider})\n"
-            + (lib.strings.concatMapStrings
-              ({protocol, server, host, domain, passwordFile}:
-                if protocol == "namecheap"
-                then "${pkgs.curl}/bin/curl \"https://${server}/update?host=${host}&domain=${domain}&password=$(cat ${passwordFile})&ip=$ip\"\necho \"Updated ${host}.${domain} @ ${server}\"\n"
-                else builtins.throw "Unrecotnized protocol ${protocol}")
-              config.services.dyndns.entries
-            );
+          script = "${python} ${script} ${jsonCfg}";
           serviceConfig = {
             Type = "oneshot";
           };

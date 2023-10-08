@@ -1,27 +1,18 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.externalSmtp;
-  python = pkgs.python311;
-  pyScript = ''
-    import smtplib, pathlib, time
-    security = "${cfg.security}"
-    Constructor = (smtplib.SMTP_SSL if security == "ssl" else smtplib.SMTP)
-    def get_server():
-      return Constructor("${cfg.host}", ${builtins.toString cfg.port})
-    server = get_server()
-    if security == "startls":
-      server.starttls()
-    server.login("${cfg.username}", pathlib.Path("${cfg.passwordFile}").read_text())
-    server.ehlo_or_helo_if_needed()
-    server.quit()
-  '';
+  jsonCfg = (pkgs.formats.json {}).generate "cfg.json" cfg;
+  python_ = pkgs.python311.withPackages (pypkgs: [ pypkgs.retry ]);
+  python = "${python_}/bin/python";
+  script = pkgs.writeText "script.py" (builtins.readFile ./externalSmtp.py);
 in {
   config = {
     runtimeTests = {
       tests = lib.attrsets.optionalAttrs cfg.enable {
         "external-smtp-test" = {
-          script = "${python}/bin/python ${builtins.toFile "externalSmtpTest.py" pyScript}";
+          script = "${python} ${script} ${jsonCfg}";
           date = "daily";
+          after = [ "network-online.target" ];
         };
       };
     };

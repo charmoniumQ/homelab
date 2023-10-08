@@ -5,7 +5,7 @@
   ];
   config = {
     dns = {
-      localDomains = builtins.attrNames config.reverseProxy.domains;
+      localDomains = lib.debug.traceVal builtins.attrNames config.reverseProxy.domains;
     };
     networking = {
       firewall = {

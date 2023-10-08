@@ -19,47 +19,68 @@
         };
       };
     };
-  };
-  outputs = { self, nixpkgs, agenix, nixos-generators, ... }@inputs: {
-    nixosConfigurations = {
-      home-server = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = inputs;
-        modules = [ ./hosts/home-server ];
-      };
-    };
-    packages = {
-      x86_64-linux = {
-        home-server-qemu = self.nixosConfigurations.home-server.config.system.build.vm;
-      };
-    };
-    devShells = {
-      x86_64-linux = {
-        default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
-          packages = [
-            nixpkgs.legacyPackages.x86_64-linux.colmena
-            nixpkgs.legacyPackages.x86_64-linux.pwgen
-            agenix.packages.x86_64-linux.default
-          ];
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs = {
+        nixpkgs = {
+          follows = "nixpkgs";
         };
-      };
-    };
-    colmena = {
-      meta = {
-        nixpkgs = import nixpkgs {
-          system = "x86_64-linux";
-          overlays = [];
-        };
-        specialArgs = inputs;
-      };
-      home-server = {
-        deployment = {
-          targetHost = "10.0.0.12";
-          # targetHost = "home.samgrayson.me";
-          targetUser = "sysadmin";
-        };
-        imports = [ ./hosts/home-server ];
       };
     };
   };
+  outputs = { self, nixpkgs, agenix, nixos-generators, flake-utils, ... }@inputs:
+    (flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      in {
+        packages = {
+          # notify_push = pkgs.mkDerivation {
+          # };
+        };
+        devShells = {
+          default = nixpkgs.legacyPackages.x86_64-linux.mkShell {
+            packages = [
+              pkgs.colmena
+              pkgs.pwgen
+              (pkgs.python311.withPackages (pypkgs: [
+                pypkgs.mypy
+                pypkgs.types-retry
+                pypkgs.types-requests
+                pypkgs.black
+              ]))
+              agenix.packages.x86_64-linux.default
+            ];
+          };
+        };
+      })) // {
+        nixosConfigurations = {
+          home-server = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            specialArgs = inputs;
+            modules = [ ./hosts/home-server ];
+          };
+        };
+        packages = {
+          "x86_64-linux" = {
+            home-server-qemu = self.nixosConfigurations."home-server".config.system.build.vm;
+          };
+        };
+        colmena = {
+          meta = {
+            nixpkgs = import nixpkgs {
+              system = "x86_64-linux";
+              overlays = [];
+            };
+            specialArgs = inputs;
+          };
+          home-server = {
+            deployment = {
+              # targetHost = "10.0.0.12";
+              targetHost = "home.samgrayson.me";
+              targetUser = "sysadmin";
+            };
+            imports = [ ./hosts/home-server ];
+          };
+        };
+      };
 }

@@ -15,7 +15,8 @@ It's mine, and it's awesome.
 ## To deploy
 
 1. Optionally type-check with `nix flake check --show-trace`
-2. Actually apply with [colmena](https://github.com/zhaofengli/colmena): `nix develop --command colmena apply`.
+2. Optionally type-check Python scripts with `nix develop --command mypy lib/*.py`
+3. Actually apply with [colmena](https://github.com/zhaofengli/colmena): `nix develop --command colmena apply`.
 
 Note, you can optionally, build a QEMU VM image with `nix build .home-server-qemu`
 

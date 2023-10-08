@@ -6,7 +6,7 @@ sudo --user postgres psql --command 'DROP DATABASE nextcloud;'
 */
 { config, pkgs, lib, ... }:
 let
-  makeNextcloudApp = {
+  makeNextcloudApp = lib.trivial.warn "Compile Nextcloud plugins with composer and NPM instead of this external repository" ({
     pname
     , version
     , hash
@@ -27,21 +27,9 @@ let
         exit 2
       fi
     '';
-    };
+    });
+  occ = "/run/current-system/sw/bin/nextcloud-occ";
   cfg = config.services.nextcloud;
-  # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-apps/nextcloud.nix#L51C3-L62C6
-  occ = pkgs.writeScriptBin "nextcloud-occ" ''
-    #! ${pkgs.runtimeShell}
-    cd ${cfg.package}
-    sudo=exec
-    if [[ "$USER" != nextcloud ]]; then
-      sudo='exec /run/wrappers/bin/sudo -u nextcloud --preserve-env=NEXTCLOUD_CONFIG_DIR --preserve-env=OC_PASS'
-    fi
-    export NEXTCLOUD_CONFIG_DIR="${cfg.datadir}/config"
-    $sudo \
-      ${cfg.phpPackage}/bin/php \
-      occ "$@"
-  '';
 in
 {
   config = {
@@ -94,9 +82,10 @@ in
           then "/run/secrets/nextcloud-smtp.json"
           else null
         ;
-        # notify_push = {
-        #   enable = true;
-        # };
+        notify_push = {
+          enable = true;
+          logLevel = "warn";
+        };
         extraApps = {
           # See https://github.com/helsinki-systems/nc4nix/blob/main/27.json
           calendar = makeNextcloudApp rec {
@@ -116,6 +105,12 @@ in
             version = "5.3.2";
             hash = "sha256-1jQ+pyLBPU7I4wSPkmezJq7ukrQh8WPErG4J6Ps3LR4=";
             url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}-v${version}.tar.gz";
+          };
+          notify_push = makeNextcloudApp rec {
+            pname = "notify_push";
+            version = "0.6.3";
+            hash = "sha256-36RIESdpwsGK45BU62gmh69QIiwTodpX1somnvUcmaU=";
+            url = "https://github.com/nextcloud-releases/${pname}/archive/refs/tags/v${version}.tar.gz";
           };
           # memories = makeNextcloudApp {
           #   pname = "memories";
@@ -157,13 +152,8 @@ in
             redir /.well-known/webfinger /index.php/.well-known/webfinger
             redir /.well-known/nodeinfo  /index.php/.well-known/nodeinfo
 
-            # root /store-apps/* ${cfg.home}
-            @store_apps path_regexp ^/store-apps
-            root @store_apps ${cfg.home}
-
-            # root /nix-apps/* ${cfg.home}
-            @nix_apps path_regexp ^/nix-apps
-            root @nix_apps ${cfg.home}
+            root /store-apps ${cfg.home}
+            root /nix-apps ${cfg.home}
 
             root * ${cfg.package}
 
@@ -195,9 +185,16 @@ in
             }
             respond @sensitive 404
 
+            @notify_push {
+              path /push
+              path /push/*
+            }
+            reverse_proxy @notify_push unix/${cfg.notify_push.socketPath}
+
             php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
               # Tells nextcloud to remove /index.php from URLs in links
               env front_controller_active true
+              trusted_proxies private_ranges
             }
             file_server
           '';
@@ -223,13 +220,16 @@ in
             databases = [ cfg.config.dbname ];
           };
           services = [ ];
-          enterMaintenanceMode = "${occ}/bin/nextcloud-occ maintenance:mode --on";
-          exitMaintenanceMode = "${occ}/bin/nextcloud-occ maintenance:mode --off";
+          enterMaintenanceMode = "${occ} maintenance:mode --on";
+          exitMaintenanceMode = "${occ} maintenance:mode --off";
           keep_daily = 6;
           keep_monthly = 5;
           keep_yearly = 5;
         };
       };
+    };
+    dns = {
+      localDomains = [ "${config.services.nextcloud.hostName}" ];
     };
     users = lib.attrsets.optionalAttrs cfg.enable {
       groups = {

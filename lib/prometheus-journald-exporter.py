@@ -8,7 +8,7 @@ import datetime
 import shlex
 import pathlib
 import os
-import prometheus_client
+import prometheus_client  # type: ignore
 import subprocess
 import pathlib
 import enum
@@ -99,7 +99,7 @@ log_lines_guage = prometheus_client.Gauge(
 
 
 if not config.logs_dir.exists():
-    config_logs_dir.mkdir()
+    config.logs_dir.mkdir()
 
 
 def loop() -> None:
@@ -111,7 +111,10 @@ def loop() -> None:
     for unit in units:
         unit_config = config.units.get(unit, config.units["default"])
         if unit_config.enable:
-            command = ["journalctl", "--priority", unit_config.priority, "--since", unit_config.since, "--unit", unit]
+            command = [
+                "journalctl", "--priority", unit_config.priority,
+                "--since", unit_config.since, "--unit", unit,
+            ]
             lines = [
                 line
                 for line in subprocess.run(
@@ -120,14 +123,21 @@ def loop() -> None:
                         capture_output=True,
                         text=True,
                 ).stdout.split("\n")
-                if line.strip() and not (line.startswith("--") and line.endswith("--")) and not any(re.search(filter, line) for filter in unit_config.filters_regex)
+                if all([
+                        line.strip(),
+                        not (line.startswith("--") and line.endswith("--")),
+                        not any(
+                            re.search(filter, line)
+                            for filter in unit_config.filters_regex
+                        ),
+                ])
             ]
             if lines:
-                command = " | ".join([
+                full_command = " | ".join([
                     " ".join(map(shlex.quote, command)),
                     *[f"pcregrep --invert-match {shlex.quote(filter)}" for filter in unit_config.filters_regex],
                 ])
-                (config.logs_dir / unit.replace(".", "-")).write_text("\n".join(["$ " + command, *lines]))
+                (config.logs_dir / unit.replace(".", "-")).write_text("\n".join(["$ " + full_command, *lines]))
             log_lines_guage.labels(unit).set(len(lines))
 
 

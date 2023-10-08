@@ -18,10 +18,6 @@
         type = lib.types.strMatching "[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*";
         description = "RFC 5646 language tag";
       };
-      locationJsonFile = lib.mkOption {
-        type = lib.types.path;
-        description = "Path to file containing JSON with keys \"latitude\", \"longitude\", and \"elevation\" (in meters) as strings of decimal numbers.";
-      };
       currency = lib.mkOption {
         type = lib.types.strMatching "[A-Z][A-Z][A-Z]";
         description = "ISO 4217 currency code";

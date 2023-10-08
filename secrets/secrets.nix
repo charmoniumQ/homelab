@@ -5,10 +5,10 @@ in {
   "nextcloud-adminpass.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "smtp-pass.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "vaultwarden-admin-token.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "location.json.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "namecheapPassword.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "resticPassword.age" = { publicKeys = [ sysadminKey hostKey ]; };
   "restic.env.age" = { publicKeys = [ sysadminKey hostKey ]; };
+  "home-assistant-secrets.yaml.age" = { publicKeys = [ sysadminKey hostKey ]; };
 }
 
 /*

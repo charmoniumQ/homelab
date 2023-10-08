@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   secrets = config.age.secrets;
 in {
@@ -32,6 +32,7 @@ in {
     };
     home-assistant = {
       enable = true;
+      secretsYaml = secrets.homeAssistantSecretsYaml.path;
     };
     dyndns = {
       entries = [
@@ -43,6 +44,9 @@ in {
         }
       ];
     };
+  };
+  environment = {
+    systemPackages = [ pkgs.speedtest-go pkgs.mtr ];
   };
   backups = {
     enable = true;
@@ -61,9 +65,6 @@ in {
       smtpPass = {
         file = ../../secrets/smtp-pass.age;
       };
-      locationJson = {
-        file = ../../secrets/location.json.age;
-      };
       namecheapPassword = {
         file = ../../secrets/namecheapPassword.age;
       };
@@ -72,6 +73,11 @@ in {
       };
       resticEnvironmentFile = {
         file = ../../secrets/restic.env.age;
+      };
+      homeAssistantSecretsYaml = {
+        file = ../../secrets/home-assistant-secrets.yaml.age;
+        owner = config.users.users.hass.name;
+        group = config.users.users.hass.group;
       };
     } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       nextcloudAdminpass = {
