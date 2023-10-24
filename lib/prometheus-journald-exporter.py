@@ -87,7 +87,7 @@ def get_systemd_units_raw() -> str:
 units = set(
     line.strip()
     for line in get_systemd_units_raw().split("\n")
-    if "." in line
+    if "." in line and not line.endswith(".slice")
 )
 
 

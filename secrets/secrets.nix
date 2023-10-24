@@ -1,14 +1,17 @@
 let
-  sysadminKey = builtins.elemAt (import ../hosts/site.nix { config = null; }).sysadmin.sshKeys 0;
-  hostKey = (import ../hosts/home-server/hardware-configuration.nix { lib = null; pkgs = null; }).hostKey;
+  sysadminKeys = (import ../hosts/site.nix { config = null; }).sysadmin.sshKeys;
+  hostKeys = [
+    (import ../hosts/home-server/hardware-configuration.nix { lib = null; pkgs = null; }).hostKey
+  ];
 in {
-  "nextcloud-adminpass.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "smtp-pass.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "vaultwarden-admin-token.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "namecheapPassword.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "resticPassword.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "restic.env.age" = { publicKeys = [ sysadminKey hostKey ]; };
-  "home-assistant-secrets.yaml.age" = { publicKeys = [ sysadminKey hostKey ]; };
+  "nextcloud-adminpass.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "smtp-pass.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "vaultwarden-admin-token.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "namecheapPassword.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "resticPassword.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "restic.env.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "home-assistant-secrets.yaml.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "zigbee2mqttSecrets.yaml.age" = { publicKeys = sysadminKeys ++ hostKeys; };
 }
 
 /*

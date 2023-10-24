@@ -21,11 +21,6 @@
     };
     flake-utils = {
       url = "github:numtide/flake-utils";
-      inputs = {
-        nixpkgs = {
-          follows = "nixpkgs";
-        };
-      };
     };
   };
   outputs = { self, nixpkgs, agenix, nixos-generators, flake-utils, ... }@inputs:
@@ -75,8 +70,8 @@
           };
           home-server = {
             deployment = {
-              # targetHost = "10.0.0.12";
-              targetHost = "home.samgrayson.me";
+              targetHost = "192.168.1.28";
+              # targetHost = "home.samgrayson.me";
               targetUser = "sysadmin";
             };
             imports = [ ./hosts/home-server ];

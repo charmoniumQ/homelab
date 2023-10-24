@@ -9,9 +9,6 @@ configuration. However, defaults may still be set here.
 
 Options that the user will likely not need to change will be set here.
 
-TODO: isolate out the "interface" modules from the "implementation" modules
-Also isolate out the "heavily customized implementation" components (nextcloud.extraApps, Grafana dashboards, homre-manager config and dashboards)
-
  */
 
 { config, ... }:
@@ -28,8 +25,10 @@ Also isolate out the "heavily customized implementation" components (nextcloud.e
     ./generatedFiles.nix
     ./grafana.nix
     ./home-assistant.nix
+    ./kea.nix
     ./locale.nix
     ./loki.nix
+    ./mosquitto.nix
     ./networkedNode.nix
     ./nextcloud.nix
     ./nixConf.nix

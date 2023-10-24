@@ -7,6 +7,9 @@ in {
     ../site.nix
   ];
   services = {
+    dhcp-server = {
+      enable = true;
+    };
     nginx = {
       enable = false;
     };
@@ -33,6 +36,7 @@ in {
     home-assistant = {
       enable = true;
       secretsYaml = secrets.homeAssistantSecretsYaml.path;
+      zigbee2mqttSecretsYaml = secrets.zigbee2mqttSecretsYaml.path;
     };
     dyndns = {
       entries = [
@@ -78,6 +82,11 @@ in {
         file = ../../secrets/home-assistant-secrets.yaml.age;
         owner = config.users.users.hass.name;
         group = config.users.users.hass.group;
+      };
+      zigbee2mqttSecretsYaml = {
+        file = ../../secrets/zigbee2mqttSecrets.yaml.age;
+        owner = config.users.users.zigbee2mqtt.name;
+        group = config.users.users.zigbee2mqtt.group;
       };
     } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       nextcloudAdminpass = {

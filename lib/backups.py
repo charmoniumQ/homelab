@@ -8,7 +8,9 @@ snapshot_dir = pathlib.Path("/tmp/snapshots")
 cfg = json.loads(pathlib.Path(sys.argv[1]).read_text())
 command = sys.argv[2]
 volume = sys.argv[3]
-volume_cfg = cfg[volume]
+if volume not in cfg["volumes"]:
+    raise KeyError(f"{volume} not found in cfg['volumes'] ({cfg['volumes']})")
+volume_cfg = cfg["volumes"][volume]
 postgres_url = volume_cfg["postgresql"]["url"]
 if postgres_url.endswith("/"):
     postgres_url = postgres_url[:-1]
@@ -28,7 +30,7 @@ if command == "prepare":
             [
                 f"{cfg['sudo']}/bin/sudo",
                 "--user=postgres",
-                f"{volume_cfg['postgresql']}/bin/pg_dump",
+                f"{cfg['postgresql']}/bin/pg_dump",
                 "--format=directory",
                 f"--file={db_dir}",
                 f"{postgres_url}/{db_name}",

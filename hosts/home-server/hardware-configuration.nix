@@ -25,6 +25,14 @@ let
   enumerate = lst: lib.lists.zipListsWith (elemNo: elem: {inherit elem elemNo;}) (lib.lists.range 0 ((builtins.length lst) - 1)) lst;
 in
 {
+  services = {
+    home-assistant = {
+      zigbeeDevice = "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_e8f237a26645ed118378c68f0a86e0b4-if00-port0";
+    };
+    dhcp-server = {
+      interface = "enp4s0";
+    };
+  };
   hardware = {
     enableAllFirmware = true;
     cpu = {
@@ -42,7 +50,6 @@ in
       nvidiaSettings = true;
     };
   };
-
   networking = {
     hostName = "home-server";
     hostId = "0decdc86";
@@ -142,6 +149,6 @@ in
   nixpkgs = {
     hostPlatform = "x86_64-linux";
   };
-  localIP = "10.0.0.12";
+  localIP = "192.168.1.28";
   hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID2OwUfcZINCrf8UT5g3qgH5T4xhda56yx6+4EIzIX9h root@homeserver";
 }

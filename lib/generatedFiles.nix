@@ -29,7 +29,7 @@
             '';
             };
             name = lib.mkOption {
-              type = lib.types.strMatching "[a-z0-9.-]+";
+              type = lib.types.strMatching "[a-zA-Z0-9.-]+";
               description = ''
               Filename of the generated file
             '';

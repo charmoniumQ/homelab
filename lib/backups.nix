@@ -7,8 +7,8 @@ let
   script = pkgs.writeText "script.py" (builtins.readFile ./backups.py);
   resticBackups = builtins.mapAttrs (volume: volumeCfg: {
     initialize = true;
-    backupPrepareCommand = "${python} ${jsonCfg} prepare ${volume}";
-    backupCleanupCommand = "${python} ${jsonCfg} cleanup ${volume}";
+    backupPrepareCommand = "${python} ${script} ${jsonCfg} prepare ${volume}";
+    backupCleanupCommand = "${python} ${script} ${jsonCfg} cleanup ${volume}";
     paths = (
       volumeCfg.filesystem.paths
       ++ (builtins.map
@@ -16,8 +16,8 @@ let
         volumeCfg.postgresql.databases)
     );
     environmentFile = config.backups.environmentFile;
-    repository = cfg.localRepo;
     passwordFile = config.backups.passwordFile;
+    extraOptions = [ "--verbose" ];
   }) config.backups.volumes;
 in {
   config = {
@@ -88,7 +88,7 @@ in {
         description = "Package in which to find sudo";
         default = "${pkgs.sudo}";
       };
-      package = lib.mkOption {
+      postgresql = lib.mkOption {
         type = lib.types.package;
         description = "Package in which to find pg_dump";
         default = "${pkgs.postgresql}";
