@@ -1,0 +1,98 @@
+* Sam's Homelab
+
+It's mine, and it's awesome.
+
+** To configure
+
+1. [NixOS](https://nixos.org/manual/nixos/unstable/options) provides basic options for most packages.
+2. Modules in [`./lib/*.nix`](./lib/default.nix) provide opinionated defaults and new option interfaces.
+   - For an example of opinionated defaults, if `services.nextcloud.enabled` is set to true, this `./lib/nextcloud.nix` will expose create reverse proxy from `https://nextcloud.${networking.domain}` to the Nextcloud PHP FastCGI server.
+   - For an example of new option interfaces, the user can set language, country code, currency, and units in a `config.locale.*` (see [`./lib/locale.nix`](./lib/locale.nix)) which get used by the aforementioned "opinionated defaults" in this libary.
+3. Site-specific customization takes place in [`hosts/site.nix`](./hosts/site.nix); this applies to the whole network.
+4. Host-specific customization takes place in [`hosts/*/default.nix`](./hosts/home-server/default.nix), which applies only to one node.
+5. Secrets are encrypted by [Agenix](https://github.com/ryantm/agenix), declared in [`./secrets/secrets.nix`](./secrets/secrets.nix), and stored in [`./secrets/*.age`](./secrets/). They are encrypted with the sysadmin's SSH public key and the server's SSH host public key, such that they are write/read-able with either of the associated private keys.
+
+** To deploy
+
+1. Optionally type-check with `nix flake check --show-trace`
+2. Optionally type-check Python scripts with `nix develop --command mypy lib/*.py`
+3. Actually apply with [colmena](https://github.com/zhaofengli/colmena): `nix develop --command colmena apply`.
+
+Note, you can optionally, build a QEMU VM image with `nix build .home-server-qemu`
+
+** Setting up Nextcloud <-> CalDAV <-> Android
+
+1. Download F-Droid
+2. In F-Droid, download "Nextcloud Sync" and "Dav5x"
+3. Log in to Nextcloud Sync
+4. In the Nextcloud mobile, go to Settings/More, tap on “Sync calendars & contacts”.
+5. Follow this flow, which will have you logging in to Nextcloud again
+6. Set Contact Group Method to Groups are per-contact categories.
+7. launch DAVx⁵ again.
+
+See also [Nextcloud manual](https://docs.nextcloud.com/server/latest/user_manual/en/groupware/sync_android.html#contacts-and-calendar)
+
+** Home assistant cat tracking
+https://www.home-assistant.io/integrations/mqtt_room/?ref=jamesridgway.co.uk
+https://www.amazon.com/ESP-WROOM-32-Development-Microcontroller-Integrated-Compatible/dp/B08D5ZD528?crid=2R7B6EY31OF2V&keywords=LOLIN32%2BESP32&qid=1655589767&sprefix=lolin32%2Besp32%2Caps%2C64&sr=8-5&linkCode=sl1&tag=espresense-20&linkId=cc9dcfa47f47f6fe47e4c697535f814c&language=en_US&ref_=as_li_ss_tl&th=1
+https://www.amazon.com/Keychains-Bluetooth-Anti-Lost-Reminder-Smartphone/dp/B097PLRCVZ/ref=sr_1_6?crid=38SG4R3SZ2J7D&keywords=key+finder+tag&qid=1696526771&sprefix=key+finder+ta%2Caps%2C116&sr=8-6
+https://www.aliexpress.us/item/3256805458064966.html?spm=a2g0o.productlist.main.41.50d4q1lHq1lHup&algo_pvid=a7d65298-6351-41bf-8619-e4da8f0c581d&algo_exp_id=a7d65298-6351-41bf-8619-e4da8f0c581d-20&pdp_npi=4%40dis%21USD%2115.78%215.84%21%21%2115.78%21%21%402103255b16965265497564453e7880%2112000033862847350%21sea%21US%210%21AB&curPageLogUid=ALaoQb5U0uej
+https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.3.2f902CZC2CZCDB&algo_pvid=c9ae4550-2744-47c5-abc5-21edc75f7832&algo_exp_id=c9ae4550-2744-47c5-abc5-21edc75f7832-1&pdp_npi=4%40dis%21USD%215.40%214.86%21%21%215.40%21%21%402103247016965264673431643e9c86%2112000028906157905%21sea%21US%210%21AB&curPageLogUid=bOSRrbOgYZw6
+
+** Other configs
+- https://github.com/gvolpe/nix-config/blob/master/flake.nix
+- https://github.com/Ex-32/nixos-config
+
+** TODO-items
+- [ ] Make fprint work in SDDM
+  - https://github.com/sddm/sddm/issues/284
+  - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/x11/display-managers/sddm.nix
+  - https://github.com/NixOS/nixpkgs/blob/7bfb47ae12af981cf237ea7993a896216c932db8/nixos/modules/security/pam.nix
+
+- [ ] Make firefly-iii with Postgres and Caddy
+  - https://github.com/NixOS/nixpkgs/blob/bf78e6a54601fc74d8d27fb918a420c84fb6f5b3/nixos/modules/services/web-apps/nextcloud.nix#L6
+  - https://github.com/timhae/firefly/tree/main
+  - https://docs.firefly-iii.org/firefly-iii/faq/self-hosted/#i-want-to-use-postgresql
+  - https://github.com/NixOS/nixpkgs/commit/6cd896f96749e7932b4efb46c8cd92a2d6577d13
+  - https://github.com/NixOS/nixpkgs/pull/184362
+
+- [ ] Get Betterbird to work with CalDAV
+  - My bug:
+
+#+NAME: Error stacktrace
+#+BEGIN_SRC: TEXT
+uncaught exception: ParserError: invalid line (no token ";" or ":") "America/Chicago[2023c]" 5 CalStorageItemModel.jsm:1045:39
+#setDateParamHelper resource:///modules/calendar/CalStorageItemModel.jsm:1045
+#prepareEvent resource:///modules/calendar/CalStorageItemModel.jsm:1107
+#prepareItem resource:///modules/calendar/CalStorageItemModel.jsm:1093
+addItem resource:///modules/calendar/CalStorageItemModel.jsm:1070
+addItem resource:///modules/calendar/CalStorageCachedItemModel.jsm:180
+adoptItem resource:///modules/CalStorageCalendar.jsm:235
+AsyncFunctionNext self-hosted:852
+
+Error: zone is nullIcal.jsm:5588:26
+convertToZone resource:///modules/calendar/Ical.jsm:5588
+getInTimezone resource:///modules/CalDateTime.jsm:141
+unwrapSetter resource:///modules/calendar/Ical.jsm:29
+unwrap resource:///modules/calendar/Ical.jsm:25
+now resource:///modules/calendar/utils/calDateTimeUtils.jsm:62
+flush resource:///modules/CalDeletedItems.jsm:50
+onLoad resource:///modules/CalDeletedItems.jsm:198
+notify resource:///modules/calendar/utils/calDataUtils.jsm:39
+notifyCalendarObservers resource:///modules/CalCalendarManager.jsm:674
+onLoad resource:///modules/CalCalendarManager.jsm:712
+notify resource:///modules/calendar/utils/calDataUtils.jsm:39
+notify resource:///modules/calendar/utils/calDataUtils.jsm:66
+onLoad resource:///components/calCachedCalendar.js:68
+downstreamRefresh resource:///components/calCachedCalendar.js:634
+InterpretGeneratorResume self-hosted:1455
+AsyncFunctionNext self-hosted:852
+#+END_SRC
+
+  - TBird bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1790071
+  - TBird bug 2: https://bugzilla.mozilla.org/show_bug.cgi?id=1843007
+  - ICU bug: https://unicode-org.atlassian.net/browse/ICU-22132
+  - NixOS Tbird issue: https://github.com/NixOS/nixpkgs/pull/242970#issuecomment-1631948560
+  - NixOS Tbird patch: https://github.com/NixOS/nixpkgs/pull/243179
+  - TBird package: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/networking/mailreaders/thunderbird/packages.nix
+  - BBird package: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/networking/mailreaders/betterbird/default.nix

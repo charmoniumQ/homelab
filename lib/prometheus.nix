@@ -145,7 +145,7 @@ in {
             };
             interval = lib.mkOption {
               type = lib.types.ints.unsigned;
-              default = 15;
+              default = 60;
             };
             timeout = lib.mkOption {
               type = lib.types.ints.unsigned;

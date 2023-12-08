@@ -8,7 +8,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
       stateVersion = "23.11";
       # TODO: enable
       autoUpgrade = {
-        enable = config.automaticMaintenance.enable;
+        enable = false;
         allowReboot = config.automaticMaintenance.enable;
         dates = config.automaticMaintenance.weeklyTime;
         persistent = true;
@@ -25,7 +25,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
       enable = true;
       package = pkgs.nixUnstable;
       channel = {
-        enable = true;
+        enable = false;
       };
       settings = {
         substituters = [

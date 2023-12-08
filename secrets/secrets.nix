@@ -1,21 +1,25 @@
 let
-  sysadminKeys = (import ../hosts/site.nix { config = null; }).sysadmin.sshKeys;
+  sysadminKeys = (import ../hosts/site.nix {}).sysadmin.sshKeys;
   hostKeys = [
     (import ../hosts/home-server/hardware-configuration.nix { lib = null; pkgs = null; }).hostKey
   ];
+  keys = sysadminKeys ++ hostKeys;
 in {
-  "nextcloud-adminpass.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "smtp-pass.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "vaultwarden-admin-token.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "namecheapPassword.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "resticPassword.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "restic.env.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "home-assistant-secrets.yaml.age" = { publicKeys = sysadminKeys ++ hostKeys; };
-  "zigbee2mqttSecrets.yaml.age" = { publicKeys = sysadminKeys ++ hostKeys; };
+  "nextcloud-adminpass.age" = { publicKeys = keys; };
+  "smtp-pass.age" = { publicKeys = keys; };
+  "vaultwarden-admin-token.age" = { publicKeys = keys; };
+  "namecheapPassword.age" = { publicKeys = keys; };
+  "resticPassword.age" = { publicKeys = keys; };
+  "restic.env.age" = { publicKeys = keys; };
+  "home-assistant-secrets.yaml.age" = { publicKeys = keys; };
+  "zigbee2mqttSecrets.yaml.age" = { publicKeys = keys; };
+  "kea-ctrl-agent-pass.age" = { publicKeys = keys; };
+  "firefly-iii-app-key.age" = { publicKeys = keys; };
 }
 
 /*
 Secrets can be generated with:
 pwgen 30 1
 nix develop --command agenix --edit $FILE
+Put in hosts/home-server/default.nix
 */

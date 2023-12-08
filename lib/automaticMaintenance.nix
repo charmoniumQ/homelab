@@ -18,7 +18,6 @@
         type = lib.types.str;
         description = "Randomized delay for automatic maintenance. See https://www.freedesktop.org/software/systemd/man/systemd.time.html";
       };
-      
     };
   };
 }

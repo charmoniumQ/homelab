@@ -1,8 +1,5 @@
 /*
-Note: to reset the state, run
-
-sudo rm --recursive --force /var/lib/nextcloud
-sudo --user postgres psql --command 'DROP DATABASE nextcloud;'
+TODO: TOTP
 */
 { config, pkgs, lib, ... }:
 let
@@ -152,16 +149,24 @@ in
             redir /.well-known/webfinger /index.php/.well-known/webfinger
             redir /.well-known/nodeinfo  /index.php/.well-known/nodeinfo
 
-            root /store-apps ${cfg.home}
-            root /nix-apps ${cfg.home}
 
-            root * ${cfg.package}
+            @store_apps path_regexp ^/store-apps
+            root @store_apps ${cfg.home}
+
+            @nix_apps path_regexp ^/nix-apps
+            root @nix_apps ${cfg.home}
 
             @davClnt {
               header_regexp User-Agent ^DavClnt
               path /
             }
             redir @davClnt /remote.php/webdev{uri} 302
+
+            @notify_push {
+              path /push
+              path /push/*
+            }
+            reverse_proxy @notify_push unix/${cfg.notify_push.socketPath}
 
             # .htaccess / data / config / ... shouldn't be accessible from outside
             @sensitive {
@@ -185,11 +190,7 @@ in
             }
             respond @sensitive 404
 
-            @notify_push {
-              path /push
-              path /push/*
-            }
-            reverse_proxy @notify_push unix/${cfg.notify_push.socketPath}
+            root * ${cfg.package}
 
             php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
               # Tells nextcloud to remove /index.php from URLs in links

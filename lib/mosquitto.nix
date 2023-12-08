@@ -55,7 +55,7 @@ with lib; let
   configFile = pkgs.writeText "mosquitto.conf"
     (concatStringsSep "\n" (formatGlobal cfg));
 in {
-  systemd = {
+  systemd = lib.attrsets.optionalAttrs cfg.enable {
     services = {
       mosquitto = {
         serviceConfig = {
@@ -64,7 +64,7 @@ in {
       };
     };
   };
-  environment = {
+  environment = lib.attrsets.optionalAttrs cfg.enable {
     etc = listToAttrs (
       lists.imap0
         (idx: listener: {

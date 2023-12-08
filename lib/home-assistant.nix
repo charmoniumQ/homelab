@@ -15,6 +15,7 @@ in {
     services = {
       home-assistant = {
         configWritable = true;
+        lovelaceConfigWritable = true;
         config = {
           default_config = {};
           homeassistant = {
@@ -29,6 +30,9 @@ in {
             external_url = "https://${cfg.hostname}";
             internal_url = "https://${cfg.hostname}";
           };
+          automation = "!include automations.yaml";
+          scene = "!include scenes.yaml";
+          script = "!include scripts.yaml";
           calendar = []
             ++ (lib.lists.optional config.services.nextcloud.enable {
               platform = "caldav";
@@ -43,7 +47,8 @@ in {
               username = "!secret hubspace_username";
               password = "!secret hubspace_password";
               debug = true;
-              friendlynames = [ "Sun" ];
+              friendlynames = [ "OfficeLight" ];
+              roomnames = [];
             }
           ];
           recorder = {
@@ -73,9 +78,15 @@ in {
             use_x_forwarded_for = true;
             trusted_proxies = [ "127.0.0.1" ];
           };
+          logger = {
+            default = "warning";
+          };
         };
         extraPackages = ps: with ps; [
           psycopg2
+          radios
+          aiogithubapi
+          pyqrcode
         ];
         extraComponents = [
           "met"
@@ -83,10 +94,12 @@ in {
           "wiz"
           "mqtt"
           "tuya"
+          "otp"
+          "zha"
           "google_translate" # for gtts
          ];
       };
-      mosquitto = {
+      mosquitto = lib.attrsets.optionalAttrs (! cfg.zha) {
         enable = cfg.enable;
         logDest = [ "syslog" ];
         logType = [ "warning" ];
@@ -110,10 +123,10 @@ in {
         ];
       };
       zigbee2mqtt = {
-        enable = true;
-        settings = {
+        enable = ! cfg.zha;
+        settings = lib.attrsets.optionalAttrs (! cfg.zha) {
           homeassistant = true;
-          permit_join = true;
+          permit_join = false;
           mqtt = {
             base_topic = mqttTopic;
             server = "mqtt://127.0.0.1:${builtins.toString mqttPort}";
@@ -154,7 +167,7 @@ in {
             ln --symbolic ${cfg.secretsYaml} ${cfg.configDir}/secrets.yaml
           '';
         };
-        zigbee2mqtt = {
+        zigbee2mqtt = lib.attrsets.optionalAttrs (! cfg.zha) {
           preStart = ''
             cp --no-preserve=mode ${cfg.zigbee2mqttSecretsYaml} "${config.services.zigbee2mqtt.dataDir}/secrets.yaml"
           '';
@@ -168,7 +181,7 @@ in {
         };
       };
     };
-    generatedFiles = {
+    generatedFiles = lib.attrsets.optionalAttrs (! cfg.zha) {
       mosquittoHAPassword = {
         name = "mosquittoHAPassword";
         script = "${pkgs.yq}/bin/yq -r .mqtt_password ${cfg.secretsYaml}";
@@ -208,6 +221,11 @@ in {
         zigbeeDevice = lib.mkOption {
           type = lib.types.path;
           description = "Path to a Zigbee coordinator";
+        };
+        zha = lib.mkOption {
+          type = lib.types.bool;
+          description = "Use ZHA isntead of Mosquitto + zigbee2mqtt";
+          default = true;
         };
       };
     };

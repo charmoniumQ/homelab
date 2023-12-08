@@ -1,7 +1,15 @@
-{ lib, ...}: {
+{ lib, pkgs, ...}: {
   config = {
     networking = {
       firewall = {
+        enable = true;
+      };
+    };
+    environment = {
+      systemPackages = [ pkgs.tmux ];
+    };
+    programs = {
+      mtr = {
         enable = true;
       };
     };

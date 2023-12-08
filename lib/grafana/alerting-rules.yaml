@@ -200,7 +200,7 @@ groups:
                     type: prometheus
                     uid: PBFA97CFB590B2093
                 editorMode: code
-                expr: clamp_min((1-(node_memory_MemAvailable_bytes/(node_memory_MemTotal_bytes- 4*10^9))), 0)
+                expr: clamp_min((1-(node_memory_MemAvailable_bytes/(node_memory_MemTotal_bytes- 1.6*10^10))), 0)
                 hide: false
                 instant: false
                 interval: ""
@@ -290,7 +290,7 @@ groups:
                     type: prometheus
                     uid: PBFA97CFB590B2093
                 editorMode: code
-                expr: (node_hwmon_temp_celsius - 20) / (node_hwmon_temp_max_celsius - 20)
+                expr: (node_hwmon_temp_celsius - 25) / (node_hwmon_temp_max_celsius - 25)
                 hide: false
                 instant: false
                 interval: ""

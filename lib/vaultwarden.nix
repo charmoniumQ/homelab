@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 {
   config = let
     cfg = config.services.vaultwarden;
@@ -8,7 +8,6 @@
     services = {
       vaultwarden = {
         dbBackend = "postgresql";
-        # TODO: backup
         config = rec {
           # https://github.com/dani-garcia/vaultwarden/blob/1.29.2/.env.template
           SIGNUPS_ALLOWED = cfg.signups_allowed;
