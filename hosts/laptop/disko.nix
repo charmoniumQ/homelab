@@ -49,11 +49,11 @@
                       };
                       "varlog" = {
                         mountpoint = "/var/log";
-                        mountOptions = [ "compress=zstd" "noatime" ];
+                        mountOptions = [ "compress=zstd" "noatime" "acl" ];
                       };
                       "swap" = {
                         mountpoint = "/swap";
-                      mountOptions = [ ];
+                        mountOptions = [ ];
                         swap = {
                           swapfile = {
                             size = "24G";

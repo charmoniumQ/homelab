@@ -9,15 +9,19 @@
     ../../lib/automaticMaintenance.nix
     ../../lib/desktop.nix
     ../../lib/fprint.nix
+    ../../lib/laptop.nix
     ../../lib/locale.nix
+    ../../lib/podman.nix
     ../../lib/nixConf.nix
     ../../lib/printing.nix
     ../../lib/sound.nix
+    ../../lib/swaylock.nix
     ../../lib/sysadmin.nix
+    # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1
   ];
   networking = {
     firewall = {
-    enable = false;
+      enable = true;
     };
   };
   sysadmin = {

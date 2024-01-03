@@ -1,4 +1,4 @@
-{ lib, ... }: let
+{ lib, pkgs, ... }: let
   # disko = import ./disko.nix;
   # partitions = {
   #   boot = "${disk}-part1";
@@ -14,12 +14,22 @@ in {
     blueman = {
       enable = true;
     };
+    thermald = {
+      enable = true;
+    };
+    upower = {
+      enable = true;
+    };
+  };
+  environment = {
+    systemPackages = with pkgs; [ glxinfo gnome.gnome-power-manager ];
   };
   hardware = {
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
     bluetooth = {
       enable = true;
+      powerOnBoot = false;
     };
     cpu = {
       intel = {

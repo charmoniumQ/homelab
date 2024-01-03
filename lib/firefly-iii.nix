@@ -2,36 +2,41 @@
   cfg = config.services.firefly-iii;
   pkg = config.systemd.services.firefly-iii-setup.serviceConfig.WorkingDirectory;
 in {
-  # imports = [
-  #   firefly.nixosModules.firefly-iii
-  # ];
+  imports = [
+    firefly.nixosModules.firefly-iii
+  ];
   config = {
+    nixpkgs = {
+      overlays = [
+        firefly.overlays.default
+      ];
+    };
     services = {
-      # postgresql = {
-      #   enable = true;
-      #   ensureDatabases = [ cfg.database.name ];
-      #   ensureUsers = [ {
-      #     name = cfg.database.user;
-      #     ensurePermissions = { "${cfg.database.name}.*" = "ALL PRIVILEGES"; };
-      #   } ];
-      # };
-      # caddy = {
-      #   virtualHosts = {
-      #     cfg.hostname = {
-      #       extraConfig = ''
-      #         encode gzip zstd
-      #         header Strict-Transport-Security max-age=15552000;
-      #         try_files {path} {path}/ {path}/index.php?{query}
-      #         root * ${pkg}/public
-      #         php_fastcgi unix/${config.services.phpfpm.pools.firefly-iii.socket} { }
-      #         file_server
-      #       '';
-      #     };
-      #   };
-      # };
-      # nginx = {
-      #   enable = false;
-      # };
+      postgresql = {
+        enable = true;
+        ensureDatabases = [ cfg.database.name ];
+        ensureUsers = [ {
+          name = cfg.database.user;
+          # ensurePermissions = { "${cfg.database.name}" = "ALL PRIVILEGES"; };
+        } ];
+      };
+      caddy = {
+        virtualHosts = {
+          "${cfg.hostname}" = {
+            extraConfig = ''
+              encode gzip zstd
+              header Strict-Transport-Security max-age=15552000;
+              try_files {path} {path}/ {path}/index.php?{query}
+              root * ${pkg}/public
+              php_fastcgi unix/${config.services.phpfpm.pools.firefly-iii.socket} { }
+              file_server
+            '';
+          };
+        };
+      };
+      nginx = {
+        enable = false;
+      };
       firefly-iii = {
         config = {
           DB_SOCKET = "/run/postgresql";
@@ -41,14 +46,12 @@ in {
         enable = true;
         appURL = "https://firefly.samgrayson.me";
         hostname = "firefly.samgrayson.me";
-        user = "firefly";
-        group = "firefly";
         database = {
           type = "pgsql";
           host = "";
           port = 0;
-          name = "firefly";
-          user = "firefly";
+          name = "firefly-iii";
+          user = "firefly-iii";
           createLocally = false;
         };
         mail = {
@@ -64,7 +67,7 @@ in {
     systemd = {
       services = {
         firefly-iii-setup = {
-          after = lib.mkForce "postgresql.service";
+          after = lib.mkForce [ "postgresql.service" ];
         };
       };
     };

@@ -1,7 +1,20 @@
-{ lib, config, ... }:
+{ lib, pkgs, config, ... }:
 {
   config = {
+    environment = {
+      systemPackages = with pkgs; [ flatpak swaylock ];
+    };
+    fonts = {
+      enableDefaultPackages = true;
+    };
     security = {
+      pam = {
+        services = {
+          swaylock = {
+            name = "swaylock";
+          };
+        };
+      };
       polkit = {
         enable = true;
       };
@@ -15,31 +28,43 @@
       hyprland = {
         enable = true;
       };
+      dconf = {
+        enable = true;
+      };
     };
     services = {
+      flatpak = {
+        enable = true;
+      };
+      udisks2 = {
+        enable = true;
+      };
       xserver = {
         enable = true;
         displayManager = {
-          sddm = {
+          lightdm = {
             enable = true;
-            wayland = {
-              enable = true;
-            };
           };
+          # sddm = {
+          #   enable = true;
+          #   wayland = {
+          #     enable = true;
+          #   };
+          # };
           autoLogin = {
             enable = true;
             user = config.sysadmin.username;
           };
           defaultSession = "hyprland";
         };
-        # desktopManager = {
-        #   lxqt = {
-        #     enable = config.desktop.guiFramework == "qt";
-        #   };
-        #   lxde = {
-        #     enable = config.desktop.guiFramework == "gtk";
-        #   };
-        # };
+        desktopManager = {
+          # lxqt = {
+          #   enable = config.desktop.guiFramework == "qt";
+          # };
+          # lxde = {
+          #   enable = config.desktop.guiFramework == "gtk";
+          # };
+        };
       };
     };
   };

@@ -42,12 +42,13 @@ https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.
 ** Other configs
 - https://github.com/gvolpe/nix-config/blob/master/flake.nix
 - https://github.com/Ex-32/nixos-config
+- https://github.com/ryan4yin/nix-config
 
 ** TODO-items
-- [ ] Make fprint work in SDDM
-  - https://github.com/sddm/sddm/issues/284
-  - https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/x11/display-managers/sddm.nix
-  - https://github.com/NixOS/nixpkgs/blob/7bfb47ae12af981cf237ea7993a896216c932db8/nixos/modules/security/pam.nix
+- [ ] Do power management
+  - gnome.gnome-power-manager
+  - https://community.frame.work/t/tracking-linux-battery-life-tuning/6665
+  - https://knowledgebase.frame.work/en_us/optimizing-ubuntu-battery-life-Sye_48Lg3
 
 - [ ] Make firefly-iii with Postgres and Caddy
   - https://github.com/NixOS/nixpkgs/blob/bf78e6a54601fc74d8d27fb918a420c84fb6f5b3/nixos/modules/services/web-apps/nextcloud.nix#L6

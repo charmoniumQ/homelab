@@ -58,24 +58,31 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in {
-        apps = {
-          apply = {
+        apps = let
+          mkApp = string: {
             type = "app";
             program = let
-              package = pkgs.writeShellScriptBin "script" "${pkgs.colmena}/bin/colmena apply --show-trace --verbose";
+              package = pkgs.writeShellScriptBin "script" string;
             in "${package}/bin/script";
           };
-          edit-secret = {
-            type = "app";
-            program = let
-              package = pkgs.writeShellScriptBin "script" ''
-                set -xx
-                fname=$1
-                shift
-                env --chdir=secrets/ ${agenix.packages.x86_64-linux.default}/bin/agenix -e $fname $@
-              '';
-            in "${package}/bin/script";
-          };
+        in {
+          colmena = mkApp "${pkgs.colmena}/bin/colmena $@";
+          apply-local = mkApp "${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose $@";
+          apply-remote = mkApp "${pkgs.colmena}/bin/colmena apply --show-trace --verbose $@";
+          apply-all = mkApp ''
+            ${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose $@
+            if ${pkgs.openssh}/bin/ssh sysadmin@home.samgrayson.me true; then
+              ${pkgs.colmena}/bin/colmena apply --show-trace --verbose $@
+            else
+              echo "Can't connect to host sysadmin@home.samgrayson.me"
+            fi
+          '';
+          edit-secret = mkApp ''
+            set -xx
+            fname=$1
+            shift
+            env --chdir=secrets/ ${agenix.packages.x86_64-linux.default}/bin/agenix -e $fname $@
+          '';
         };
         devShells = {
           default = pkgs.mkShell {

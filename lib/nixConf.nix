@@ -25,7 +25,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
       enable = true;
       package = pkgs.nixUnstable;
       channel = {
-        enable = false;
+        enable = true;
       };
       settings = {
         substituters = [
@@ -42,6 +42,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
         dates = config.automaticMaintenance.weeklyTime;
         persistent = true;
         randomizedDelaySec = config.automaticMaintenance.randomizedDelay;
+        options = "--delete-older-than 8d";
       };
       optimise = {
         automatic = config.automaticMaintenance.enable;
