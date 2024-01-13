@@ -12,17 +12,15 @@ in {
     systemPackages = [ lock ];
   };
   systemd = {
-    user = {
-      services = {
-        "swaylock.unit" = {
-          enable = true;
-          before = [ "sleep.target" ];
-          wantedBy = [ "sleep.target" ];
-          description = "Local system suspend actions";
-          script = "${lock}/bin/lock";
-          serviceConfig = {
-            Type = "simple";
-          };
+    services = {
+      "swaylock.unit" = {
+        enable = true;
+        before = [ "sleep.target" ];
+        wantedBy = [ "sleep.target" ];
+        description = "Local system suspend actions";
+        script = "${lock}/bin/lock";
+        serviceConfig = {
+          Type = "simple";
         };
       };
     };

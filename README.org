@@ -45,6 +45,9 @@ https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.
 - https://github.com/ryan4yin/nix-config
 
 ** TODO-items
+- [ ] Switch to Sops-nix
+  - https://github.com/Mic92/sops-nix
+
 - [ ] Do power management
   - gnome.gnome-power-manager
   - https://community.frame.work/t/tracking-linux-battery-life-tuning/6665

@@ -16,6 +16,8 @@ in {
       home-assistant = {
         configWritable = true;
         lovelaceConfigWritable = true;
+        # TODO: Remove this config as much as possible
+        # TODO: Back this up in Restic
         config = {
           default_config = {};
           homeassistant = {
@@ -36,9 +38,11 @@ in {
           calendar = []
             ++ (lib.lists.optional config.services.nextcloud.enable {
               platform = "caldav";
-              username = "!secret nextcloud_username";
+              username = "sam";
               password = "!secret nextcloud_password";
               url = "https://${config.services.nextcloud.hostName}/remote.php/dav";
+              # TODO: Remove calendar names from this file
+              # calendars = [ "personal_shared_by_kt" "shared" "personal" ];
             })
           ;
           light = [
@@ -87,9 +91,11 @@ in {
           radios
           aiogithubapi
           pyqrcode
+          ical
         ];
         extraComponents = [
           "met"
+          "calendar"
           "caldav"
           "wiz"
           "mqtt"
@@ -99,6 +105,7 @@ in {
           "google_translate" # for gtts
          ];
       };
+      # TODO: Remove mosquitto/zigbee2mqtt, secrets, and options
       mosquitto = lib.attrsets.optionalAttrs (! cfg.zha) {
         enable = cfg.enable;
         logDest = [ "syslog" ];
