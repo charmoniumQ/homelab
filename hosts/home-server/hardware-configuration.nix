@@ -2,7 +2,7 @@
 This module contains all and only information specific to one particular host.
 Most of it comes from nixos-generate.
 */
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   # TODO: use by-uuid
   disks = [
@@ -49,7 +49,23 @@ in
       # TODO: test opengl and vulkan
     };
     nvidia = {
+      # https://nixos.wiki/wiki/Nvidia
+      # Modesetting is required.
+      modesetting.enable = true;
+
+      # Whether to use the NVidia open source kernel module
+      # Currently alpha-quality/buggy, so false is currently the recommended setting.
+      open = false;
+
+      # Enable the Nvidia settings menu,
+	    # accessible via `nvidia-settings`.
       nvidiaSettings = true;
+
+      # Optionally, you may need to select the appropriate driver version for your specific GPU.
+      # NVIDIA Corporation GT218 [GeForce 8400 GS Rev. 3] (rev a2)
+      # https://www.nvidia.com/download/driverResults.aspx/89883/en-us/
+      # https://nixos.wiki/wiki/Nvidia
+      package = config.boot.kernelPackages.nvidiaPackages.legacy_340;
     };
   };
   networking = {

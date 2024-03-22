@@ -1,4 +1,4 @@
-{ config, lib, pkgs, disko, nixos-hardware, ... }:
+{ config, lib, pkgs, disko, nixos-hardware, benchexec-nixpkgs, ... }:
 
 {
   imports = [
@@ -7,6 +7,7 @@
     ./hardware-configuration.nix
     ./disko.nix
     ../../lib/automaticMaintenance.nix
+    ../../lib/benchexec.nix
     ../../lib/desktop.nix
     ../../lib/fprint.nix
     ../../lib/laptop.nix
@@ -14,6 +15,7 @@
     ../../lib/podman.nix
     ../../lib/nixConf.nix
     ../../lib/printing.nix
+    ../../lib/virtualbox.nix
     ../../lib/sound.nix
     ../../lib/swaylock.nix
     ../../lib/sysadmin.nix
@@ -39,6 +41,10 @@
   programs = {
     zsh = {
       enable = true;
+    };
+    benchexec = {
+      enable = true;
+      users = [ "sam" ];
     };
   };
   time = {

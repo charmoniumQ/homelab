@@ -12,7 +12,7 @@ in {
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
     ../../lib/fail2ban.nix
-    # ../../lib/firefly-iii.nix
+    ../../lib/firefly-iii.nix
     ../../lib/generatedFiles.nix
     ../../lib/grafana.nix
     ../../lib/home-assistant.nix
@@ -24,6 +24,7 @@ in {
     ../../lib/nextcloud.nix
     ../../lib/nixConf.nix
     ../../lib/runtimeTests.nix
+    ../../lib/paperless.nix
     ../../lib/prometheus.nix
     ../../lib/promtail.nix
     ../../lib/reverseProxy.nix
@@ -56,6 +57,9 @@ in {
     useDHCP = true;
     domain = "samgrayson.me";
     enableIPv6 = false;
+    firewall = {
+      allowedTCPPorts = [ 7860 ];
+    };
   };
   time = {
     timeZone = "America/Chicago";
@@ -66,6 +70,10 @@ in {
     lang = "en-US";
   };
   services = {
+    paperless = {
+      enable = false;
+      passwordFile = secrets.paperless-password.path;
+    };
     dhcp-server = {
       enable = true;
     };
@@ -112,9 +120,10 @@ in {
         pass-file = secrets.keaCtrlAgentPass.path;
       };
     };
-    # firefly-iii = {
-    #   appKeyFile = secrets.firefly-iii-app-key.path;
-    # };
+    firefly-iii = {
+      appKeyFile = secrets.firefly-iii-app-key.path;
+      enable = false;
+    };
   };
   environment = {
     systemPackages = [ pkgs.speedtest-go pkgs.mtr ];
@@ -158,12 +167,13 @@ in {
       keaCtrlAgentPass = {
         file = ../../secrets/kea-ctrl-agent-pass.age;
       };
-      # firefly-iii-app-key = {
-      #   file = ../../secrets/firefly-iii-app-key.age;
-      #   mode = "0400";
-      #   owner = config.services.firefly-iii.user;
-      #   group = config.services.firefly-iii.group;
-      # };
+    } // {
+      firefly-iii-app-key = lib.mkIf config.services.firefly-iii.enable {
+        file = ../../secrets/firefly-iii-app-key.age;
+        mode = "0400";
+        owner = config.services.firefly-iii.user;
+        group = config.services.firefly-iii.group;
+      };
     } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       nextcloudAdminpass = {
         file = ../../secrets/nextcloud-adminpass.age;
@@ -173,6 +183,10 @@ in {
     } // lib.attrsets.optionalAttrs config.services.vaultwarden.enable {
       vaultwarden-admin-token = {
         file = ../../secrets/vaultwarden-admin-token.age;
+      };
+    } // lib.attrsets.optionalAttrs config.services.paperless.enable {
+      paperless-password = {
+        file = ../../secrets/paperless.age;
       };
     };
   };

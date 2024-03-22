@@ -103,6 +103,7 @@ in {
           "otp"
           "zha"
           "google_translate" # for gtts
+          "esphome"
          ];
       };
       # TODO: Remove mosquitto/zigbee2mqtt, secrets, and options

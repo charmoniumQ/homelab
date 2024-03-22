@@ -1,7 +1,7 @@
 let
   sysadminKeys = (import ../hosts/site.nix {}).sysadmin.sshKeys;
   hostKeys = [
-    (import ../hosts/home-server/hardware-configuration.nix { lib = null; pkgs = null; }).hostKey
+    (import ../hosts/home-server/hardware-configuration.nix { config = null; lib = null; pkgs = null; }).hostKey
   ];
   keys = sysadminKeys ++ hostKeys;
 in {
@@ -15,6 +15,7 @@ in {
   "zigbee2mqttSecrets.yaml.age" = { publicKeys = keys; };
   "kea-ctrl-agent-pass.age" = { publicKeys = keys; };
   "firefly-iii-app-key.age" = { publicKeys = keys; };
+  "paperless.age" = { publicKeys = keys; };
 }
 
 /*
