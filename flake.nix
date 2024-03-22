@@ -90,6 +90,7 @@
               pkgs.colmena
               pkgs.pwgen
               pkgs.apacheHttpd # for htpasswd
+              pkgs.restic
               disko.packages."${system}".default
               agenix.packages."${system}".default
               (pkgs.python311.withPackages (pypkgs: [
