@@ -19,8 +19,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     firefly = {
-      url = github:timhae/firefly;
+      url = github:charmoniumQ/firefly/patch-2;
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.firefly-iii-src = {
+        url = "github:firefly-iii/firefly-iii/v6.1.10";
+        flake = false;
+      };
     };
     nixos-hardware = {
       url = github:NixOS/nixos-hardware;

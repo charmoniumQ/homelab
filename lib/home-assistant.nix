@@ -160,9 +160,7 @@ in {
         ensureUsers = [
           {
             name = userName;
-            ensurePermissions = {
-              "DATABASE ${dbName}" = "ALL PRIVILEGES";
-            };
+            ensureDBOwnership = true;
           }
         ];
       };

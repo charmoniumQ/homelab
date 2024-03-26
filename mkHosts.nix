@@ -1,7 +1,7 @@
 /*
-Turns a colmena deply object into QEMU VMs and nixosConfigurations.
+Turns a flake icolmena-conf object into QEMU VMs and nixosConfigurations.
 */
-{ nixpkgs, flake-utils, ... }@inputs: { colmena }:
+{ nixpkgs, flake-utils, ... }@flake-inputs: { colmena }:
 let
   hosts = nixpkgs.lib.lists.remove "meta" (builtins.attrNames colmena);
   importsForHost = host: [
@@ -14,7 +14,7 @@ in (flake-utils.lib.eachDefaultSystem (system: {
     name = "${host}-qemu";
     value = (nixpkgs.lib.nixosSystem {
       system = colmena.meta.nixpkgs.system;
-      specialArgs = inputs;
+      specialArgs = flake-inputs;
       modules = importsForHost host;
     }).config.system.build.vm;
   }));
@@ -23,7 +23,7 @@ in (flake-utils.lib.eachDefaultSystem (system: {
     name = "${host}";
     value = nixpkgs.lib.nixosSystem {
       system = colmena.meta.nixpkgs.system;
-      specialArgs = inputs;
+      specialArgs = flake-inputs;
       modules = importsForHost host;
     };
   }));
@@ -32,7 +32,7 @@ in (flake-utils.lib.eachDefaultSystem (system: {
       nixpkgs = import nixpkgs {
         system = "x86_64-linux";
       };
-      specialArgs = inputs;
+      specialArgs = flake-inputs;
     };
   } // builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {
     name = host;

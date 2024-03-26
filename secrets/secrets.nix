@@ -15,6 +15,7 @@ in {
   "zigbee2mqttSecrets.yaml.age" = { publicKeys = keys; };
   "kea-ctrl-agent-pass.age" = { publicKeys = keys; };
   "firefly-iii-app-key.age" = { publicKeys = keys; };
+  "firefly-iii-postgres.age" = { publicKeys = keys; };
   "paperless.age" = { publicKeys = keys; };
 }
 

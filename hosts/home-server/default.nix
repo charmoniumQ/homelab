@@ -15,6 +15,7 @@ in {
     ../../lib/firefly-iii.nix
     ../../lib/generatedFiles.nix
     ../../lib/grafana.nix
+    ../../lib/jupyter.nix
     ../../lib/home-assistant.nix
     ../../lib/kea.nix
     ../../lib/locale.nix
@@ -96,6 +97,9 @@ in {
         adminpassFile = secrets.nextcloudAdminpass.path;
       };
     };
+    jupyter = {
+      enable = true;
+    };
     vaultwarden = {
       enable = true;
       admin_token_file = secrets.vaultwarden-admin-token.path;
@@ -122,7 +126,10 @@ in {
     };
     firefly-iii = {
       appKeyFile = secrets.firefly-iii-app-key.path;
-      enable = false;
+      database = {
+        passwordFile = secrets.firefly-iii-postgres.path;
+      };
+      enable = true;
     };
   };
   environment = {
@@ -140,10 +147,17 @@ in {
       # Note that reverse proxy domains are already added
     ];
   };
+  users = {
+    groups = {
+      "smtp" = {};
+    };
+  };
   age = {
     secrets = {
       smtpPass = {
         file = ../../secrets/smtp-pass.age;
+        group = "smtp";
+        mode = "0440";
       };
       namecheapPassword = {
         file = ../../secrets/namecheapPassword.age;
@@ -170,6 +184,12 @@ in {
     } // {
       firefly-iii-app-key = lib.mkIf config.services.firefly-iii.enable {
         file = ../../secrets/firefly-iii-app-key.age;
+        mode = "0400";
+        owner = config.services.firefly-iii.user;
+        group = config.services.firefly-iii.group;
+      };
+      firefly-iii-postgres = lib.mkIf config.services.firefly-iii.enable {
+        file = ../../secrets/firefly-iii-postgres.age;
         mode = "0400";
         owner = config.services.firefly-iii.user;
         group = config.services.firefly-iii.group;

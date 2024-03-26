@@ -37,7 +37,7 @@
         ensureUsers = [
           {
             name = config.users.users.vaultwarden.name;
-            ensurePermissions = {
+            ensurePermissions = lib.trivial.warn "Migrate vaultwarden to ensureDBOwnership (dbname must be username)" {
               "DATABASE ${dbName}" = "ALL PRIVILEGES";
             };
           }
