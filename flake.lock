@@ -90,11 +90,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1711465373,
-        "narHash": "sha256-EYa+d5AuQEHOZX1HO5vsjk61cK8gTIl3EJzFNyDebuQ=",
+        "lastModified": 1711515853,
+        "narHash": "sha256-gQh6rgge/oehDOVvNz1n4dOEAOogF8Y/tGzAMzk3zE0=",
         "owner": "charmoniumQ",
         "repo": "firefly",
-        "rev": "9d6b0a9960e47b47a2b37eb91fc7dc65f2bf1c4a",
+        "rev": "61a282acf64edc69d00d43051faf76e456e6fd1f",
         "type": "github"
       },
       "original": {
@@ -107,16 +107,16 @@
     "firefly-iii-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1709395923,
-        "narHash": "sha256-RPkSX9o/5XGh1dZhyyFYsPedl6/SHOGXOAY2/x7aiaM=",
+        "lastModified": 1704536021,
+        "narHash": "sha256-7V9HXyHPEa7j0BhJHKw3ar6BduxmKPW8ZiL5YpEXxtg=",
         "owner": "firefly-iii",
         "repo": "firefly-iii",
-        "rev": "90d58ec8fa2963934be6fc7cc3d5a85171239025",
+        "rev": "2c3f032a2b0fa0dc8afa3efc871790af2d5aa8ed",
         "type": "github"
       },
       "original": {
-        "owner": "charmoniumQ",
-        "ref": "develop",
+        "owner": "firefly-iii",
+        "ref": "v6.1.6",
         "repo": "firefly-iii",
         "type": "github"
       }
@@ -227,6 +227,27 @@
         "type": "github"
       }
     },
+    "pia": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1687263775,
+        "narHash": "sha256-sSVNT3o+4RcdnUqdVloPc3UvM3LancTY6htyzAHrC0w=",
+        "ref": "development",
+        "rev": "190f8040cc4837fb6b3c43032711e1536ef2270b",
+        "revCount": 10,
+        "type": "git",
+        "url": "https://git.sr.ht/~rprospero/nixos-pia"
+      },
+      "original": {
+        "ref": "development",
+        "type": "git",
+        "url": "https://git.sr.ht/~rprospero/nixos-pia"
+      }
+    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -235,7 +256,8 @@
         "flake-utils": "flake-utils",
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "pia": "pia"
       }
     },
     "systems": {

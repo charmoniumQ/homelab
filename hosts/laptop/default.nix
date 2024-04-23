@@ -1,4 +1,4 @@
-{ config, lib, pkgs, disko, nixos-hardware, benchexec-nixpkgs, ... }:
+{ config, lib, pkgs, disko, nixos-hardware, benchexec-nixpkgs, pia, ... }:
 
 {
   imports = [
@@ -20,6 +20,7 @@
     ../../lib/swaylock.nix
     ../../lib/sysadmin.nix
     # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1
+    pia.nixosModule
   ];
   networking = {
     firewall = {
