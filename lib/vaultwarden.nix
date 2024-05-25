@@ -3,7 +3,7 @@
   config = let
     cfg = config.services.vaultwarden;
     smtpCfg = config.externalSmtp;
-    dbName = "vaultwardendb";
+    dbName = "vaultwarden";
   in {
     services = {
       vaultwarden = {
@@ -37,9 +37,7 @@
         ensureUsers = [
           {
             name = config.users.users.vaultwarden.name;
-            ensurePermissions = lib.trivial.warn "Migrate vaultwarden to ensureDBOwnership (dbname must be username)" {
-              "DATABASE ${dbName}" = "ALL PRIVILEGES";
-            };
+            ensureDBOwnership = true;
           }
         ];
       };
@@ -68,7 +66,7 @@
             paths = [ "/var/lib/bitwarden_rs/attachments" ];
           };
           postgresql = {
-            databases = [ dbName];
+            databases = [ dbName ];
           };
           services = [ "vaultwarden" ];
           keep_daily = 3;

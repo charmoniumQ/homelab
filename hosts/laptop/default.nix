@@ -13,6 +13,7 @@
     ../../lib/laptop.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
+    ../../lib/docker.nix
     ../../lib/nixConf.nix
     ../../lib/printing.nix
     ../../lib/virtualbox.nix

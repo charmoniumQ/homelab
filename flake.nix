@@ -71,8 +71,8 @@
           };
         in {
           colmena = mkApp "${pkgs.colmena}/bin/colmena $@";
-          apply-local = mkApp "${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose $@";
-          apply-remote = mkApp "${pkgs.colmena}/bin/colmena apply --show-trace --verbose $@";
+          apply-local = mkApp "${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose --impure $@";
+          apply-remote = mkApp "${pkgs.colmena}/bin/colmena apply --show-trace --verbose --impure $@";
           apply-all = mkApp ''
             ${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose $@
             if ${pkgs.openssh}/bin/ssh sysadmin@home.samgrayson.me true; then

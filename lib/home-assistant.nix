@@ -13,6 +13,11 @@ in {
       systemPackages = [ cfg.package ];
     };
     services = {
+      # esphome = {
+      #   enable = true;
+      #   port = lib.trivial.warn "Consider moving this port to a hash" 34137;
+      #   openFirewall = true;
+      # };
       home-assistant = {
         configWritable = true;
         lovelaceConfigWritable = true;
@@ -185,6 +190,9 @@ in {
         "${cfg.hostname}" = {
           port = cfg.http_port;
         };
+        # "esphome.${config.networking.domain}" = {
+        #   port = config.services.esphome.port;
+        # };
       };
     };
     generatedFiles = lib.attrsets.optionalAttrs (! cfg.zha) {

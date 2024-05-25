@@ -12,12 +12,12 @@ in {
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
     ../../lib/fail2ban.nix
-    ../../lib/firefly-iii.nix
+    # ../../lib/firefly-iii.nix
     ../../lib/generatedFiles.nix
     ../../lib/grafana.nix
     ../../lib/jupyter.nix
     ../../lib/home-assistant.nix
-    ../../lib/kea.nix
+    # ../../lib/kea.nix
     ../../lib/locale.nix
     ../../lib/loki.nix
     ../../lib/mosquitto.nix
@@ -75,9 +75,9 @@ in {
       enable = false;
       passwordFile = secrets.paperless-password.path;
     };
-    dhcp-server = {
-      enable = true;
-    };
+    # dhcp-server = {
+    #   enable = true;
+    # };
     nginx = {
       enable = false;
     };
@@ -119,18 +119,18 @@ in {
         }
       ];
     };
-    kea = {
-      ctrl-agent = {
-        pass-file = secrets.keaCtrlAgentPass.path;
-      };
-    };
-    firefly-iii = {
-      appKeyFile = secrets.firefly-iii-app-key.path;
-      database = {
-        passwordFile = secrets.firefly-iii-postgres.path;
-      };
-      enable = true;
-    };
+    # kea = {
+    #   ctrl-agent = {
+    #     pass-file = secrets.keaCtrlAgentPass.path;
+    #   };
+    # };
+    # firefly-iii = {
+    #   appKeyFile = secrets.firefly-iii-app-key.path;
+    #   database = {
+    #     passwordFile = secrets.firefly-iii-postgres.path;
+    #   };
+    #   enable = true;
+    # };
   };
   environment = {
     systemPackages = [ pkgs.speedtest-go pkgs.mtr ];
@@ -182,18 +182,18 @@ in {
         file = ../../secrets/kea-ctrl-agent-pass.age;
       };
     } // {
-      firefly-iii-app-key = lib.mkIf config.services.firefly-iii.enable {
-        file = ../../secrets/firefly-iii-app-key.age;
-        mode = "0400";
-        owner = config.services.firefly-iii.user;
-        group = config.services.firefly-iii.group;
-      };
-      firefly-iii-postgres = lib.mkIf config.services.firefly-iii.enable {
-        file = ../../secrets/firefly-iii-postgres.age;
-        mode = "0400";
-        owner = config.services.firefly-iii.user;
-        group = config.services.firefly-iii.group;
-      };
+      # firefly-iii-app-key = lib.mkIf config.services.firefly-iii.enable {
+      #   file = ../../secrets/firefly-iii-app-key.age;
+      #   mode = "0400";
+      #   owner = config.services.firefly-iii.user;
+      #   group = config.services.firefly-iii.group;
+      # };
+      # firefly-iii-postgres = lib.mkIf config.services.firefly-iii.enable {
+      #   file = ../../secrets/firefly-iii-postgres.age;
+      #   mode = "0400";
+      #   owner = config.services.firefly-iii.user;
+      #   group = config.services.firefly-iii.group;
+      # };
     } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
       nextcloudAdminpass = {
         file = ../../secrets/nextcloud-adminpass.age;
