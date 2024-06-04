@@ -54,7 +54,7 @@ in {
         };
       };
     };
-    networking = {
+    networking = lib.attrsets.optionalAttrs (cfg.enable && cfg.implementation == "kea") {
       interfaces = {
         "${cfg.interface}" = {
           ipv4 = {

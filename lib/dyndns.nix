@@ -12,6 +12,7 @@ in {
         "dyndns" = {
           wantedBy = [ "multi-user.target" ];
           after = [ "network-online.target" ];
+          requires = [ "network-online.target" ];
           script = "${python} ${script} ${jsonCfg}";
           serviceConfig = {
             Type = "oneshot";
@@ -60,9 +61,10 @@ in {
                 type = lib.types.strMatching "[a-z0-9][a-z0-9.-]+[a-z0-9]";
                 description = "Provider of dynamic DNS";
               };
-              host = lib.mkOption {
-                type = lib.types.strMatching "\\*|@|[a-z0-9][a-z0-9-]+";
-                description = "Name of host to update";
+              hosts = lib.mkOption {
+                type = lib.types.listOf (lib.types.strMatching "\\*|@|[a-z0-9][a-z0-9-]+");
+                default = [ ];
+                description = "Names of host to update";
               };
               domain = lib.mkOption {
                 type = lib.types.strMatching "[a-z0-9][a-z0-9.-]+[a-z0-9]";

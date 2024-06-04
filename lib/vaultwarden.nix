@@ -53,7 +53,7 @@
     generatedFiles = {
       "vaultwarden.env" = {
         name = "vaultwarden.env";
-        script = ''echo -e "SMTP_PASSWORD=$(cat ${smtpCfg.passwordFile})\nADMIN_TOKEN=$(cat ${cfg.admin_token_file})"'';
+        script = ''echo -e "SMTP_PASSWORD=$(cat ${smtpCfg.passwordFile})\nADMIN_TOKEN=$(cat ${cfg.admin_token_file} | tr --delete '\n')"'';
         user = config.users.users.vaultwarden.name;
         group = config.users.groups.vaultwarden.name;
       };

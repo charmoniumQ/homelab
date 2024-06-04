@@ -32,26 +32,35 @@ in
   config = {
     services = {
       nextcloud = {
-        hostName = "nextcloud.${config.networking.domain}";
-        https = true;
+        # enable should be set by client
+        enableImagemagick = true;
+        # package shoudl be set by client
         appstoreEnable = false;
-        database = {
-          createLocally = true;
-        };
         caching = {
+          # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/caching_configuration.html
+          # Unless you have a memcached cluster, I think just apcu + redis is recommended
           apcu = true;
           redis = true;
           memcached = false;
         };
-        logLevel = 2 /* warning */;
-        logType = lib.trivial.warn "Move syslog to systemd once we install php-systemd" "syslog";
-        configureRedis = true;
-        enableImagemagick = true;
         config = {
-          dbtype = "pgsql";
           adminuser = "root";
-          trustedProxies = [ "${config.localIP}" ];
-          defaultPhoneRegion = "US";
+          # adminpassfile should be set by client
+          dbtype = "pgsql";
+        };
+        configureRedis = true;
+        database = {
+          createLocally = true;
+        };
+        extraApps = {
+          calendar = config.services.nextcloud.package.packages.apps.calendar;
+          notify_push = config.services.nextcloud.package.packages.apps.notify_push;
+        };
+        hostName = lib.mkDefault "nextcloud.${config.networking.domain}";
+        https = true;
+        notify_push = {
+          enable = true;
+          logLevel = "warn";
         };
         # phpExtraExtensions = all: [
         #   all.php-systemd
@@ -62,7 +71,27 @@ in
           "opcache.interned_strings_buffer" = "16";
           # https://spot13.com/pmcalculator/
         };
-        extraOptions = lib.attrsets.optionalAttrs config.externalSmtp.enable ({
+        secretFile =
+          if config.externalSmtp.enable && config.externalSmtp.authentication
+          then "/run/secrets/nextcloud-smtp.json"
+          else null
+        ;
+        settings = {
+          default_phone_region = "US";
+          loglevel = 2 /* warning */;
+          logfile = "nextcloud.log";
+          log_type = "file";
+          # Note that Nextcloud's self-check requires logType = "file"
+          # or else:
+          #
+          #     Failed to get an iterator for log entries: Logreader application only supports "file" log_type
+          #
+          # which necessitates some options in config.services.nextcloud.settings
+          # See https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/logging_configuration.html
+          # Perhaps we don't need Nextcloud's self-check, in which case, we should get php-systemd installed, use systemd, and log warnings.
+          # That way, we will get alerts when Nextcloud has warnings.
+          overwriteprotocol = "https";
+          trusted_proxies = [ "${config.localIP}" ];
           mail_smtpmode = "smtp";
           mail_sendmailmode = "smtp";
           mail_smtpsecure = config.externalSmtp.security;
@@ -71,54 +100,9 @@ in
           mail_from_address = config.externalSmtp.fromUser;
           mail_domain = config.externalSmtp.fromDomain;
           mail_smtpauth = if config.externalSmtp.authentication then 1 else 0;
-        } // lib.attrsets.optionalAttrs config.externalSmtp.authentication{
+          maintenance_window_start = 1;
+        } // lib.attrsets.optionalAttrs config.externalSmtp.authentication {
           mail_smtpname = config.externalSmtp.username;
-        });
-        secretFile =
-          if config.externalSmtp.enable && config.externalSmtp.authentication
-          then "/run/secrets/nextcloud-smtp.json"
-          else null
-        ;
-        notify_push = {
-          enable = true;
-          logLevel = "warn";
-        };
-        extraApps = {
-          # See https://github.com/helsinki-systems/nc4nix/blob/main/27.json
-          calendar = makeNextcloudApp rec {
-            pname = "calendar";
-            version = "4.5.0";
-            hash = "sha256-McoYHnNBoOUjxL5RE3R9l7DwK3BHPvQ8VKhjef2e2kg=";
-            url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}-v${version}.tar.gz";
-          };
-          notes = makeNextcloudApp rec {
-            pname = "notes";
-            version = "4.8.1";
-            hash = "sha256-BfH1W+7TWKZRuAAhKQEQtlv8ePTtJQvZQVMMu3zULR4=";
-            url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}.tar.gz";
-          };
-          contacts = makeNextcloudApp rec {
-            pname = "contacts";
-            version = "5.3.2";
-            hash = "sha256-1jQ+pyLBPU7I4wSPkmezJq7ukrQh8WPErG4J6Ps3LR4=";
-            url = "https://github.com/nextcloud-releases/${pname}/releases/download/v${version}/${pname}-v${version}.tar.gz";
-          };
-          notify_push = makeNextcloudApp rec {
-            pname = "notify_push";
-            version = "0.6.3";
-            hash = "sha256-36RIESdpwsGK45BU62gmh69QIiwTodpX1somnvUcmaU=";
-            url = "https://github.com/nextcloud-releases/${pname}/archive/refs/tags/v${version}.tar.gz";
-          };
-          # memories = makeNextcloudApp {
-          #   pname = "memories";
-          #   version = "v5.2.1";
-          #   hash = "sha256-qu+LrohAVBpTj/t14BinT2ExDF8uifcfEpc4YB+Q9Pw=";
-          # };
-          # nextcloud-breeze-dark = makeNextcloudApp {
-          #   pname = "nextcloud-breeze-dark";
-          #   version = "v26.0.0";
-          #   hash = "sha256-CKgs/IqwebPIxvcItF0Z/ynEAgcE0jhyVkxJ603QARc=";
-          # };
         };
       };
       phpfpm = lib.attrsets.optionalAttrs cfg.enable {
@@ -144,17 +128,16 @@ in
 
             header Strict-Transport-Security max-age=15552000;
 
-            redir /.well-known/carddav   /remote.php/dav 301
-            redir /.well-known/caldav    /remote.php/dav 301
+            redir /.well-known/carddav   /remote.php/dav/ 301
+            redir /.well-known/caldav    /remote.php/dav/ 301
             redir /.well-known/webfinger /index.php/.well-known/webfinger
             redir /.well-known/nodeinfo  /index.php/.well-known/nodeinfo
-
 
             @store_apps path_regexp ^/store-apps
             root @store_apps ${cfg.home}
 
-            @nix_apps path_regexp ^/nix-apps
-            root @nix_apps ${cfg.home}
+            # @nix_apps path_regexp ^/nix-apps
+            # root @nix_apps ${cfg.home}
 
             @davClnt {
               header_regexp User-Agent ^DavClnt
@@ -223,9 +206,9 @@ in
           services = [ ];
           enterMaintenanceMode = "${occ} maintenance:mode --on";
           exitMaintenanceMode = "${occ} maintenance:mode --off";
-          keep_daily = 6;
-          keep_monthly = 5;
-          keep_yearly = 5;
+          keep_daily = 2;
+          keep_monthly = 2;
+          keep_yearly = 2;
         };
       };
     };
@@ -248,7 +231,7 @@ in
     generatedFiles = lib.attrsets.optionalAttrs (cfg.enable && config.externalSmtp.enable && config.externalSmtp.authentication) {
       "nextcloud-smtp.json" = {
         name = "nextcloud-smtp.json";
-        script = ''echo {\"mail_smtppassword\":\"$(cat ${config.externalSmtp.passwordFile})\"}'';
+        script = ''echo {\"mail_smtppassword\":\"$(cat ${config.externalSmtp.passwordFile} | tr --delete '\n')\"}'';
         user = config.services.phpfpm.pools.nextcloud.user;
         group = config.services.phpfpm.pools.nextcloud.group;
       };

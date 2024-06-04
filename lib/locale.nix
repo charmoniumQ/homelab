@@ -1,7 +1,7 @@
 { config, lib, ... }: {
   config = {
     i18n = {
-      defaultLocale = "${builtins.replaceStrings ["-"] ["_"] config.locale.lang}.UTF-8";
+      defaultLocale = lib.mkDefault "${builtins.replaceStrings ["-"] ["_"] config.locale.lang}.UTF-8";
     };
   };
   options = {

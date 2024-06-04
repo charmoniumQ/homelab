@@ -29,9 +29,7 @@ in (flake-utils.lib.eachDefaultSystem (system: {
   }));
   colmena = {
     meta = {
-      nixpkgs = import nixpkgs {
-        system = "x86_64-linux";
-      };
+      nixpkgs = import nixpkgs;
       specialArgs = flake-inputs;
     };
   } // builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {

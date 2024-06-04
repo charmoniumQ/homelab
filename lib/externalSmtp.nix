@@ -7,6 +7,11 @@ let
   script = pkgs.writeText "script.py" (builtins.readFile ./externalSmtp.py);
 in {
   config = {
+    users = {
+      groups = {
+        smtp = { };
+      };
+    };
     runtimeTests = {
       tests = lib.attrsets.optionalAttrs cfg.enable {
         "external-smtp-test" = {
@@ -46,7 +51,7 @@ in {
       };
       passwordFile = lib.mkOption {
         type = lib.types.path;
-        description = "File containing the password with which to log in to the SMTP server.";
+        description = "File containing the password with which to log in to the SMTP server. Should be owned by group 'smtp'";
       };
       fromUser = lib.mkOption {
         type = lib.types.nonEmptyStr;

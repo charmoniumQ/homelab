@@ -30,9 +30,9 @@ in
     home-assistant = {
       zigbeeDevice = "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_e8f237a26645ed118378c68f0a86e0b4-if00-port0";
     };
-    # dhcp-server = {
-    #   interface = "enp4s0";
-    # };
+    dhcp-server = {
+      interface = "enp4s0";
+    };
   };
 
   hardware = {
@@ -165,5 +165,14 @@ in
     hostPlatform = "x86_64-linux";
   };
   localIP = "192.168.1.28";
+  wifi = false;
   hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID2OwUfcZINCrf8UT5g3qgH5T4xhda56yx6+4EIzIX9h root@homeserver";
+
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It's perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "23.05"; # Did you read the comment?
 }

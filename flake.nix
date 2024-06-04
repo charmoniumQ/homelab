@@ -18,19 +18,16 @@
       url = github:nix-community/disko;
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    firefly = {
-      url = github:charmoniumQ/firefly/patch-2;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     nixos-hardware = {
       url = github:NixOS/nixos-hardware;
     };
-    pia = {
-      url = "git+https://git.sr.ht/~rprospero/nixos-pia?ref=development";
+    nixos-anywhere = {
+      url = github:nix-community/nixos-anywhere;
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.disko.follows = "disko";
     };
   };
-  outputs = { self, nixpkgs, agenix, flake-utils, disko, ... }@inputs:
+  outputs = { self, nixpkgs, agenix, flake-utils, disko, nixos-anywhere, nixos-generators, ... }@inputs:
     ((import ./mkHosts.nix) inputs {
       colmena = {
         meta = {
@@ -44,6 +41,12 @@
           deployment = {
             targetHost = "home.samgrayson.me";
             targetUser = "sysadmin";
+          };
+        };
+        cloud-server = {
+          deployment = { # TODO: change to sysadmin and DNS name
+            targetHost = "49.13.239.201";
+            targetUser = "root";
           };
         };
         laptop = {
@@ -71,16 +74,9 @@
           };
         in {
           colmena = mkApp "${pkgs.colmena}/bin/colmena $@";
-          apply-local = mkApp "${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose --impure $@";
-          apply-remote = mkApp "${pkgs.colmena}/bin/colmena apply --show-trace --verbose --impure $@";
-          apply-all = mkApp ''
-            ${pkgs.colmena}/bin/colmena apply-local --sudo --show-trace --verbose $@
-            if ${pkgs.openssh}/bin/ssh sysadmin@home.samgrayson.me true; then
-              ${pkgs.colmena}/bin/colmena apply --show-trace --verbose $@
-            else
-              echo "Can't connect to host sysadmin@home.samgrayson.me"
-            fi
-          '';
+          apply-cloud  = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#cloud-server' --target-host 'sysadmin@cloud.samgrayson.me' --use-remote-sudo";
+          apply-home   = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#home-server'  --target-host 'sysadmin@home.samgrayson.me'  --use-remote-sudo";
+          apply-laptop = mkApp "sudo nixos-rebuild switch --verbose --show-trace --flake '.#laptop'";
           edit-secret = mkApp ''
             set -xx
             fname=$1
@@ -95,8 +91,11 @@
               pkgs.pwgen
               pkgs.apacheHttpd # for htpasswd
               pkgs.restic
+              pkgs.nixos-rebuild
               disko.packages."${system}".default
               agenix.packages."${system}".default
+              nixos-anywhere.packages."${system}".default
+              nixos-generators.packages."${system}".default
               (pkgs.python311.withPackages (pypkgs: [
                 pypkgs.mypy
                 pypkgs.types-retry

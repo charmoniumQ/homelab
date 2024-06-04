@@ -5,7 +5,6 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
 {
   config = {
     system = {
-      stateVersion = "23.11";
       # TODO: enable
       autoUpgrade = {
         enable = false;
@@ -23,7 +22,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
     };
     nix = {
       enable = true;
-      package = pkgs.nixUnstable;
+      package = pkgs.nixVersions.git;
       channel = {
         enable = true;
       };
@@ -31,11 +30,14 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
         substituters = [
           "https://nix-community.cachix.org"
           "https://cache.nixos.org/"
+          "https://cache.floxdev.com"
         ];
         trusted-public-keys = [
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+          "flox-store-public-0:8c/B+kjIaQ+BloCmNkRUKwaVPFWkriSAd0JJvuDu4F0="
         ];
         experimental-features = [ "nix-command" "flakes" ];
+        extra-platforms = config.boot.binfmt.emulatedSystems ++ [ config.nixpkgs.hostPlatform.system ];
       };
       gc = {
         automatic = config.automaticMaintenance.enable;

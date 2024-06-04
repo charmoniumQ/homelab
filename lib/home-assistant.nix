@@ -209,6 +209,22 @@ in {
         group = config.users.users.mosquitto.group;
       };
     };
+    backups = {
+      volumes = {
+        home-assistant = {
+          filesystem = {
+            paths = [ cfg.configDir ];
+          };
+          postgresql = {
+            databases = [ dbName ];
+          };
+          services = [ "home-assistant" ];
+          keep_daily = 2;
+          keep_monthly = 2;
+          keep_yearly = 2;
+        };
+      };
+    };
   };
   options = {
     services = {

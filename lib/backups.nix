@@ -1,4 +1,15 @@
 { config, lib, pkgs, ... }:
+/*
+ * Manually trigger a backup like so: sudo systemctl restart restic-backups-${name}-(remote|local)
+ * Manually restore a backup like so:
+ *
+ *     sudo systemctl stop ${name} # or equivalent
+ *     sudo systemctl stop postgres # if necessary
+ *     sudo restic-${name}-(remote|local) snapshots
+ *     # select snapshot
+ *     sudo restic-${name}-(remote|local) restore $snapshot --target /
+ *     sudo -u postgres pg_restore --verbose --clean --dbname nextcloud /tmp/snapshots/nextcloud # if necessary
+ */
 let
   cfg = config.backups;
   jsonCfg = (pkgs.formats.json {}).generate "cfg.json" cfg;
@@ -22,6 +33,16 @@ let
 in {
   config = {
     services = {
+      prometheus = {
+        exporters = {
+          restic = {
+            enable = true;
+            environmentFile = config.backups.environmentFile;
+            passwordFile = config.backups.passwordFile;
+            repository = config.backups.remoteRepo;
+          };
+        };
+      };
       restic = {
         backups = builtins.listToAttrs (
           (lib.attrsets.mapAttrsToList
@@ -29,10 +50,10 @@ in {
               name = "${name}-remote";
               value = resticBackups."${name}" // {
                 repository = config.backups.remoteRepo;
-                timerConfig = {
+                timerConfig = if config.backups.enableTimers then {
                   OnCalendar = config.automaticMaintenance.weeklyTime;
                   RandomizedDelaySec = config.automaticMaintenance.randomizedDelay;
-                };
+                } else null;
                 pruneOpts = [
                   "--keep-monthly ${builtins.toString cfg.keep_monthly}"
                   "--keep-yearly ${builtins.toString cfg.keep_yearly}"
@@ -45,10 +66,10 @@ in {
               name = "${name}-local";
               value = resticBackups."${name}" // {
                 repository = config.backups.localRepo;
-                timerConfig = {
+                timerConfig = if config.backups.enableTimers then {
                   OnCalendar = config.automaticMaintenance.dailyTime;
                   RandomizedDelaySec = config.automaticMaintenance.randomizedDelay;
-                };
+                } else null;
                 pruneOpts = [
                   "--keep-daily ${builtins.toString cfg.keep_daily}"
                 ];
@@ -63,7 +84,11 @@ in {
     backups = {
       enable = lib.mkOption {
         type = lib.types.bool;
-        description = "Whether to enable periodic backups of databases and files";
+        description = "Whether to enable backup scripts/services";
+      };
+      enableTimers = lib.mkOption {
+        type = lib.types.bool;
+        description = "Whether to enable periodic backups of databases and files (otherwise they must be manually invoked)";
       };
       environmentFile = lib.mkOption {
         type = lib.types.path;

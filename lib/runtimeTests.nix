@@ -6,6 +6,7 @@
         (name: value: {
           wantedBy = [ "multi-user.target" ];
           after = value.after;
+          requires = value.after;
           script = value.script;
           serviceConfig = {
             Type = "oneshot";

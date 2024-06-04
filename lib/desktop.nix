@@ -2,32 +2,22 @@
 {
   config = {
     environment = {
-      systemPackages = with pkgs; [ flatpak swaylock ];
+      systemPackages = with pkgs; [ flatpak ];
     };
     fonts = {
       enableDefaultPackages = true;
     };
     security = {
-      pam = {
-        services = {
-          swaylock = {
-            name = "swaylock";
-          };
-        };
-      };
       polkit = {
         enable = true;
       };
     };
     networking = {
       networkmanager = {
-        enable = true;
+        enable = lib.mkDefault true;
       };
     };
     programs = {
-      hyprland = {
-        enable = true;
-      };
       dconf = {
         enable = true;
       };
@@ -38,6 +28,12 @@
       };
       udisks2 = {
         enable = true;
+      };
+      displayManager = {
+        autoLogin = {
+          enable = true;
+          user = config.sysadmin.username;
+        };
       };
       xserver = {
         enable = true;
@@ -51,11 +47,6 @@
           #     enable = true;
           #   };
           # };
-          autoLogin = {
-            enable = true;
-            user = config.sysadmin.username;
-          };
-          defaultSession = "hyprland";
         };
         desktopManager = {
           # lxqt = {

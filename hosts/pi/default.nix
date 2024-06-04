@@ -1,30 +1,24 @@
-{ config, lib, pkgs, disko, nixos-hardware, benchexec-nixpkgs, ... }:
+{ config, lib, pkgs, disko, benchexec-nixpkgs, ... }:
 
 {
   imports = [
     disko.nixosModules.disko
-    nixos-hardware.nixosModules.framework-11th-gen-intel
     ./hardware-configuration.nix
     ./disko.nix
-    ../../lib/agenix.nix
+    # ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
     ../../lib/desktop.nix
-    ../../lib/tiling-desktop.nix
-    ../../lib/fprint.nix
-    ../../lib/laptop.nix
+    ../../lib/classic-desktop.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
     ../../lib/docker.nix
     ../../lib/fwupd.nix
     ../../lib/nixConf.nix
     ../../lib/pia.nix
-    ../../lib/printing.nix
-    ../../lib/virtualbox.nix
     ../../lib/sound.nix
     ../../lib/swaylock.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
-    # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1
   ];
 
   networking = {
@@ -36,7 +30,7 @@
   sysadmin = {
     username ="sam";
     email = "sam@samgrayson.me";
-    hashedPassword = "$y$j9T$Ts4yey8oYBzEtUHuQh2F1.$n5LCsPQzaQ9YEsmOdHJtu3unhqPDHZHrAuAU.4ZzkY2";
+    hashedPassword = "$y$j9T$Ix52oWTX.jUoRurwwxzj9.$VXXiZ6e25vypJMiGfBi1qnSC3ge8QYmzfcxcWWb5Rq1";
   };
 
   users = {
@@ -51,10 +45,6 @@
     zsh = {
       enable = true;
     };
-    benchexec = {
-      enable = true;
-      users = [ "sam" ];
-    };
   };
 
   automaticMaintenance = {
@@ -63,7 +53,7 @@
 
   boot = {
     binfmt = {
-      emulatedSystems = ["aarch64-linux"];
+      emulatedSystems = [ "aarch64-linux" "x86-64"];
     };
   };
 

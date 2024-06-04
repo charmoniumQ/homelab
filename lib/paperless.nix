@@ -23,7 +23,7 @@ in lib.mkIf config.services.paperless.enable {
     redis = {
       servers = {
         paperless = {
-          enable = true;
+          enable = config.services.paperless.enable;
           user = config.services.paperless.user;
         };
       };

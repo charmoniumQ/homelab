@@ -1,7 +1,12 @@
 let
-  sysadminKeys = (import ../hosts/site.nix {}).sysadmin.sshKeys;
+  sysadminKeys = (import ../hosts/site.nix {
+    config = { wifi = false; };
+    lib = { mkIf = a: b: b; };
+  }).sysadmin.sshKeys;
   hostKeys = [
-    (import ../hosts/home-server/hardware-configuration.nix { config = null; lib = null; pkgs = null; }).hostKey
+    (import ../hosts/home-server/hardware-configuration.nix  { config = null; lib = null; pkgs = null; }).hostKey
+    (import ../hosts/cloud-server/hardware-configuration.nix { config = null; lib = null; pkgs = null; }).hostKey
+    (import ../hosts/laptop/hardware-configuration.nix       { config = null; lib = null; pkgs = null; }).hostKey
   ];
   keys = sysadminKeys ++ hostKeys;
 in {
@@ -12,11 +17,12 @@ in {
   "resticPassword.age" = { publicKeys = keys; };
   "restic.env.age" = { publicKeys = keys; };
   "home-assistant-secrets.yaml.age" = { publicKeys = keys; };
-  "zigbee2mqttSecrets.yaml.age" = { publicKeys = keys; };
   "kea-ctrl-agent-pass.age" = { publicKeys = keys; };
   "firefly-iii-app-key.age" = { publicKeys = keys; };
   "firefly-iii-postgres.age" = { publicKeys = keys; };
   "paperless.age" = { publicKeys = keys; };
+  "pia-auth-user-pass.age" = { publicKeys = keys; };
+  "wifi-env-file.age" = { publicKeys = keys; };
 }
 
 /*
