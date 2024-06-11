@@ -59,6 +59,16 @@
             targetHost = null;
           };
         };
+        tvpi = {
+          deployment = {
+            # Allow local deployment with `colmena apply-local`
+            allowLocalDeployment = true;
+
+            # Disable SSH deployment. This node will be skipped in a
+            # normal`colmena apply`.
+            targetHost = null;
+          };
+        };
       };
     })
     // flake-utils.lib.eachDefaultSystem (system:
@@ -77,6 +87,8 @@
           apply-cloud  = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#cloud-server' --target-host 'sysadmin@cloud.samgrayson.me' --use-remote-sudo";
           apply-home   = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#home-server'  --target-host 'sysadmin@home.samgrayson.me'  --use-remote-sudo";
           apply-laptop = mkApp "sudo nixos-rebuild switch --verbose --show-trace --flake '.#laptop'";
+          apply-tvpi   = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#tvpi'         --target-host 192.168.1.17                   --use-remote-sudo";
+          image-tvpi   = mkApp "nix build --verbose --show-trace .#nixosConfigurations.tvpi.config.system.build.sdImage";
           edit-secret = mkApp ''
             set -xx
             fname=$1
@@ -88,6 +100,7 @@
           default = pkgs.mkShell {
             packages = [
               pkgs.colmena
+              pkgs.pv # for flashing SD cards
               pkgs.pwgen
               pkgs.apacheHttpd # for htpasswd
               pkgs.restic

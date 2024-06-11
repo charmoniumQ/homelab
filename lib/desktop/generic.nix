@@ -35,28 +35,6 @@
           user = config.sysadmin.username;
         };
       };
-      xserver = {
-        enable = true;
-        displayManager = {
-          lightdm = {
-            enable = true;
-          };
-          # sddm = {
-          #   enable = true;
-          #   wayland = {
-          #     enable = true;
-          #   };
-          # };
-        };
-        desktopManager = {
-          # lxqt = {
-          #   enable = config.desktop.guiFramework == "qt";
-          # };
-          # lxde = {
-          #   enable = config.desktop.guiFramework == "gtk";
-          # };
-        };
-      };
     };
   };
   options = {

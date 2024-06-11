@@ -6,7 +6,10 @@
       };
     };
     environment = {
-      systemPackages = [ pkgs.tmux pkgs.rsync ];
+      systemPackages = [
+        pkgs.tmux
+        pkgs.rsync
+      ];
     };
     programs = {
       mtr = {

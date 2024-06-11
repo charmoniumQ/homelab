@@ -69,6 +69,13 @@ in {
     };
     caddy = {
       enable = true;
+      # virtualHosts = {
+      #   "home-assistant.samgrayson.me" = {
+      #     extraConfig = ''
+      #       reverse_proxy https://home-assistant2.samgrayson.me
+      #     '';
+      #   };
+      # };
     };
     prometheus = {
       enable = true;
@@ -91,28 +98,23 @@ in {
     vaultwarden = {
       enable = true;
       domain = "vaultwarden.samgrayson.me";
-      admin_token_file = secrets.vaultwarden-admin-token.path;
+      admin_token_file = config.age.secrets.vaultwarden-admin-token.path;
     };
     home-assistant = {
-      enable = true;
-      hostname = "home-assistant2.samgrayson.me";
-      secretsYaml = secrets.homeAssistantSecretsYaml.path;
-      zigbee2mqttSecretsYaml = secrets.zigbee2mqttSecretsYaml.path;
+      enable = false;
+      # hostname = "home-assistant2.samgrayson.me";
+      # secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
+      # zigbee2mqttSecretsYaml = config.age.secrets.zigbee2mqttSecretsYaml.path;
     };
     dyndns = {
       entries = [
         {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
-          hosts = [ "cloud" "jupyter" "grafana" "nextcloud" "vaultwarden" "home-assistant2"];
-          passwordFile = secrets.namecheapPassword.path;
+          hosts = [ "cloud" "jupyter" "grafana" "nextcloud" "vaultwarden" "home-assistant"];
+          passwordFile = config.age.secrets.namecheapPassword.path;
         }
       ];
-    };
-    kea = {
-      ctrl-agent = {
-        pass-file = secrets.keaCtrlAgentPass.path;
-      };
     };
     firefly-iii = {
       enable = false;
@@ -147,18 +149,11 @@ in {
       resticEnvironmentFile = {
         file = ../../secrets/restic.env.age;
       };
+    } // lib.mkIf config.services.home-assistant.enable {
       homeAssistantSecretsYaml = {
         file = ../../secrets/home-assistant-secrets.yaml.age;
         owner = config.users.users.hass.name;
         group = config.users.users.hass.group;
-      };
-      # zigbee2mqttSecretsYaml = {
-      #   file = ../../secrets/zigbee2mqttSecrets.yaml.age;
-      #   owner = config.users.users.zigbee2mqtt.name;
-      #   group = config.users.users.zigbee2mqtt.group;
-      # };
-      keaCtrlAgentPass = {
-        file = ../../secrets/kea-ctrl-agent-pass.age;
       };
     } // {
       firefly-iii-app-key = lib.mkIf config.services.firefly-iii.enable {

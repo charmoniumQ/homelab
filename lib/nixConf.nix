@@ -30,11 +30,11 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
         substituters = [
           "https://nix-community.cachix.org"
           "https://cache.nixos.org/"
-          "https://cache.floxdev.com"
+          "https://cache.flox.dev"
         ];
         trusted-public-keys = [
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-          "flox-store-public-0:8c/B+kjIaQ+BloCmNkRUKwaVPFWkriSAd0JJvuDu4F0="
+          "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
         ];
         experimental-features = [ "nix-command" "flakes" ];
         extra-platforms = config.boot.binfmt.emulatedSystems ++ [ config.nixpkgs.hostPlatform.system ];

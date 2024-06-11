@@ -8,8 +8,8 @@
     ./disko.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
-    ../../lib/desktop.nix
-    ../../lib/tiling-desktop.nix
+    ../../lib/desktop/generic.nix
+    ../../lib/desktop/hyprland.nix
     ../../lib/fprint.nix
     ../../lib/laptop.nix
     ../../lib/locale.nix
