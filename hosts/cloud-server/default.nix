@@ -62,7 +62,7 @@ in {
   services = {
     paperless = {
       enable = false;
-      passwordFile = secrets.paperless-password.path;
+      passwordFile = config.age.secrets.paperless-password.path;
     };
     nginx = {
       enable = false;
@@ -89,7 +89,7 @@ in {
       package = pkgs.nextcloud29;
       hostName = "nextcloud.samgrayson.me";
       config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-        adminpassFile = secrets.nextcloudAdminpass.path;
+        adminpassFile = config.age.secrets.nextcloudAdminpass.path;
       };
     };
     jupyter = {
@@ -129,8 +129,8 @@ in {
   backups = {
     enable = false;
     enableTimers = false;
-    passwordFile = secrets.resticPassword.path;
-    environmentFile = secrets.resticEnvironmentFile.path;
+    passwordFile = config.age.secrets.resticPassword.path;
+    environmentFile = config.age.secrets.resticEnvironmentFile.path;
     remoteRepo = "b2:charmonium-backups:home-server";
   };
   age = {
@@ -149,20 +149,20 @@ in {
       resticEnvironmentFile = {
         file = ../../secrets/restic.env.age;
       };
-    } // lib.mkIf config.services.home-assistant.enable {
+    } // lib.attrsets.optionalAttrs config.services.home-assistant.enable {
       homeAssistantSecretsYaml = {
         file = ../../secrets/home-assistant-secrets.yaml.age;
         owner = config.users.users.hass.name;
         group = config.users.users.hass.group;
       };
-    } // {
-      firefly-iii-app-key = lib.mkIf config.services.firefly-iii.enable {
+    } // lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
+      firefly-iii-app-key = {
         file = ../../secrets/firefly-iii-app-key.age;
         mode = "0400";
         owner = config.services.firefly-iii.user;
         group = config.services.firefly-iii.group;
       };
-      firefly-iii-postgres = lib.mkIf config.services.firefly-iii.enable {
+      firefly-iii-postgres = {
         file = ../../secrets/firefly-iii-postgres.age;
         mode = "0400";
         owner = config.services.firefly-iii.user;

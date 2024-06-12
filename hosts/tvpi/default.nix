@@ -19,6 +19,7 @@ in {
     ../../lib/fwupd.nix
     ../../lib/generatedFiles.nix
     ../../lib/home-assistant.nix
+    ../../lib/kodi.nix
     ../../lib/networkedNode.nix
     ../../lib/nixConf.nix
     ../../lib/pia.nix
@@ -88,12 +89,18 @@ in {
     pia = {
       authUserPassFile = secrets.pia-auth-user-pass.path;
     };
+    home-assistant = {
+      enable = true;
+      hostname = "home-assistant2.samgrayson.me";
+      secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
+    };
     dyndns = {
       entries = [
         {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
           hosts = [ "home-assistant2" ];
+          domain = "samgrayson.me";
           passwordFile = secrets.namecheapPassword.path;
         }
       ];
@@ -138,6 +145,12 @@ in {
       };
       pia-auth-user-pass = {
         file = ../../secrets/pia-auth-user-pass.age;
+      };
+    } // lib.attrsets.optionalAttrs config.services.home-assistant.enable {
+      homeAssistantSecretsYaml = {
+        file = ../../secrets/home-assistant-secrets.yaml.age;
+        owner = config.users.users.hass.name;
+        group = config.users.users.hass.group;
       };
     };
   };

@@ -15,30 +15,30 @@
     country = lib.mkDefault "US";
     lang = lib.mkDefault "en-US";
   };
-} // lib.mkIf config.wifi {
-  networking = {
-    networkmanager = {
-      ensureProfiles = {
-        environmentFiles = [ config.age.secrets.wifi-env-file.path ];
-        profiles = {
-          home-wifi = {
-            id = "$home_wifi_ssid";
-            type = "wifi";
-            mode = "infrastructure";
-            ssid = "$home_wifi_ssid";
-            auth-alg = "open";
-            key-mgmt = "wpa-psk";
-            psk = "$home_wifi_password";
-          };
-        };
-      };
-    };
-  };
-  age = {
-    secrets = {
-      wifi-env-file = {
-        file = ../secrets/wifi-env-file.age;
-      };
-    };
-  };
-}
+} # // lib.attrsets.optionalAttrs config.wifi {
+#   networking = {
+#     networkmanager = {
+#       ensureProfiles = {
+#         environmentFiles = [ config.age.secrets.wifi-env-file.path ];
+#         profiles = {
+#           home-wifi = {
+#             id = "$home_wifi_ssid";
+#             type = "wifi";
+#             mode = "infrastructure";
+#             ssid = "$home_wifi_ssid";
+#             auth-alg = "open";
+#             key-mgmt = "wpa-psk";
+#             psk = "$home_wifi_password";
+#           };
+#         };
+#       };
+#     };
+#   };
+#   age = {
+#     secrets = {
+#       wifi-env-file = {
+#         file = ../secrets/wifi-env-file.age;
+#       };
+#     };
+#   };
+# }

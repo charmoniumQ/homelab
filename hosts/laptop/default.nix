@@ -1,5 +1,4 @@
 { config, lib, pkgs, disko, nixos-hardware, benchexec-nixpkgs, ... }:
-
 {
   imports = [
     disko.nixosModules.disko
