@@ -1,19 +1,17 @@
 /*
-Turns a flake icolmena-conf object into QEMU VMs and nixosConfigurations.
+Turns a simple object into QEMU VMs and nixosConfigurations.
 */
-{ nixpkgs, flake-utils, ... }@flake-inputs: { colmena }:
+{ nixpkgs, flake-utils, ... }@flake-inputs: hosts:
 let
-  hosts = nixpkgs.lib.lists.remove "meta" (builtins.attrNames colmena);
-  importsForHost = host: [
-    (./hosts + "/${host}")
-    ./hosts/site.nix
-  ];
   lib = nixpkgs.lib;
+  importsForHost = host: [
+    ./hosts/site.nix
+    (./hosts + "/${host}")
+  ];
 in (flake-utils.lib.eachDefaultSystem (system: {
   packages = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {
     name = "${host}-qemu";
     value = (nixpkgs.lib.nixosSystem {
-      system = colmena.meta.nixpkgs.system;
       specialArgs = flake-inputs;
       modules = importsForHost host;
     }).config.system.build.vm;
@@ -22,20 +20,8 @@ in (flake-utils.lib.eachDefaultSystem (system: {
   nixosConfigurations = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {
     name = "${host}";
     value = nixpkgs.lib.nixosSystem {
-      system = colmena.meta.nixpkgs.system;
       specialArgs = flake-inputs;
       modules = importsForHost host;
-    };
-  }));
-  colmena = {
-    meta = {
-      nixpkgs = import nixpkgs;
-      specialArgs = flake-inputs;
-    };
-  } // builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {
-    name = host;
-    value = colmena."${host}" // {
-      imports = importsForHost host;
     };
   }));
 }

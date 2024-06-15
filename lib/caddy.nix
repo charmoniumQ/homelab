@@ -1,6 +1,11 @@
 { config, lib, ... }:
 {
   config = {
+    networking = {
+      firewall = {
+        allowedTCPPorts = [ 80 443 ];
+      };
+    };
     services = {
       caddy = {
         email = config.sysadmin.email;

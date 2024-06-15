@@ -1,12 +1,18 @@
 let
-  sysadminKeys = (import ../hosts/site.nix {
-    config = { wifi = false; };
-    lib = { mkIf = a: b: b; };
-  }).sysadmin.sshKeys;
+  args = {
+    config = {
+      wifi = false;
+    };
+    lib = null;
+    pkgs = null;
+    modulesPath = <nixpkgs>;
+  };
+  sysadminKeys = (import ../hosts/site.nix args).sysadmin.sshKeys;
   hostKeys = [
-    (import ../hosts/home-server/hardware-configuration.nix  { config = null; lib = null; pkgs = null; }).hostKey
-    (import ../hosts/cloud-server/hardware-configuration.nix { config = null; lib = null; pkgs = null; }).hostKey
-    (import ../hosts/laptop/hardware-configuration.nix       { config = null; lib = null; pkgs = null; }).hostKey
+    (import ../hosts/home-server/hardware-configuration.nix  args).hostKey
+    (import ../hosts/cloud-server/hardware-configuration.nix args).hostKey
+    (import ../hosts/laptop/hardware-configuration.nix       args).hostKey
+    (import ../hosts/tvpi/hardware-configuration.nix         args).hostKey
   ];
   keys = sysadminKeys ++ hostKeys;
 in {

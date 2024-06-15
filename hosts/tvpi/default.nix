@@ -15,7 +15,7 @@ in {
     ../../lib/externalSmtp.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
-    ../../lib/docker.nix
+    # ../../lib/docker.nix
     ../../lib/fwupd.nix
     ../../lib/generatedFiles.nix
     ../../lib/home-assistant.nix
@@ -56,7 +56,6 @@ in {
 
   sysadmin = {
     username ="sam";
-    email = "sam@samgrayson.me";
     hashedPassword = "$y$j9T$/YEWDGOkn3DQ5TVuylQMB.$ccqCLtZsTeKn3.aRBAXKqVLusBcvRcWOXIne.6d2AU5";
   };
 
@@ -86,6 +85,9 @@ in {
   };
 
   services = {
+    caddy = {
+      enable = true;
+    };
     pia = {
       authUserPassFile = secrets.pia-auth-user-pass.path;
     };

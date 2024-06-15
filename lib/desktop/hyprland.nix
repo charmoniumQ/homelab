@@ -19,13 +19,13 @@
       };
     };
     services = {
+      displayManager = {
+        sddm = {
+          enable = true;
+        };
+      };
       xserver = {
         enable = true;
-        displayManager = {
-          sddm = {
-            enable = true;
-          };
-        };
       };
       displayManager = {
         defaultSession = "hyprland";

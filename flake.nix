@@ -28,50 +28,12 @@
     };
   };
   outputs = { self, nixpkgs, agenix, flake-utils, disko, nixos-anywhere, nixos-generators, ... }@inputs:
-    ((import ./mkHosts.nix) inputs {
-      colmena = {
-        meta = {
-          nixpkgs = import nixpkgs {
-            system = "x86_64-linux";
-            overlays = [ ];
-          };
-          specialArgs = inputs;
-        };
-        home-server = {
-          deployment = {
-            targetHost = "home.samgrayson.me";
-            targetUser = "sysadmin";
-          };
-        };
-        cloud-server = {
-          deployment = { # TODO: change to sysadmin and DNS name
-            targetHost = "49.13.239.201";
-            targetUser = "root";
-          };
-        };
-        laptop = {
-          deployment = {
-            # Allow local deployment with `colmena apply-local`
-            allowLocalDeployment = true;
-
-            # Disable SSH deployment. This node will be skipped in a
-            # normal`colmena apply`.
-            targetHost = null;
-          };
-        };
-        tvpi = {
-          deployment = {
-            # Allow local deployment with `colmena apply-local`
-            allowLocalDeployment = true;
-
-            # Disable SSH deployment. This node will be skipped in a
-            # normal`colmena apply`.
-            targetHost = null;
-          };
-        };
-      };
-    })
-    // flake-utils.lib.eachDefaultSystem (system:
+    ((import ./mkHosts.nix) inputs [
+      "home-server"
+      "cloud-server"
+      "laptop"
+      "tvpi"
+    ]) // flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in {
@@ -83,7 +45,6 @@
             in "${package}/bin/script";
           };
         in {
-          colmena = mkApp "${pkgs.colmena}/bin/colmena $@";
           apply-cloud  = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#cloud-server' --target-host 'sysadmin@cloud.samgrayson.me' --use-remote-sudo";
           apply-home   = mkApp "     nixos-rebuild switch --verbose --show-trace --flake '.#home-server'  --target-host 'sysadmin@home.samgrayson.me'  --use-remote-sudo";
           apply-laptop = mkApp "sudo nixos-rebuild switch --verbose --show-trace --flake '.#laptop'";
@@ -99,7 +60,6 @@
         devShells = {
           default = pkgs.mkShell {
             packages = [
-              pkgs.colmena
               pkgs.pv # for flashing SD cards
               pkgs.pwgen
               pkgs.apacheHttpd # for htpasswd

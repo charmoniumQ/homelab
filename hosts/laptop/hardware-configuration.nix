@@ -8,7 +8,7 @@
   # subvolumes = disko.disko.devices.disk.vdb.content.partitions.luks.content.content.subvolumes;
 in {
   nixpkgs = {
-    hostPlatform = "x86_64-linux";
+    hostPlatform = lib.mkForce "x86_64-linux";
   };
   services = {
     blueman = {
@@ -91,7 +91,7 @@ in {
 
   hostKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJTg9IazPIM98HvEOp+nlUs3Rp7C4JOKA9GbmXl1UbW8 root@laptop";
 
-  wifi = true;
+  # wifi = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

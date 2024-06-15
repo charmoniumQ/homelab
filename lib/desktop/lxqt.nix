@@ -1,12 +1,12 @@
 { ... }: {
   services = {
+    displayManager = {
+      sddm = {
+        enable = true;
+      };
+    };
     xserver = {
       enable = true;
-      displayManager = {
-        sddm = {
-          enable = true;
-        };
-      };
       desktopManager = {
         lxqt = {
           enable = true;

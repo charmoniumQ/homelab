@@ -1,6 +1,11 @@
 { lib, pkgs, config, ... }:
 {
   config = {
+    xdg = {
+      portal = {
+        enable = true;
+      };
+    };
     environment = {
       systemPackages = with pkgs; [ flatpak ];
     };
@@ -34,14 +39,6 @@
           enable = true;
           user = config.sysadmin.username;
         };
-      };
-    };
-  };
-  options = {
-    desktop = {
-      guiFramework = lib.mkOption {
-        type = lib.types.enum [ "qt" "gtk" ];
-	      default = "gtk";
       };
     };
   };
