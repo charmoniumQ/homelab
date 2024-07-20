@@ -22,10 +22,10 @@
       displayManager = {
         sddm = {
           enable = true;
+          wayland = {
+            enable = true;
+          };
         };
-      };
-      xserver = {
-        enable = true;
       };
       displayManager = {
         defaultSession = "hyprland";

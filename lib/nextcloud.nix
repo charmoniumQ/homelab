@@ -91,7 +91,7 @@ in
           # Perhaps we don't need Nextcloud's self-check, in which case, we should get php-systemd installed, use systemd, and log warnings.
           # That way, we will get alerts when Nextcloud has warnings.
           overwriteprotocol = "https";
-          trusted_proxies = [ "${config.localIP}" ];
+          trusted_proxies = [ "${config.localIP}" "127.0.0.1" ];
           mail_smtpmode = "smtp";
           mail_sendmailmode = "smtp";
           mail_smtpsecure = config.externalSmtp.security;
@@ -122,65 +122,77 @@ in
         virtualHosts = {
           "${cfg.hostName}" = {
             extraConfig = ''
-            # https://github.com/NixOS/nixpkgs/issues/243203#issue-1802143563
-            # https://caddy.community/t/example-docker-nextcloud-fpm-caddy-v2-webserver/9407
-            encode gzip zstd
+              # https://github.com/NixOS/nixpkgs/issues/243203#issue-1802143563
+              # https://caddy.community/t/example-docker-nextcloud-fpm-caddy-v2-webserver/9407
 
-            header Strict-Transport-Security max-age=15552000;
+              encode gzip zstd
 
-            redir /.well-known/carddav   /remote.php/dav/ 301
-            redir /.well-known/caldav    /remote.php/dav/ 301
-            redir /.well-known/webfinger /index.php/.well-known/webfinger
-            redir /.well-known/nodeinfo  /index.php/.well-known/nodeinfo
+              redir /.well-known/carddav   /remote.php/dav 301
+              redir /.well-known/caldav    /remote.php/dav 301
+              redir /.well-known/*         /index.php{uri} 301
+              redir /remote/*              /index.php{uri} 301
 
-            @store_apps path_regexp ^/store-apps
-            root @store_apps ${cfg.home}
+              header {
+                Strict-Transport-Security max-age=31536000
+                Permissions-Policy interest-cohort=()
+                X-Content-Type-Options nosniff
+                X-Frame-Options SAMEORIGIN
+                Referrer-Policy no-referrer
+                X-XSS-Protection "1; mode=block"
+                X-Permitted-Cross-Domain-Policies none
+                X-Robots-Tag "noindex, nofollow"
+                -X-Powered-By
+              }
 
-            # @nix_apps path_regexp ^/nix-apps
-            # root @nix_apps ${cfg.home}
+              @davClnt {
+                header_regexp User-Agent ^DavClnt
+                path /
+              }
+              redir @davClnt /remote.php/webdev{uri} 302
 
-            @davClnt {
-              header_regexp User-Agent ^DavClnt
-              path /
-            }
-            redir @davClnt /remote.php/webdev{uri} 302
+              @notify_push {
+                path /push
+                path /push/*
+              }
+              reverse_proxy @notify_push unix/${cfg.notify_push.socketPath}
 
-            @notify_push {
-              path /push
-              path /push/*
-            }
-            reverse_proxy @notify_push unix/${cfg.notify_push.socketPath}
+              # Disallow access to special files
+              @forbidden {
+                path /build/* /tests/* /config/* /lib/* /3rdparty/* /templates/* /data/*
+                path /.* /autotest* /occ* /issue* /indie* /db_* /console*
+                not path /.well-known/*
+              }
+              error @forbidden 404
 
-            # .htaccess / data / config / ... shouldn't be accessible from outside
-            @sensitive {
-              # ^/(?:build|tests|config|lib|3rdparty|templates|data)(?:$|/)
-              path /build     /build/*
-              path /tests     /tests/*
-              path /config    /config/*
-              path /lib       /lib/*
-              path /3rdparty  /3rdparty/*
-              path /templates /templates/*
-              path /data      /data/*
-        
-              # ^/(?:\.|autotest|occ|issue|indie|db_|console)
-              path /.*
-              path /autotest*
-              path /occ*
-              path /issue*
-              path /indie*
-              path /db_*
-              path /console*
-            }
-            respond @sensitive 404
+              @immutable {
+                path *.css *.js *.mjs *.svg *.gif *.png *.jpg *.ico *.wasm *.tflite
+                query v=*
+              }
+              header @immutable Cache-Control "max-age=15778463, immutable"
 
-            root * ${cfg.package}
+              @static {
+                path *.css *.js *.mjs *.svg *.gif *.png *.jpg *.ico *.wasm *.tflite
+                not query v=*
+              }
+              header @static Cache-Control "max-age=15778463"
 
-            php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
-              # Tells nextcloud to remove /index.php from URLs in links
-              env front_controller_active true
-              trusted_proxies private_ranges
-            }
-            file_server
+
+              @woff2 path *.woff2
+              header @woff2 Cache-Control "max-age=604800"
+
+              root * ${config.services.nginx.virtualHosts.${cfg.hostName}.root}
+
+              php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
+                root ${config.services.nginx.virtualHosts.${cfg.hostName}.root}
+                # Tells nextcloud to remove /index.php from URLs in links
+                env front_controller_active true
+                env modHeadersAvailable true
+
+                # https://caddy.community/t/nextcloud-high-performance-backend-notify-push/16476/15
+                trusted_proxies private_ranges ${config.localIP}
+              }
+
+              file_server
           '';
           };
         };

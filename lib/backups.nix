@@ -36,7 +36,7 @@ in {
       prometheus = {
         exporters = {
           restic = {
-            enable = true;
+            enable = config.services.prometheus.enable;
             environmentFile = config.backups.environmentFile;
             passwordFile = config.backups.passwordFile;
             repository = config.backups.remoteRepo;

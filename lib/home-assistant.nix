@@ -50,16 +50,6 @@ in {
               # calendars = [ "personal_shared_by_kt" "shared" "personal" ];
             })
           ;
-          light = [
-            {
-              platform = "hubspace";
-              username = "!secret hubspace_username";
-              password = "!secret hubspace_password";
-              debug = true;
-              friendlynames = [ "OfficeLight" ];
-              roomnames = [];
-            }
-          ];
           recorder = {
             db_url = "postgresql://${userName}@/${dbName}?host=/run/postgresql";
           };
@@ -97,6 +87,8 @@ in {
           aiogithubapi
           pyqrcode
           ical
+          isal
+          zlib-ng
         ];
         extraComponents = [
           "met"

@@ -18,7 +18,7 @@ in {
     ../../lib/fail2ban.nix
     ../../lib/grafana.nix
     ../../lib/jupyter.nix
-    ../../lib/home-assistant.nix
+    # ../../lib/home-assistant.nix
     ../../lib/kea.nix
     ../../lib/locale.nix
     ../../lib/loki.nix
@@ -69,13 +69,16 @@ in {
     };
     caddy = {
       enable = true;
-      # virtualHosts = {
-      #   "home-assistant.samgrayson.me" = {
-      #     extraConfig = ''
-      #       reverse_proxy https://home-assistant2.samgrayson.me
-      #     '';
-      #   };
-      # };
+      virtualHosts = {
+        "home-assistant.samgrayson.me" = {
+          extraConfig = ''
+            reverse_proxy https://home-assistant2.samgrayson.me {
+                header_up Host {upstream_hostport}
+                header_up X-Forwarded-Host {host}
+            }
+          '';
+        };
+      };
     };
     prometheus = {
       enable = true;

@@ -13,6 +13,11 @@
         pkgs.bash
       ];
     };
+    programs = {
+      atop = {
+        enable = true;
+      };
+    };
     nix = {
       settings = {
         trusted-users = [ "${config.sysadmin.username}" ];

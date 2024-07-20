@@ -31,6 +31,13 @@ in {
     "${toString modulesPath}/installer/sd-card/sd-image-aarch64.nix"
   ];
 
+  environment = {
+    systemPackages = [
+      pkgs.firefox
+      pkgs.libraspberrypi
+    ];
+  };
+
   externalSmtp = {
     enable = true;
     security = "ssl";
@@ -93,7 +100,7 @@ in {
     };
     home-assistant = {
       enable = true;
-      hostname = "home-assistant2.samgrayson.me";
+      hostname = "home-assistant.samgrayson.me";
       secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
     };
     dyndns = {
