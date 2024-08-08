@@ -13,7 +13,7 @@ in {
       };
     };
     runtimeTests = {
-      tests = lib.attrsets.optionalAttrs cfg.enable {
+      tests = lib.attrsets.optionalAttrs cfg.tests.enable {
         "external-smtp-test" = {
           script = "${python} ${script} ${jsonCfg}";
           date = "daily";
@@ -27,6 +27,12 @@ in {
       enable = lib.mkOption {
         type = lib.types.bool;
         description = "Whether to allow this server to send emails to users using the specified SMTP server.";
+      };
+      tests = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          description = "Whether to test the SMTP connection periodically";
+        };
       };
       host = lib.mkOption {
         type = lib.types.strMatching "[a-z0-9.-]+";

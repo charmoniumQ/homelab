@@ -7,7 +7,10 @@
       };
     };
     environment = {
-      systemPackages = with pkgs; [ flatpak ];
+      systemPackages = with pkgs; [
+        flatpak
+        at
+      ];
     };
     fonts = {
       enableDefaultPackages = true;
@@ -28,6 +31,9 @@
       };
     };
     services = {
+      atd = {
+        enable = true;
+      };
       flatpak = {
         enable = true;
       };

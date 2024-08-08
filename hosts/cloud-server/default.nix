@@ -16,6 +16,7 @@ in {
     ../../lib/externalSmtp.nix
     ../../lib/generatedFiles.nix
     ../../lib/fail2ban.nix
+    ../../lib/firefly-iii.nix
     ../../lib/grafana.nix
     ../../lib/jupyter.nix
     # ../../lib/home-assistant.nix
@@ -48,6 +49,9 @@ in {
     port = 465;
     fromUser = "sam";
     fromDomain = "samgrayson.me";
+    tests = {
+      enable = false;
+    };
   };
   automaticMaintenance = {
     enable = true;
@@ -70,18 +74,18 @@ in {
     caddy = {
       enable = true;
       virtualHosts = {
-        "home-assistant.samgrayson.me" = {
-          extraConfig = ''
-            reverse_proxy https://home-assistant2.samgrayson.me {
-                header_up Host {upstream_hostport}
-                header_up X-Forwarded-Host {host}
-            }
-          '';
-        };
+        # "home-assistant.samgrayson.me" = {
+        #   extraConfig = ''
+        #     reverse_proxy https://home-assistant2.samgrayson.me {
+        #         header_up Host {upstream_hostport}
+        #         header_up X-Forwarded-Host {host}
+        #     }
+        #   '';
+        # };
       };
     };
     prometheus = {
-      enable = true;
+      enable = lib.trivial.warn "Fix this when prometheus blackbox is restored" false;
     };
     grafana = {
       enable = true;
@@ -96,7 +100,7 @@ in {
       };
     };
     jupyter = {
-      enable = true;
+      enable = lib.trivial.warn "Fix this later" false;
     };
     vaultwarden = {
       enable = true;
@@ -114,13 +118,17 @@ in {
         {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
-          hosts = [ "cloud" "jupyter" "grafana" "nextcloud" "vaultwarden" "home-assistant"];
+          hosts = [ "cloud" "jupyter" "grafana" "nextcloud" "vaultwarden" "home-assistant" "firefly-iii" ];
           passwordFile = config.age.secrets.namecheapPassword.path;
         }
       ];
     };
     firefly-iii = {
-      enable = false;
+      enable = true;
+      settings = {
+        APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
+        DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
+      };
     };
   };
   environment = {

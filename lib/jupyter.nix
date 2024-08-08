@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
-{
+let
+  cfg = config.services.jupyter;
+in {
   config = {
     services = {
       jupyter = {
@@ -33,12 +35,11 @@
         };
       };
     };
-    systemd = {
+    systemd = lib.attrsets.optionalAttrs cfg.enable {
       services = {
         jupyter = {
           serviceConfig = {
             ExecStart = let
-              cfg = config.services.jupyter;
               package = cfg.package;
               notebookConfig = pkgs.writeText "jupyter_config.py" ''
                 ${cfg.notebookConfig}
@@ -56,7 +57,7 @@
         };
       };
     };
-    users = {
+    users = lib.attrsets.optionalAttrs cfg.enable {
       users = {
         jupyter = {
           group = "jupyter";
@@ -66,7 +67,7 @@
         jupyter = {};
       };
     };
-    reverseProxy = {
+    reverseProxy = lib.attrsets.optionalAttrs cfg.enable {
       domains = {
         "jupyter.${config.networking.domain}" = {
           port = config.services.jupyter.port;

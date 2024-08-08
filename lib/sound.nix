@@ -20,8 +20,4 @@
       };
     };
   };
-  sound = {
-    enable = false;
-    # We use pipewire instead
-  };
 }
