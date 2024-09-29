@@ -40,6 +40,9 @@
         enable = true;
       };
       displayManager = {
+        sddm = {
+          enable = true;
+        };
         autoLogin = {
           enable = true;
           user = config.sysadmin.username;
