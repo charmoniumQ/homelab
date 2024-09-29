@@ -12,6 +12,7 @@
     ../../lib/desktop/hyprland.nix
     ../../lib/fprint.nix
     ../../lib/laptop.nix
+    ../../lib/cli.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
     ../../lib/docker.nix
@@ -21,7 +22,7 @@
     ../../lib/printing.nix
     ../../lib/virtualbox.nix
     ../../lib/sound.nix
-    ../../lib/swaylock.nix
+    ../../lib/desktop/swaylock.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
     # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1

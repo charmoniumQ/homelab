@@ -4,6 +4,13 @@
     environment = {
       systemPackages = with pkgs; [ swaylock ];
     };
+    xdg = {
+      portal = {
+        wlr = {
+          enable = true;
+        };
+      };
+    };
     security = {
       pam = {
         services = {

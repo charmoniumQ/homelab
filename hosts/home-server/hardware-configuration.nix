@@ -46,7 +46,6 @@ in
       enable = true;
       driSupport = true;
       driSupport32Bit = true;
-      # TODO: test opengl and vulkan
     };
     nvidia = {
       # https://nixos.wiki/wiki/Nvidia

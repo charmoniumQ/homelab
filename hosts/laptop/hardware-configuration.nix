@@ -22,7 +22,9 @@ in {
     };
   };
   environment = {
-    systemPackages = with pkgs; [ glxinfo gnome.gnome-power-manager ];
+    systemPackages = with pkgs; [
+      glxinfo
+    ];
   };
   hardware = {
     enableAllFirmware = true;
@@ -38,7 +40,8 @@ in {
     };
     opengl = {
       enable = true;
-      # TODO: test
+      driSupport = true;
+      driSupport32Bit = true;
     };
   };
 
@@ -74,8 +77,8 @@ in {
       };
       grub = {
         enable = true;
-	device = "nodev";
-	efiSupport = true;
+        device = "nodev";
+        efiSupport = true;
       };
       # systemd-boot = {
       #   enable = true;
