@@ -1,9 +1,14 @@
 /*
 Configures NixOS system updates, Nixpkgs channel, and Nix command.
 */
-{ pkgs, lib, self, config, ... }:
+{ system, pkgs, lib, self, config, nix-alien, ... }:
 {
   config = {
+    programs = {
+      nix-ld = {
+        enable = true;
+      };
+    };
     system = {
       # TODO: enable
       autoUpgrade = {
@@ -63,6 +68,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
     environment = {
       systemPackages = [
         pkgs.gitMinimal # Needed to make Nix flakes work
+        nix-alien.packages.${config.nixpkgs.hostPlatform.system}.nix-alien
       ];
     };
   };

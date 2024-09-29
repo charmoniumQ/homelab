@@ -8,6 +8,7 @@
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
     ../../lib/desktop/generic.nix
+    ../../lib/desktop/kde.nix
     ../../lib/desktop/hyprland.nix
     ../../lib/fprint.nix
     ../../lib/laptop.nix

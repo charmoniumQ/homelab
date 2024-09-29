@@ -5,10 +5,10 @@
     };
   };
   services = {
-    tlp = {
-      enable = true;
-      settings = {};
-    };
+    #tlp = {
+    #  enable = true;
+    #  settings = {};
+    #};
     logind = {
       lidSwitch = "suspend";
       powerKey = "hibernate";
