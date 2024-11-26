@@ -213,20 +213,11 @@ in
               }
               header @immutable Cache-Control "max-age=15778463, immutable"
 
-              @static {
-                path *.css *.js *.mjs *.svg *.gif *.png *.jpg *.ico *.wasm *.tflite
-                not query v=*
-              }
-              header @static Cache-Control "max-age=15778463"
-
-
-              @woff2 path *.woff2
-              header @woff2 Cache-Control "max-age=604800"
-
               root * ${webroot}
 
               php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
                 root ${webroot}
+
                 # Tells nextcloud to remove /index.php from URLs in links
                 env front_controller_active true
                 env modHeadersAvailable true

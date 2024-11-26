@@ -37,8 +37,6 @@ in {
         "${hostname}" = {
           extraConfig = ''
               encode gzip zstd
-              header Strict-Transport-Security max-age=15552000;
-              try_files {path} {path}/ {path}/index.php?{query}
               root * ${config.services.firefly-iii.package}/public
               php_fastcgi unix/${config.services.phpfpm.pools.firefly-iii.socket} { }
               file_server

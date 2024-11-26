@@ -34,6 +34,7 @@ in {
     phpfpm = {
       pools = {
         grocy = {
+          user = lib.mkForce "grocy";
           group = lib.mkForce "grocy";
           inherit (cfg.phpfpm) settings;
           phpEnv = {
@@ -98,8 +99,9 @@ in {
           extraConfig = ''
             # Based on the working ./nextcloud.nix config
             # Also see https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-apps/grocy.nix
+            # With help from https://srp.life/p/setting-up-grocy-on-caddy-with-lets-encrypt-support
 
-            encode gzip zstd
+            encode zstd gzip
 
             header {
               Strict-Transport-Security max-age=31536000
@@ -114,30 +116,28 @@ in {
             }
 
             @immutable {
-              path *.css *.js *.mjs *.svg *.gif *.png *.jpg *.ico *.wasm *.tflite
+              path *.css *.js *.mjs *.svg *.gif *.png *.jpe?g *.ico *.wasm *.tflite *.woff2?
               query v=*
             }
-            header @immutable Cache-Control "max-age=15778463, immutable"
-
-            @static {
-              path *.css *.js *.mjs *.svg *.gif *.png *.jpg *.ico *.wasm *.tflite
-              not query v=*
-            }
-            header @static Cache-Control "max-age=15778463"
-
-
-            @woff2 path *.woff2
-            header @woff2 Cache-Control "max-age=604800"
-
-            root * ${config.services.nginx.virtualHosts.${cfg.hostName}.root}
-
-            php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
-              root ${config.services.nginx.virtualHosts.${cfg.hostName}.root}
-              # Tells nextcloud to remove /index.php from URLs in links
-              env front_controller_active true
-              env modHeadersAvailable true
+            header @immutable {
+                # https://github.com/NixOS/nixpkgs/blob/nixos-unstable/nixos/modules/services/web-apps/grocy.nix
+                Cache-Control "public, max-age=15778463";
+                X-Content-Type-Options nosniff;
+                X-XSS-Protection "1; mode=block";
+                X-Robots-Tag none;
+                X-Download-Options noopen;
+                X-Permitted-Cross-Domain-Policies none;
+                Referrer-Policy no-referrer;
+                Cache-Control "max-age=15778463, immutable"
             }
 
+            @php path *.php
+            php_fastcgi @php unix/${config.services.phpfpm.pools.grocy.socket} {
+              root ${cfg.package}/public
+            }
+
+            try_files {path} /index.php?{query} # url rewriting
+            root * ${cfg.package}/public
             file_server
         '';
         };
