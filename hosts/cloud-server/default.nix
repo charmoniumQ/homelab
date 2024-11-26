@@ -71,14 +71,8 @@ in {
   };
   services = {
     paperless = {
-      enable = false;
-      passwordFile = config.age.secrets.paperless-password.path;
-    };
-    grocy = {
       enable = true;
-    };
-    nginx = {
-      enable = false;
+      passwordFile = config.age.secrets.paperless-password.path;
     };
     caddy = {
       enable = true;

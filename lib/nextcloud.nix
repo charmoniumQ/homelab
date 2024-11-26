@@ -268,7 +268,7 @@ in
       };
     };
     dns = {
-      localDomains = [ "${config.services.nextcloud.hostName}" ];
+      localDomains = [ "${cfg.hostName}" ];
     };
     users = lib.attrsets.optionalAttrs cfg.enable {
       groups = {
@@ -298,7 +298,7 @@ in
     #       script = ''
     #         ${services.redis.package}/bin/redis-cli -s ${config.services.redis.servers.nextcloud.unixSocket} monitor > log &
     #         monitor_pid=$?
-    #         ${pkgs.curl}/bin/curl https://${ocnfig.services.nextcloud.hostName}/
+    #         ${pkgs.curl}/bin/curl https://${cfg.hostName}/
     #         kill $?
     #       '';
     #     };

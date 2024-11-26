@@ -1,15 +1,16 @@
 { config, lib, ... }: let
-  port = 37152;
+  cfg = config.services.paperless;
   smtp = config.externalSmtp;
 in lib.mkIf config.services.paperless.enable {
   services = {
     paperless = {
-      extraConfig = {
+      port = 37152;
+      settings = {
         PAPERLESS_DBENGINE = "postgresql";
         PAPERLESS_DBHOST = "/run/postgresql";
         PAPERLESS_DBNAME = "paperless";
         PAPERLESS_DBUSER = "paperless";
-        PAPERLESS_REDIS = "redis:///run/redis/redis.sock";
+        PAPERLESS_REDIS = "unix:///run/redis-paperless/redis.sock";
         PAPERLESS_URL = "https://paperless.${config.networking.domain}";
         PAPERLESS_EMAIL_HOST = smtp.host;
         PAPERLESS_EMAIL_PORT = smtp.port;
@@ -28,11 +29,22 @@ in lib.mkIf config.services.paperless.enable {
         };
       };
     };
+    postgresql = {
+      enable = true;
+      ensureDatabases = [ "paperless" ];
+      ensureUsers = [
+        {
+          name = "paperless";
+          ensureDBOwnership = true;
+        }
+      ];
+    };
   };
   reverseProxy = {
     domains = {
       "paperless.${config.networking.domain}" = {
-        inherit port;
+        inherit (cfg) port;
+        host = "127.0.0.1";
       };
     };
   };
