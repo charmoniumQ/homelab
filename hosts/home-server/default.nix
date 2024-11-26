@@ -8,6 +8,7 @@ in {
     ../../lib/automaticMaintenance.nix
     ../../lib/backups.nix
     ../../lib/caddy.nix
+    ../../lib/deployment.nix
     ../../lib/dns.nix
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
@@ -35,6 +36,10 @@ in {
     ../../lib/unbound.nix
     ../../lib/zfs.nix
   ];
+  deployment = {
+    hostName = "home.samgrayson.me";
+    sudo = true;
+  };
   sysadmin = {
     hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
   };

@@ -25,8 +25,51 @@ let
       fi
     '';
     });
+
+  # Copied from
+  # https://github.com/NixOS/nixpkgs/blob/nixos-24.05/nixos/modules/services/web-apps/nextcloud.nix#L47
+
   occ = "/run/current-system/sw/bin/nextcloud-occ";
   cfg = config.services.nextcloud;
+
+  appStores = {
+    # default apps bundled with pkgs.nextcloudXX, e.g. files, contacts
+    apps = {
+      enabled = true;
+      writable = false;
+    };
+    # apps installed via cfg.extraApps
+    nix-apps = {
+      enabled = cfg.extraApps != { };
+      linkTarget = pkgs.linkFarm "nix-apps"
+        (lib.mapAttrsToList (name: path: { inherit name path; }) cfg.extraApps);
+      writable = false;
+    };
+    # apps installed via the app store.
+    store-apps = {
+      enabled = cfg.appstoreEnable == null || cfg.appstoreEnable;
+      linkTarget = "${cfg.home}/store-apps";
+      writable = true;
+    };
+  };
+
+  webroot = pkgs.runCommandLocal
+    "${cfg.package.name or "nextcloud"}-with-apps"
+    { }
+    ''
+      mkdir $out
+      ln -sfv "${cfg.package}"/* "$out"
+      ${lib.concatStrings
+        (lib.mapAttrsToList (name: store: lib.optionalString (store.enabled && store?linkTarget) ''
+          if [ -e "$out"/${name} ]; then
+            echo "Didn't expect ${name} already in $out!"
+            exit 1
+          fi
+          ln -sfTv ${store.linkTarget} "$out"/${name}
+        '') appStores)}
+    '';
+
+
 in
 {
   config = {
@@ -116,7 +159,7 @@ in
         };
       };
       nginx = {
-        enable = false;
+        enable = lib.mkForce false;
       };
       caddy = lib.attrsets.optionalAttrs cfg.enable {
         virtualHosts = {
@@ -180,10 +223,10 @@ in
               @woff2 path *.woff2
               header @woff2 Cache-Control "max-age=604800"
 
-              root * ${config.services.nginx.virtualHosts.${cfg.hostName}.root}
+              root * ${webroot}
 
               php_fastcgi unix/${config.services.phpfpm.pools.nextcloud.socket} {
-                root ${config.services.nginx.virtualHosts.${cfg.hostName}.root}
+                root ${webroot}
                 # Tells nextcloud to remove /index.php from URLs in links
                 env front_controller_active true
                 env modHeadersAvailable true

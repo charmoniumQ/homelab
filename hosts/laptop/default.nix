@@ -9,7 +9,9 @@
     ../../lib/automaticMaintenance.nix
     ../../lib/desktop/generic.nix
     ../../lib/desktop/kde.nix
+    ../../lib/desktop/lxqt.nix
     ../../lib/desktop/hyprland.nix
+    ../../lib/deployment.nix
     ../../lib/fprint.nix
     ../../lib/laptop.nix
     ../../lib/cli.nix
@@ -28,9 +30,19 @@
     # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1
   ];
 
+  deployment = {
+    sudo = true;
+    hostName = "localhost";
+  };
+
   networking = {
     firewall = {
       enable = true;
+    };
+    enableIPv6 = true;
+    useDHCP = true;
+    dhcpcd = {
+      enable = false;
     };
   };
 
@@ -71,6 +83,7 @@
   services = {
     pia = {
       authUserPassFile = config.age.secrets.pia-auth-user-pass.path;
+      enable = true;
     };
   };
 

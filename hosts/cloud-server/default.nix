@@ -12,12 +12,14 @@ in {
     ../../lib/backups.nix
     ../../lib/caddy.nix
     ../../lib/dns.nix
+    ../../lib/deployment.nix
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
     ../../lib/generatedFiles.nix
     ../../lib/fail2ban.nix
     ../../lib/firefly-iii.nix
     ../../lib/grafana.nix
+    ../../lib/grocy.nix
     ../../lib/jupyter.nix
     # ../../lib/home-assistant.nix
     ../../lib/kea.nix
@@ -37,6 +39,10 @@ in {
     ../../lib/vaultwarden.nix
     # ../../lib/unbound.nix
   ];
+  deployment = {
+    sudo = true;
+    hostName = "cloud.samgrayson.me";
+  };
   sysadmin = {
     hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
   };
@@ -68,6 +74,9 @@ in {
       enable = false;
       passwordFile = config.age.secrets.paperless-password.path;
     };
+    grocy = {
+      enable = true;
+    };
     nginx = {
       enable = false;
     };
@@ -93,7 +102,7 @@ in {
     };
     nextcloud = {
       enable = true;
-      package = pkgs.nextcloud29;
+      package = pkgs.nextcloud30;
       hostName = "nextcloud.samgrayson.me";
       config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
         adminpassFile = config.age.secrets.nextcloudAdminpass.path;
@@ -118,17 +127,24 @@ in {
         {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
-          hosts = [ "cloud" "jupyter" "grafana" "nextcloud" "vaultwarden" "home-assistant" "firefly-iii" ];
+          hosts = [
+            "cloud"
+            "jupyter"
+            "grafana"
+            "nextcloud"
+            "vaultwarden"
+            "home-assistant"
+          ] ++ lib.lists.optional config.services.firefly-iii.enable "firefly-iii";
           passwordFile = config.age.secrets.namecheapPassword.path;
         }
       ];
     };
     firefly-iii = {
-      enable = true;
-      settings = {
-        APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
-        DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
-      };
+      enable = false;
+      # settings = {
+      #   APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
+      #   DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
+      # };
     };
   };
   environment = {

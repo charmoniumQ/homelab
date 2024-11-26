@@ -32,7 +32,7 @@ in {
         MAIL_ENCRYPTION = if config.externalSmtp.security == "ssl" then "tls" else null;
       };
     };
-    caddy = {
+    caddy = lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
       virtualHosts = {
         "${hostname}" = {
           extraConfig = ''
@@ -46,7 +46,7 @@ in {
         };
       };
     };
-    postgresql = {
+    postgresql = lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
       enable = true;
       ensureDatabases = [ config.services.firefly-iii.settings.DB_DATABASE ];
       ensureUsers = [ {
@@ -55,10 +55,10 @@ in {
       } ];
     };
   };
-  dns = {
+  dns = lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
     localDomains = [ hostname ];
   };
-  users = {
+  users = lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
     users = {
       "${config.services.firefly-iii.user}" = {
         isSystemUser = true;

@@ -7,29 +7,35 @@ in {
     ./hardware-configuration.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
-    ../../lib/backups.nix
-    ../../lib/caddy.nix
+    # ../../lib/backups.nix
+    # ../../lib/caddy.nix
     ../../lib/desktop/generic.nix
     ../../lib/desktop/lxqt.nix
-    ../../lib/dyndns.nix
-    ../../lib/externalSmtp.nix
+    ../../lib/deployment.nix
+    # ../../lib/dyndns.nix
+    # ../../lib/externalSmtp.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
     # ../../lib/docker.nix
     ../../lib/fwupd.nix
-    ../../lib/generatedFiles.nix
-    ../../lib/home-assistant.nix
+    # ../../lib/generatedFiles.nix
+    # ../../lib/home-assistant.nix
     ../../lib/kodi.nix
     ../../lib/networkedNode.nix
     ../../lib/nixConf.nix
     ../../lib/pia.nix
-    ../../lib/reverseProxy.nix
+    # ../../lib/reverseProxy.nix
     ../../lib/runtimeTests.nix
     ../../lib/sound.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
     "${toString modulesPath}/installer/sd-card/sd-image-aarch64.nix"
   ];
+
+  deployment = {
+    hostName = "192.168.1.17";
+    sudo = true;
+  };
 
   environment = {
     systemPackages = [
@@ -38,16 +44,16 @@ in {
     ];
   };
 
-  externalSmtp = {
-    enable = true;
-    security = "ssl";
-    authentication = true;
-    passwordFile = config.age.secrets.smtpPass.path;
-    host = "mail.runbox.com";
-    port = 465;
-    fromUser = "sam";
-    fromDomain = "samgrayson.me";
-  };
+  # externalSmtp = {
+  #   enable = true;
+  #   security = "ssl";
+  #   authentication = true;
+  #   passwordFile = config.age.secrets.smtpPass.path;
+  #   host = "mail.runbox.com";
+  #   port = 465;
+  #   fromUser = "sam";
+  #   fromDomain = "samgrayson.me";
+  # };
 
   sdImage = {
     imageBaseName = "tvpi";
@@ -92,28 +98,28 @@ in {
   };
 
   services = {
-    caddy = {
-      enable = true;
-    };
+    # caddy = {
+    #   enable = true;
+    # };
     pia = {
       authUserPassFile = secrets.pia-auth-user-pass.path;
     };
-    home-assistant = {
-      enable = true;
-      hostname = "home-assistant.samgrayson.me";
-      secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
-    };
-    dyndns = {
-      entries = [
-        {
-          protocol = "namecheap";
-          server = "dynamicdns.park-your-domain.com";
-          hosts = [ "home-assistant2" ];
-          domain = "samgrayson.me";
-          passwordFile = secrets.namecheapPassword.path;
-        }
-      ];
-    };
+    # home-assistant = {
+    #   enable = true;
+    #   hostname = "home-assistant.samgrayson.me";
+    #   secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
+    # };
+    # dyndns = {
+    #   entries = [
+    #     {
+    #       protocol = "namecheap";
+    #       server = "dynamicdns.park-your-domain.com";
+    #       hosts = [ "home-assistant2" ];
+    #       domain = "samgrayson.me";
+    #       passwordFile = secrets.namecheapPassword.path;
+    #     }
+    #   ];
+    # };
   };
 
   # Suppress error when switching
@@ -128,13 +134,13 @@ in {
     };
   };
 
-  backups = {
-    enable = true;
-    enableTimers = false;
-    passwordFile = secrets.resticPassword.path;
-    environmentFile = secrets.resticEnvironmentFile.path;
-    remoteRepo = "b2:charmonium-backups:home-server";
-  };
+  # backups = {
+  #   enable = true;
+  #   enableTimers = false;
+  #   passwordFile = secrets.resticPassword.path;
+  #   environmentFile = secrets.resticEnvironmentFile.path;
+  #   remoteRepo = "b2:charmonium-backups:home-server";
+  # };
 
   age = {
     secrets = {
