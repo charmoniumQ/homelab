@@ -7,24 +7,24 @@ in {
     ./hardware-configuration.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
-    # ../../lib/backups.nix
-    # ../../lib/caddy.nix
+    ../../lib/backups.nix
+    ../../lib/caddy.nix
     ../../lib/desktop/generic.nix
     ../../lib/desktop/lxqt.nix
     ../../lib/deployment.nix
-    # ../../lib/dyndns.nix
+    ../../lib/dyndns.nix
     # ../../lib/externalSmtp.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
     # ../../lib/docker.nix
     ../../lib/fwupd.nix
-    # ../../lib/generatedFiles.nix
-    # ../../lib/home-assistant.nix
+    ../../lib/generatedFiles.nix
+    ../../lib/home-assistant.nix
     ../../lib/kodi.nix
     ../../lib/networkedNode.nix
     ../../lib/nixConf.nix
-    ../../lib/pia.nix
-    # ../../lib/reverseProxy.nix
+    # ../../lib/pia.nix
+    ../../lib/reverseProxy.nix
     ../../lib/runtimeTests.nix
     ../../lib/sound.nix
     ../../lib/ssh.nix
@@ -98,28 +98,28 @@ in {
   };
 
   services = {
-    # caddy = {
-    #   enable = true;
-    # };
-    pia = {
-      authUserPassFile = secrets.pia-auth-user-pass.path;
+    caddy = {
+      enable = true;
     };
-    # home-assistant = {
-    #   enable = true;
-    #   hostname = "home-assistant.samgrayson.me";
-    #   secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
+    # pia = {
+    #   authUserPassFile = secrets.pia-auth-user-pass.path;
     # };
-    # dyndns = {
-    #   entries = [
-    #     {
-    #       protocol = "namecheap";
-    #       server = "dynamicdns.park-your-domain.com";
-    #       hosts = [ "home-assistant2" ];
-    #       domain = "samgrayson.me";
-    #       passwordFile = secrets.namecheapPassword.path;
-    #     }
-    #   ];
-    # };
+    home-assistant = {
+      enable = true;
+      hostname = "home-assistant.samgrayson.me";
+      secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
+    };
+    dyndns = {
+      entries = [
+        {
+          protocol = "namecheap";
+          server = "dynamicdns.park-your-domain.com";
+          hosts = [ "home-assistant2" ];
+          domain = "samgrayson.me";
+          passwordFile = secrets.namecheapPassword.path;
+        }
+      ];
+    };
   };
 
   # Suppress error when switching
@@ -134,13 +134,13 @@ in {
     };
   };
 
-  # backups = {
-  #   enable = true;
-  #   enableTimers = false;
-  #   passwordFile = secrets.resticPassword.path;
-  #   environmentFile = secrets.resticEnvironmentFile.path;
-  #   remoteRepo = "b2:charmonium-backups:home-server";
-  # };
+  backups = {
+    enable = true;
+    enableTimers = false;
+    passwordFile = secrets.resticPassword.path;
+    environmentFile = secrets.resticEnvironmentFile.path;
+    remoteRepo = "b2:charmonium-backups:home-server";
+  };
 
   age = {
     secrets = {
@@ -158,9 +158,9 @@ in {
       resticEnvironmentFile = {
         file = ../../secrets/restic.env.age;
       };
-      pia-auth-user-pass = {
-        file = ../../secrets/pia-auth-user-pass.age;
-      };
+      # pia-auth-user-pass = {
+      #   file = ../../secrets/pia-auth-user-pass.age;
+      # };
     } // lib.attrsets.optionalAttrs config.services.home-assistant.enable {
       homeAssistantSecretsYaml = {
         file = ../../secrets/home-assistant-secrets.yaml.age;

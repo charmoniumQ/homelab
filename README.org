@@ -44,6 +44,12 @@ https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.
 - https://github.com/Ex-32/nixos-config
 - https://github.com/ryan4yin/nix-config
 
+** Grocy UPC databases
+Do they have 4099100042856?
+- https://www.barcodelookup.com/4099100042856
+- https://world.openfoodfacts.org/product/4099100042856/whole-wheat-l-oven-fresh
+- https://github.com/Semantics3 ???
+
 ** TODO-items
 - [ ] Switch to Sops-nix
   - https://github.com/Mic92/sops-nix
@@ -60,43 +66,4 @@ https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.
   - https://github.com/NixOS/nixpkgs/commit/6cd896f96749e7932b4efb46c8cd92a2d6577d13
   - https://github.com/NixOS/nixpkgs/pull/184362
 
-- [ ] Get Betterbird to work with CalDAV
-  - My bug:
-
-#+NAME: Error stacktrace
-#+BEGIN_SRC: TEXT
-uncaught exception: ParserError: invalid line (no token ";" or ":") "America/Chicago[2023c]" 5 CalStorageItemModel.jsm:1045:39
-#setDateParamHelper resource:///modules/calendar/CalStorageItemModel.jsm:1045
-#prepareEvent resource:///modules/calendar/CalStorageItemModel.jsm:1107
-#prepareItem resource:///modules/calendar/CalStorageItemModel.jsm:1093
-addItem resource:///modules/calendar/CalStorageItemModel.jsm:1070
-addItem resource:///modules/calendar/CalStorageCachedItemModel.jsm:180
-adoptItem resource:///modules/CalStorageCalendar.jsm:235
-AsyncFunctionNext self-hosted:852
-
-Error: zone is nullIcal.jsm:5588:26
-convertToZone resource:///modules/calendar/Ical.jsm:5588
-getInTimezone resource:///modules/CalDateTime.jsm:141
-unwrapSetter resource:///modules/calendar/Ical.jsm:29
-unwrap resource:///modules/calendar/Ical.jsm:25
-now resource:///modules/calendar/utils/calDateTimeUtils.jsm:62
-flush resource:///modules/CalDeletedItems.jsm:50
-onLoad resource:///modules/CalDeletedItems.jsm:198
-notify resource:///modules/calendar/utils/calDataUtils.jsm:39
-notifyCalendarObservers resource:///modules/CalCalendarManager.jsm:674
-onLoad resource:///modules/CalCalendarManager.jsm:712
-notify resource:///modules/calendar/utils/calDataUtils.jsm:39
-notify resource:///modules/calendar/utils/calDataUtils.jsm:66
-onLoad resource:///components/calCachedCalendar.js:68
-downstreamRefresh resource:///components/calCachedCalendar.js:634
-InterpretGeneratorResume self-hosted:1455
-AsyncFunctionNext self-hosted:852
-#+END_SRC
-
-  - TBird bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1790071
-  - TBird bug 2: https://bugzilla.mozilla.org/show_bug.cgi?id=1843007
-  - ICU bug: https://unicode-org.atlassian.net/browse/ICU-22132
-  - NixOS Tbird issue: https://github.com/NixOS/nixpkgs/pull/242970#issuecomment-1631948560
-  - NixOS Tbird patch: https://github.com/NixOS/nixpkgs/pull/243179
-  - TBird package: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/networking/mailreaders/thunderbird/packages.nix
-  - BBird package: https://github.com/NixOS/nixpkgs/blob/nixos-unstable/pkgs/applications/networking/mailreaders/betterbird/default.nix
+- https://github.com/DoTheEvo/selfhosted-apps-docker

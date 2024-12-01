@@ -33,16 +33,15 @@ in (flake-utils.lib.eachDefaultSystem (system: {
     value = {
       type = "app";
       program = let
-        sudo = if cfg.deployment.sudo && cfg.deployment.hostName == "localhost" then "${pkgs.sudo}/bin/sudo" else "";
+        sudo = if cfg.deployment.sudo && cfg.deployment.hostName == "localhost" then "sudo" else "";
         targetHost = if cfg.deployment.hostName == "localhost" then "" else "--target-host ${cfg.deployment.username}@${cfg.deployment.hostName}";
         useRemoteSudo = if cfg.deployment.sudo && cfg.deployment.hostName != "localhost" then "--use-remote-sudo" else "";
         p = pkgs.writeShellScriptBin "script" ''
           set -eux -o pipefail
-          # ${pkgs.nh}/bin/nh os switch \
-          #   --verbose \
-          #   --hostname ${host} \
-          #   . \
-          #   --  --show-trace
+          ${pkgs.nom}/bin/nom build \
+            --verbose \
+            ".#nixosConfigurations.${host}.config.system.build.toplevel" \
+            -- --show-trace
           ${sudo} nixos-rebuild switch --verbose --show-trace --flake ".#${host}" ${targetHost} ${useRemoteSudo}
         '';
       in "${p}/bin/script";

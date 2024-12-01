@@ -134,11 +134,11 @@ in {
       ];
     };
     firefly-iii = {
-      enable = false;
-      # settings = {
-      #   APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
-      #   DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
-      # };
+      enable = true;
+      settings = {
+        APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
+        DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
+      };
     };
   };
   environment = {
