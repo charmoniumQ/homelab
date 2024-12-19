@@ -16,7 +16,7 @@ in {
       user = "firefly";
       group = "firefly";
       # TODO: enable redis acceleration
-      settings = {
+      settings = lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
         APP_ENV = "local";
         # APP_KEY_FILE set by client
         APP_URL = "https://${hostname}";
@@ -27,13 +27,25 @@ in {
         DB_USERNAME = config.services.firefly-iii.user;
         # db name must be same as db username because of ensureDBOwnership
         DB_DATABASE = config.services.firefly-iii.user;
-        MAIL_MAILER = "smtp";
-        MAIL_HOST = config.externalSmtp.host;
-        MAIL_PORT = config.externalSmtp.port;
-        MAIL_FROM = config.externalSmtp.username;
-        MAIL_USERNAME = config.externalSmtp.username;
-        MAIL_PASSWORD = lib.trivial.warn "Fix this so it actually works" "";
-        MAIL_ENCRYPTION = if config.externalSmtp.security == "ssl" then "tls" else null;
+        # MAIL_MAILER = "smtp";
+        # MAIL_HOST = config.externalSmtp.host;
+        # MAIL_PORT = config.externalSmtp.port;
+        # MAIL_FROM = config.externalSmtp.username;
+        # MAIL_USERNAME = config.externalSmtp.username;
+        # MAIL_PASSWORD = lib.trivial.warn "Fix this so it actually works" "";
+        # MAIL_ENCRYPTION = if config.externalSmtp.security == "ssl" then "tls" else null;
+      };
+    };
+    phpfpm = lib.attrsets.optionalAttrs config.services.firefly-iii.enable {
+      pools = {
+        firefly-iii = {
+          settings = {
+            "listen.owner" = lib.mkForce "caddy";
+            "listen.group" = lib.mkForce "caddy";
+            "listen.mode" = "0660";
+            "clear_env" = "no";
+          } // cfg.poolConfig;
+        };
       };
     };
     caddy = lib.attrsets.optionalAttrs cfg.enable {

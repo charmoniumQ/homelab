@@ -38,7 +38,7 @@
   };
 
   networking = {
-    hostName = "remote";
+    hostName = "cloud-server";
     hostId = "5204291d";
     networkmanager = {
       enable = true;

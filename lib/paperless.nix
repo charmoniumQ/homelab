@@ -1,10 +1,19 @@
-{ config, lib, ... }: let
+{ pkgs, config, lib, ... }: let
   cfg = config.services.paperless;
   smtp = config.externalSmtp;
 in lib.mkIf config.services.paperless.enable {
   services = {
     paperless = {
       port = 37152;
+      package = pkgs.paperless-ngx.override (paperless-ngx-old-attrs: {
+        python3 = paperless-ngx-old-attrs.python3.override {
+          packageOverrides = self: pypkgs-old: {
+            psycopg = pypkgs-old.psycopg.overridePythonAttrs {
+              pytestCheckPhase = ''true'';
+            };
+          };
+        };
+      });
       settings = {
         PAPERLESS_DBENGINE = "postgresql";
         PAPERLESS_DBHOST = "/run/postgresql";

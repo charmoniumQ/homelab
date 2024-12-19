@@ -8,7 +8,7 @@
     ];
   };
   time = {
-    timeZone = lib.mkDefault "America/Chicago";
+    timeZone = lib.mkForce "America/Chicago";
   };
   locale = {
     unit_system = lib.mkDefault "us_customary";

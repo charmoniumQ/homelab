@@ -38,10 +38,24 @@ in (flake-utils.lib.eachDefaultSystem (system: {
         useRemoteSudo = if cfg.deployment.sudo && cfg.deployment.hostName != "localhost" then "--use-remote-sudo" else "";
         p = pkgs.writeShellScriptBin "script" ''
           set -eux -o pipefail
-          ${pkgs.nom}/bin/nom build \
-            --verbose \
-            ".#nixosConfigurations.${host}.config.system.build.toplevel" \
-            -- --show-trace
+          skip_nom=
+          while [[ $# -gt 0 ]]; do
+            case $1 in
+              -s|--skip)
+                skip_nom=1
+                shift
+                ;;
+              *)
+                echo 'Unknown arg'
+                exit 1
+                ;;
+            esac
+          done
+          if [ -z $skip_nom ]; then
+            ${pkgs.nix-output-monitor}/bin/nom build \
+              --verbose \
+              ".#nixosConfigurations.${host}.config.system.build.toplevel"
+          fi
           ${sudo} nixos-rebuild switch --verbose --show-trace --flake ".#${host}" ${targetHost} ${useRemoteSudo}
         '';
       in "${p}/bin/script";

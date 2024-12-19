@@ -11,7 +11,7 @@
           resources = pkgs.fetchzip {
             name = "pia-vpn-config";
             url = "https://www.privateinternetaccess.com/openvpn/openvpn.zip";
-            sha256 = "sha256-ZA8RS6eIjMVQfBt+9hYyhaq8LByy5oJaO9Ed+x8KtW8=";
+            hash = "sha256-ZA8RS6eIjMVQfBt+9hYyhaq8LByy5oJaO9Ed+x8KtW8=";
             stripRoot = false;
           };
           fixup = (builtins.replaceStrings [ ".ovpn" "_" ] [ "" "-" ]);

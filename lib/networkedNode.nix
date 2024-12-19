@@ -9,6 +9,7 @@
       systemPackages = [
         pkgs.tmux
         pkgs.rsync
+        pkgs.curl
       ];
     };
     programs = {

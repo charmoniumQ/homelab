@@ -30,9 +30,9 @@ in
     home-assistant = {
       zigbeeDevice = "/dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_e8f237a26645ed118378c68f0a86e0b4-if00-port0";
     };
-    dhcp-server = {
-      interface = "enp4s0";
-    };
+    # dhcp-server = {
+    #   interface = "enp4s0";
+    # };
   };
 
   hardware = {
@@ -44,7 +44,6 @@ in
     };
     opengl = {
       enable = true;
-      driSupport = true;
       driSupport32Bit = true;
     };
     nvidia = {

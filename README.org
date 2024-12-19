@@ -43,14 +43,22 @@ https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.
 - https://github.com/gvolpe/nix-config/blob/master/flake.nix
 - https://github.com/Ex-32/nixos-config
 - https://github.com/ryan4yin/nix-config
+- https://github.com/jdheyburn/nixos-configs
 
 ** Grocy UPC databases
 Do they have 4099100042856?
 - https://www.barcodelookup.com/4099100042856
 - https://world.openfoodfacts.org/product/4099100042856/whole-wheat-l-oven-fresh
 - https://github.com/Semantics3 ???
+- http://opengtindb.org/
+- https://github.com/Forceu/barcodebuddy
+
+** Other services
+- https://www.reddit.com/r/selfhosted/comments/196nke8/how_i_left_the_cloud/
 
 ** TODO-items
+- [ ] Don't set listener.group = "caddy". Instead set the application's user to be in the group caddy.
+
 - [ ] Switch to Sops-nix
   - https://github.com/Mic92/sops-nix
 

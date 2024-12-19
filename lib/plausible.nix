@@ -1,20 +1,30 @@
-{ config, ... }:
-{
+{ config, lib, ... }:
+let
+  cfg = config.services.plausible;
+in {
   services = {
     plausible = {
       enable = true;
-      adminUser = {
-        # activate is used to skip the email verification of the admin-user that's
-        # automatically created by plausible. This is only supported if
-        # postgresql is configured by the module. This is done by default, but
-        # can be turned off with services.plausible.database.postgres.setup.
-        activate = true;
-        email = config.sysadmin.email;
+      mail = {
+        email = "${config.externalSmtp.fromUser}@${config.externalSmtp.fromDomain}";
+        smtp = {
+          enableSSL = true;
+          hostAddr = "${config.externalSmtp.host}";
+          hostPort = config.externalSmtp.port;
+          passwordFile = "${config.externalSmtp.passwordFile}";
+          user = "${config.externalSmtp.fromUser}";
+        };
       };
       server = {
-        baseUrl = "https://plausible-analytics.${config.networking.domain}";
-        # secretKeybaseFile = "/run/secrets/plausible-secret-key-base";
-        # Run `openssl rand -base64 64` to generate the secret
+        baseUrl = "https://plausible.${config.networking.domain}";
+        port = lib.trace "TODO: move to hash" 49321;
+      };
+    };
+  };
+  reverseProxy = lib.attrsets.optionalAttrs cfg.enable {
+    domains = {
+      "plausible.${config.networking.domain}" = {
+        port = cfg.server.port;
       };
     };
   };

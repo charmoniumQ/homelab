@@ -73,9 +73,9 @@
                  pkgs.pv # for flashing SD cards
                  pkgs.pwgen
                  pkgs.apacheHttpd # for htpasswd
-                 pkgs.restic
-                 pkgs.nixos-rebuild
-                 pkgs.nom
+                 pkgs.restic # for reading backups
+                 pkgs.nixos-rebuild # latest version
+                 pkgs.nix-output-monitor
                  pkgs.nh
                  disko.packages."${system}".default
                  agenix.packages."${system}".default
@@ -86,7 +86,7 @@
                    pypkgs.types-retry
                    pypkgs.types-requests
                    pypkgs.black
-                 ]))
+                 ])) # for the scripts in this repo
                ];
              };
            };

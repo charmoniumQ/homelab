@@ -9,35 +9,30 @@ in {
     ../../lib/backups.nix
     ../../lib/caddy.nix
     ../../lib/deployment.nix
-    ../../lib/dns.nix
+    ../../lib/desktop/generic.nix
+    ../../lib/desktop/lxqt.nix
+    ../../lib/deployment.nix
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
     ../../lib/fail2ban.nix
     ../../lib/fwupd.nix
     ../../lib/generatedFiles.nix
-    ../../lib/grafana.nix
-    ../../lib/jupyter.nix
     ../../lib/home-assistant.nix
-    ../../lib/kea.nix
+    ../../lib/jellyfin.nix
+    ../../lib/kodi.nix
+    ../../lib/mpd.nix
     ../../lib/locale.nix
-    ../../lib/loki.nix
     ../../lib/mosquitto.nix
     ../../lib/networkedNode.nix
-    ../../lib/nextcloud.nix
     ../../lib/nixConf.nix
     ../../lib/runtimeTests.nix
-    ../../lib/paperless.nix
-    ../../lib/prometheus.nix
-    ../../lib/promtail.nix
     ../../lib/reverseProxy.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
-    ../../lib/vaultwarden.nix
-    ../../lib/unbound.nix
     ../../lib/zfs.nix
   ];
   deployment = {
-    hostName = "home.samgrayson.me";
+    hostName = "192.168.1.28";
     sudo = true;
   };
   sysadmin = {
@@ -45,6 +40,9 @@ in {
   };
   externalSmtp = {
     enable = true;
+    tests = {
+      enable = false;
+    };
     security = "ssl";
     authentication = true;
     passwordFile = config.age.secrets.smtpPass.path;
@@ -60,50 +58,23 @@ in {
     randomizedDelay = "4h";
   };
   networking = {
-    useDHCP = true;
+    useDHCP = lib.mkForce true;
     domain = "samgrayson.me";
     enableIPv6 = false;
     firewall = {
-      allowedTCPPorts = [ 7860 ];
+      allowedTCPPorts = [ ];
     };
   };
   services = {
-    paperless = {
-      enable = false;
-      passwordFile = secrets.paperless-password.path;
-    };
-    dhcp-server = {
-      enable = false;
-    };
     nginx = {
       enable = false;
     };
     caddy = {
       enable = true;
     };
-    prometheus = {
-      enable = true;
-    };
-    grafana = {
-      enable = true;
-      # TODO: make alerting-contact-points.json private
-    };
-    nextcloud = {
-      enable = true;
-      config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-        adminpassFile = secrets.nextcloudAdminpass.path;
-      };
-      package = pkgs.nextcloud29;
-    };
-    jupyter = {
-      enable = true;
-    };
-    vaultwarden = {
-      enable = true;
-      admin_token_file = secrets.vaultwarden-admin-token.path;
-    };
     home-assistant = {
       enable = true;
+      hostname = "home-assistant2.${config.networking.domain}";
       secretsYaml = secrets.homeAssistantSecretsYaml.path;
       zigbee2mqttSecretsYaml = secrets.zigbee2mqttSecretsYaml.path;
     };
@@ -112,26 +83,22 @@ in {
         {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
-          hosts = ["*" "home"];
+          hosts = [
+            "home"
+            "home-assistant2"
+            "mpd2"
+            "jellyfin2"
+          ];
           passwordFile = secrets.namecheapPassword.path;
         }
       ];
     };
-    kea = {
-      ctrl-agent = {
-        pass-file = secrets.keaCtrlAgentPass.path;
-      };
-    };
-    # firefly-iii = {
-    #   appKeyFile = secrets.firefly-iii-app-key.path;
-    #   database = {
-    #     passwordFile = secrets.firefly-iii-postgres.path;
-    #   };
-    #   enable = false;
-    # };
   };
   environment = {
-    systemPackages = [ pkgs.speedtest-go pkgs.mtr ];
+    systemPackages = [
+      pkgs.speedtest-go
+      pkgs.mtr
+    ];
   };
   backups = {
     enable = true;
@@ -178,35 +145,6 @@ in {
       #   fig.users.users.zigbee2mqtt.name;
       #   group = config.users.users.zigbee2mqtt.group;
       # };
-      keaCtrlAgentPass = {
-        file = ../../secrets/kea-ctrl-agent-pass.age;
-      };
-      # firefly-iii-app-key = {
-      #   file = ../../secrets/firefly-iii-app-key.age;
-      #   mode = "0400";
-      #   owner = config.services.firefly-iii.user;
-      #   group = config.services.firefly-iii.group;
-      # };
-      # firefly-iii-postgres = {
-      #   file = ../../secrets/firefly-iii-postgres.age;
-      #   mode = "0400";
-      #   owner = config.services.firefly-iii.user;
-      #   group = config.services.firefly-iii.group;
-      # };
-    } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-      nextcloudAdminpass = {
-        file = ../../secrets/nextcloud-adminpass.age;
-        owner = config.services.phpfpm.pools.nextcloud.user;
-        group = config.services.phpfpm.pools.nextcloud.group;
-      };
-    } // lib.attrsets.optionalAttrs config.services.vaultwarden.enable {
-      vaultwarden-admin-token = {
-        file = ../../secrets/vaultwarden-admin-token.age;
-      };
-    } // lib.attrsets.optionalAttrs config.services.paperless.enable {
-      paperless-password = {
-        file = ../../secrets/paperless.age;
-      };
     };
   };
 }

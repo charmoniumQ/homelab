@@ -21,15 +21,19 @@ in {
     ../../lib/grafana.nix
     ../../lib/grocy.nix
     ../../lib/jupyter.nix
-    # ../../lib/home-assistant.nix
-    ../../lib/kea.nix
+    ../../lib/keycloak.nix
     ../../lib/locale.nix
     ../../lib/loki.nix
+    ../../lib/matomo.nix
+    ../../lib/matrix.nix
+    ../../lib/mysql.nix
     ../../lib/networkedNode.nix
     ../../lib/nextcloud.nix
     ../../lib/nixConf.nix
     ../../lib/runtimeTests.nix
     ../../lib/paperless.nix
+    ../../lib/postgres.nix
+    ../../lib/plausible.nix
     ../../lib/prometheus.nix
     ../../lib/promtail.nix
     ../../lib/reverseProxy.nix
@@ -37,7 +41,6 @@ in {
     ../../lib/sysadmin.nix
     ../../lib/sysadmin.nix
     ../../lib/vaultwarden.nix
-    # ../../lib/unbound.nix
   ];
   deployment = {
     sudo = true;
@@ -71,20 +74,24 @@ in {
   };
   services = {
     paperless = {
-      enable = true;
+      enable = false;
       passwordFile = config.age.secrets.paperless-password.path;
+    };
+    keycloak = {
+      database = {
+        passwordFile = config.age.secrets.keycloak-postgres.path;
+      };
     };
     caddy = {
       enable = true;
       virtualHosts = {
-        # "home-assistant.samgrayson.me" = {
-        #   extraConfig = ''
-        #     reverse_proxy https://home-assistant2.samgrayson.me {
-        #         header_up Host {upstream_hostport}
-        #         header_up X-Forwarded-Host {host}
-        #     }
-        #   '';
-        # };
+        "home-assistant.samgrayson.me" = {
+          extraConfig = ''
+            reverse_proxy https://home-assistant2.samgrayson.me {
+                header_up Host {upstream_hostport}
+            }
+          '';
+        };
       };
     };
     prometheus = {
@@ -116,6 +123,11 @@ in {
       # secretsYaml = config.age.secrets.homeAssistantSecretsYaml.path;
       # zigbee2mqttSecretsYaml = config.age.secrets.zigbee2mqttSecretsYaml.path;
     };
+    plausible = {
+      server = {
+        secretKeybaseFile = config.age.secrets.plausible-secret-key.path;
+      };
+    };
     dyndns = {
       entries = [
         {
@@ -128,18 +140,29 @@ in {
             "nextcloud"
             "vaultwarden"
             "home-assistant"
+            "matrix"
+            "element"
+            "mpd"
+            "plausible"
+            "matomo"
+            "keycloak"
           ] ++ lib.lists.optional config.services.firefly-iii.enable "firefly-iii";
           passwordFile = config.age.secrets.namecheapPassword.path;
         }
       ];
     };
-    firefly-iii = {
-      enable = true;
-      settings = {
-        APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
-        DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
-      };
+    matrix-synapse = {
+      extraConfigFiles = [
+        config.age.secrets.synapse-registration.path
+      ];
     };
+    # firefly-iii = {
+    #   enable = false;
+    #   settings = {
+    #     APP_KEY_FILE = config.age.secrets.firefly-iii-app-key.path;
+    #     DB_PASSWORD_FILE = config.age.secrets.firefly-iii-postgres.path;
+    #   };
+    # };
   };
   environment = {
     systemPackages = [
@@ -161,6 +184,14 @@ in {
         group = "smtp";
         mode = "0440";
       };
+      plausible-secret-key = {
+        file  = ../../secrets/plausible-secret-key.age;
+      };
+      synapse-registration = {
+        file = ../../secrets/synapse-registration.age;
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
+      };
       namecheapPassword = {
         file = ../../secrets/namecheapPassword.age;
       };
@@ -169,6 +200,11 @@ in {
       };
       resticEnvironmentFile = {
         file = ../../secrets/restic.env.age;
+      };
+      keycloak-postgres = {
+        file = ../../secrets/keycloak-postgres.age;
+        owner = "keycloak";
+        group = "keycloak";
       };
     } // lib.attrsets.optionalAttrs config.services.home-assistant.enable {
       homeAssistantSecretsYaml = {

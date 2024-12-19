@@ -29,6 +29,9 @@ in {
   "paperless.age" = { publicKeys = keys; };
   "pia-auth-user-pass.age" = { publicKeys = keys; };
   "wifi-env-file.age" = { publicKeys = keys; };
+  "plausible-secret-key.age" = { publicKeys = keys; };
+  "synapse-registration.age" = { publicKeys = keys; };
+  "keycloak-postgres.age" = { publicKeys = keys; };
 }
 
 /*

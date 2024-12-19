@@ -1,5 +1,8 @@
 { modulesPath, lib, ... }: {
   # See https://wiki.nixos.org/wiki/NixOS_on_ARM/Initial_Configuration
+  # https://blog.krishu.moe/posts/nixos-raspberry-pi/
+  # boot.kernelPackages = lib.mkForce pkgs.linuxKernel.packages.linux_rpi4;
+  # boot.supportedFilesystems = lib.mkForce [ "vfat" "btrfs" "tmpfs" ];
 
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 

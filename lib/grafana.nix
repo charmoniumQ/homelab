@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ pkgs, config, lib, ... }:
 {
   services = {
     # https://gist.github.com/rickhull/895b0cb38fdd537c1078a858cf15d63e
@@ -56,5 +56,10 @@
         port = config.services.grafana.settings.server.http_port;
       };
     };
+  };
+  environment = {
+    systemPackages = [
+      pkgs.grafana
+    ];
   };
 }
