@@ -1,8 +1,5 @@
 { config, lib, ... }:
 {
-  imports = [
-    ./dns.nix
-  ];
   config = {
     dns = {
       localDomains = lib.debug.traceVal builtins.attrNames config.reverseProxy.domains;

@@ -20,6 +20,7 @@ in {
     ../../lib/firefly-iii.nix
     ../../lib/grafana.nix
     ../../lib/grocy.nix
+    ../../lib/garage.nix
     ../../lib/jupyter.nix
     ../../lib/keycloak.nix
     ../../lib/locale.nix
@@ -81,6 +82,9 @@ in {
       database = {
         passwordFile = config.age.secrets.keycloak-postgres.path;
       };
+    };
+    garage = {
+      environmentFile = config.age.secrets.garage-env.path;
     };
     caddy = {
       enable = true;
@@ -146,6 +150,10 @@ in {
             "plausible"
             "matomo"
             "keycloak"
+            "s3.garage"
+            "*.s3.garage"
+            "*.web.garage"
+            "admin.garage"
           ] ++ lib.lists.optional config.services.firefly-iii.enable "firefly-iii";
           passwordFile = config.age.secrets.namecheapPassword.path;
         }
@@ -205,6 +213,9 @@ in {
         file = ../../secrets/keycloak-postgres.age;
         owner = "keycloak";
         group = "keycloak";
+      };
+      garage-env = {
+        file = ../../secrets/garage-env.age;
       };
     } // lib.attrsets.optionalAttrs config.services.home-assistant.enable {
       homeAssistantSecretsYaml = {

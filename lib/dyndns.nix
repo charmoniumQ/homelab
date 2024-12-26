@@ -62,7 +62,7 @@ in {
                 description = "Provider of dynamic DNS";
               };
               hosts = lib.mkOption {
-                type = lib.types.listOf (lib.types.strMatching "\\*|@|[a-z0-9][a-z0-9-]+");
+                type = lib.types.listOf (lib.types.strMatching "(\\*|@|[a-z0-9])[a-z0-9.-]+");
                 default = [ ];
                 description = "Names of host to update";
               };

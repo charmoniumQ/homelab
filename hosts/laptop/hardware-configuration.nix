@@ -27,6 +27,9 @@ in {
     ];
   };
   hardware = {
+    rtl-sdr = {
+      enable = true;
+    };
     enableAllFirmware = true;
     enableRedistributableFirmware = true;
     bluetooth = {
@@ -41,6 +44,14 @@ in {
     graphics = {
       enable = true;
       enable32Bit = true;
+    };
+  };
+
+  users = {
+    users = {
+      sam = {
+        extraGroups = [ "plugdev" ];
+      };
     };
   };
 

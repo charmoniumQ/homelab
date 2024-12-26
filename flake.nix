@@ -77,6 +77,7 @@
                  pkgs.nixos-rebuild # latest version
                  pkgs.nix-output-monitor
                  pkgs.nh
+                 pkgs.openssl.bin # for openssl rand -hex 32
                  disko.packages."${system}".default
                  agenix.packages."${system}".default
                  nixos-anywhere.packages."${system}".default

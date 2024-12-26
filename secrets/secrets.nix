@@ -32,6 +32,7 @@ in {
   "plausible-secret-key.age" = { publicKeys = keys; };
   "synapse-registration.age" = { publicKeys = keys; };
   "keycloak-postgres.age" = { publicKeys = keys; };
+  "garage-env.age" = { publicKeys = keys; };
 }
 
 /*

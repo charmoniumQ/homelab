@@ -10,6 +10,7 @@ let
   element-webroot = pkgs.element-web.override {
     conf = {
       default_server_config = server-config;
+      default_server_name = matrix-domain;
     };
   };
 in {
@@ -18,11 +19,17 @@ in {
       enable = true;
       extras = [
         "oidc"
+        "postgres"
+        "systemd"
+        "url-preview"
       ];
       settings = {
         server_name = base-domain;
         public_baseurl = "https://${matrix-domain}";
         enable_registration = false;
+        database = {
+          name = "psycopg2";
+        };
         listeners = [
           {
             port = port;
@@ -38,20 +45,33 @@ in {
             ];
           }
         ];
+        oidc_providers = [
+          {
+            idp_id = "keycloak";
+            idp_name = "SSO";
+            issuer = "https://keycloak.samgrayson.me/realms/home";
+            client_id = "synapse";
+            client_secret = "dExxiSWUrx147ttWv7M90wh8ZNOd151K";
+            scopes = ["openid" "profile"];
+            user_mapping_provider = {
+              config = {
+                localpart_template = "{{ user.preferred_username }}";
+                display_name_template = "{{ user.name }}";
+              };
+            };
+            backchannel_logout_enabled = true;
+            update_profile_information = true;
+          }
+        ];
       };
-      # settings = with config.services.coturn; {
-      #   turn_uris = ["turn:${realm}:3478?transport=udp" "turn:${realm}:3478?transport=tcp"];
-      #   turn_shared_secret = static-auth-secret;
-      #   turn_user_lifetime = "1h";
-      # };
     };
     postgresql = {
       enable = true;
       ensureDatabases = [ "matrix-synapse" ];
       ensureUsers = [
         {
-            name = "matrix-synapse";
-            ensureDBOwnership = true;
+          name = "matrix-synapse";
+          ensureDBOwnership = true;
         }
       ];
     };

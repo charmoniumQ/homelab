@@ -1,6 +1,13 @@
 { lib, pkgs, config, ... }:
 {
   config = {
+    fonts = {
+      packages = [
+        pkgs.nerd-fonts.fira-code
+        pkgs.fira
+        pkgs.emacs-all-the-icons-fonts
+      ];
+    };
     xdg = {
       portal = {
         enable = true;

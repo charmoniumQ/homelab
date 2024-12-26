@@ -16,12 +16,11 @@
         # https://www.keycloak.org/server/hostname#_using_a_reverse_proxy
         proxy-headers = "xforwarded";
       };
-      initialAdminPassword = "8DeEyOrGIPuf98ExhczSWFt0DYfZwznFqTTo2nkLhZOpfTB9a3bEpqd8cYA4XaIu"; # changed on first login
     };
   };
   reverseProxy = {
     domains = {
-      "${config.services.keycloak.settings.hostname}" = {
+      "${builtins.elemAt (builtins.split "://" config.services.keycloak.settings.hostname) 2}" = {
         port = config.services.keycloak.settings.http-port;
       };
     };
