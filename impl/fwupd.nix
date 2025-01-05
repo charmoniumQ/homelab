@@ -1,0 +1,7 @@
+{
+  services = {
+    fwupd = {
+      enable = true;
+    };
+  };
+}

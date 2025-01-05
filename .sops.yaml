@@ -1,0 +1,7 @@
+keys:
+  - &sam_laptop age1kj54k05kvrlpenj45ea5zef9aq0gpum739xhw2ulvfrdtd0zzavs5l9zeu
+creation_rules:
+  - path_regex: secrets.yaml$
+    key_groups:
+      - age:
+        - age1kj54k05kvrlpenj45ea5zef9aq0gpum739xhw2ulvfrdtd0zzavs5l9zeu

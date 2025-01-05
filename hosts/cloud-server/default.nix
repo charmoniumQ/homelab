@@ -7,6 +7,7 @@ in {
     (modulesPath + "/profiles/qemu-guest.nix")
     ./disko.nix
     ./hardware-configuration.nix
+    ../site.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
     ../../lib/backups.nix

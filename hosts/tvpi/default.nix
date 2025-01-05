@@ -5,6 +5,7 @@ in {
   # https://www.eisfunke.com/posts/2023/nixos-on-raspberry-pi.html
   imports = [
     ./hardware-configuration.nix
+    ../site.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
     ../../lib/backups.nix

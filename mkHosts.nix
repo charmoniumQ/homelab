@@ -5,7 +5,6 @@ Turns a simple object into QEMU VMs and nixosConfigurations.
 let
   lib = nixpkgs.lib;
   importsForHost = host: [
-    ./hosts/site.nix
     (./hosts + "/${host}")
   ];
   nixosConfigurations = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {

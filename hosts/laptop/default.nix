@@ -5,6 +5,7 @@
     nixos-hardware.nixosModules.framework-11th-gen-intel
     ./hardware-configuration.nix
     ./disko.nix
+    ../site.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
     ../../lib/desktop/generic.nix
@@ -15,6 +16,7 @@
     ../../lib/fprint.nix
     ../../lib/laptop.nix
     ../../lib/cli.nix
+    ../../lib/gnupg.nix
     ../../lib/locale.nix
     ../../lib/podman.nix
     ../../lib/docker.nix

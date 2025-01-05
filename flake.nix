@@ -31,6 +31,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
+    crowdsec = {
+      url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = { self, nixpkgs, agenix, flake-utils, disko, nixos-anywhere, nixos-generators, ... }@inputs:
     let
@@ -39,6 +47,7 @@
          "cloud-server"
          "laptop"
          "tvpi"
+         "test"
        ];
     in
      nixpkgs.lib.attrsets.recursiveUpdate
@@ -78,6 +87,7 @@
                  pkgs.nix-output-monitor
                  pkgs.nh
                  pkgs.openssl.bin # for openssl rand -hex 32
+                 pkgs.sops
                  disko.packages."${system}".default
                  agenix.packages."${system}".default
                  nixos-anywhere.packages."${system}".default
