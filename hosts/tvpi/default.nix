@@ -21,6 +21,7 @@ in {
     ../../lib/sound.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
+    ../../lib/sysrq.nix
     "${toString modulesPath}/installer/sd-card/sd-image-aarch64.nix"
   ];
 

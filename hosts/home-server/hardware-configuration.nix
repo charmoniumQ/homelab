@@ -42,9 +42,8 @@ in
         updateMicrocode = true;
       };
     };
-    opengl = {
+    graphics = {
       enable = true;
-      driSupport32Bit = true;
     };
     nvidia = {
       # https://nixos.wiki/wiki/Nvidia

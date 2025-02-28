@@ -11,6 +11,7 @@ in {
     ../../lib/automaticMaintenance.nix
     ../../lib/backups.nix
     ../../lib/caddy.nix
+    ../../lib/cli.nix
     ../../lib/dns.nix
     ../../lib/deployment.nix
     ../../lib/dyndns.nix
@@ -38,11 +39,26 @@ in {
     ../../lib/prometheus.nix
     ../../lib/promtail.nix
     ../../lib/reverseProxy.nix
+    ../../lib/restricted-ssh-user.nix
     ../../lib/ssh.nix
+    ../../lib/sysrq.nix
     ../../lib/sysadmin.nix
     ../../lib/sysadmin.nix
     ../../lib/vaultwarden.nix
   ];
+  users = {
+    users = {
+      restricted-ssh-user = {
+        openssh = {
+          authorizedKeys = {
+            keys = [
+              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK5Ra/Ps/WkyBfU6u5UIo8qLGHzeNP09C6wWvraEhyMq"
+            ] ++ config.sysadmin.sshKeys;
+          };
+        };
+      };
+    };
+  };
   deployment = {
     sudo = true;
     hostName = "cloud.samgrayson.me";
@@ -75,7 +91,7 @@ in {
   };
   services = {
     paperless = {
-      enable = false;
+      enable = true;
       passwordFile = config.age.secrets.paperless-password.path;
     };
     keycloak = {

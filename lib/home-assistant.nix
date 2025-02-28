@@ -30,8 +30,7 @@ in {
             latitude = "!secret latitude";
             longitude = "!secret longitude";
             elevation = "!secret elevation";
-            unit_system =
-              if config.locale.unit_system == "us_customary" then "imperial" else config.locale.unit_system;
+            unit_system = config.locale.unit_system;
             time_zone = config.time.timeZone;
             currency = config.locale.currency;
             external_url = "https://${cfg.hostname}";
@@ -40,16 +39,14 @@ in {
           automation = "!include automations.yaml";
           scene = "!include scenes.yaml";
           script = "!include scripts.yaml";
-          calendar = []
-            ++ (lib.lists.optional config.services.nextcloud.enable {
+          calendar = [
+            {
               platform = "caldav";
-              username = "sam";
-              password = "!secret nextcloud_password";
-              url = "https://${config.services.nextcloud.hostName}/remote.php/dav";
-              # TODO: Remove calendar names from this file
-              # calendars = [ "personal_shared_by_kt" "shared" "personal" ];
-            })
-          ;
+              username = "!secret calendar_username";
+              password = "!secret calendar_password";
+              url = "!secret calendar_url";
+            }
+          ];
           recorder = {
             db_url = "postgresql://${userName}@/${dbName}?host=/run/postgresql";
           };
@@ -101,6 +98,9 @@ in {
           "zha"
           "google_translate" # for gtts
           "esphome"
+          "spotify"
+          "upnp"
+          "homekit_controller"
          ];
       };
       # TODO: Remove mosquitto/zigbee2mqtt, secrets, and options

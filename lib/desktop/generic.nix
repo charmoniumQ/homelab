@@ -35,6 +35,9 @@
       dconf = {
         enable = true;
       };
+      appimage = {
+        enable = true;
+      };
     };
     services = {
       atd = {

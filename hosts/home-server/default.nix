@@ -12,6 +12,7 @@ in {
     ../../lib/desktop/generic.nix
     ../../lib/desktop/lxqt.nix
     ../../lib/deployment.nix
+    ../../lib/dns.nix
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
     ../../lib/fail2ban.nix
@@ -27,8 +28,10 @@ in {
     ../../lib/nixConf.nix
     ../../lib/runtimeTests.nix
     ../../lib/reverseProxy.nix
+    ../../lib/sound.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
+    ../../lib/sysrq.nix
     ../../lib/zfs.nix
   ];
   deployment = {

@@ -7,6 +7,7 @@
     ./disko.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
+    ../../lib/benchmarking.nix
     ../../lib/desktop/generic.nix
     ../../lib/desktop/kde.nix
     ../../lib/desktop/lxqt.nix
@@ -27,6 +28,7 @@
     ../../lib/desktop/swaylock.nix
     ../../lib/ssh.nix
     ../../lib/sysadmin.nix
+    ../../lib/sysrq.nix
     # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1
   ];
 

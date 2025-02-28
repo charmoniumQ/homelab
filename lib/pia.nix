@@ -8,12 +8,20 @@
     services = {
       openvpn = {
         servers = let
-          resources = pkgs.fetchzip {
-            name = "pia-vpn-config";
-            url = "https://www.privateinternetaccess.com/openvpn/openvpn.zip";
-            hash = "sha256-ZA8RS6eIjMVQfBt+9hYyhaq8LByy5oJaO9Ed+x8KtW8=";
-            stripRoot = false;
-          };
+          resources = let
+            original = pkgs.fetchzip {
+              name = "pia-vpn-config";
+              url = "https://www.privateinternetaccess.com/openvpn/openvpn.zip";
+              hash = "sha256-ZA8RS6eIjMVQfBt+9hYyhaq8LByy5oJaO9Ed+x8KtW8=";
+              stripRoot = false;
+            };
+          in
+            pkgs.runCommand "modified" {} ''
+              cp ${original}/*.ovpn .
+              sed --in-place '/<crl-verify>/,/<\/crl-verify>/d' *.ovpn
+              mkdir $out
+              cp *.ovpn $out
+            '';
           fixup = (builtins.replaceStrings [ ".ovpn" "_" ] [ "" "-" ]);
           servers =
             (builtins.filter (name: !(isNull (builtins.match ".+ovpn$" name)))
