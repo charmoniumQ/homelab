@@ -32,6 +32,9 @@
       };
     };
     programs = {
+      seahorse = {
+        enable = true;
+      };
       dconf = {
         enable = true;
       };
@@ -56,6 +59,11 @@
         autoLogin = {
           enable = true;
           user = config.sysadmin.username;
+        };
+      };
+      gnome = {
+        gnome-keyring = {
+          enable = true;
         };
       };
     };

@@ -6,14 +6,16 @@
     ./hardware-configuration.nix
     ./disko.nix
     ../../lib/agenix.nix
+    # TODO: Why is Nix store filling up if we have automatic maintenance?
     ../../lib/automaticMaintenance.nix
     ../../lib/benchmarking.nix
     ../../lib/desktop/generic.nix
-    ../../lib/desktop/kde.nix
-    ../../lib/desktop/lxqt.nix
+    ../../lib/desktop/gnome.nix
+    # ../../lib/desktop/kde.nix
+    # ../../lib/desktop/lxqt.nix
     ../../lib/desktop/hyprland.nix
     ../../lib/deployment.nix
-    ../../lib/fprint.nix
+    # ../../lib/fprint.nix
     ../../lib/laptop.nix
     ../../lib/cli.nix
     ../../lib/locale.nix

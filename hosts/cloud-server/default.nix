@@ -7,6 +7,7 @@ in {
     (modulesPath + "/profiles/qemu-guest.nix")
     ./disko.nix
     ./hardware-configuration.nix
+    ../../lib/actual.nix
     ../../lib/agenix.nix
     ../../lib/automaticMaintenance.nix
     ../../lib/backups.nix
@@ -123,7 +124,7 @@ in {
     };
     nextcloud = {
       enable = true;
-      package = pkgs.nextcloud30;
+      package = pkgs.nextcloud31;
       hostName = "nextcloud.samgrayson.me";
       config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
         adminpassFile = config.age.secrets.nextcloudAdminpass.path;
@@ -170,6 +171,7 @@ in {
             "*.s3.garage"
             "*.web.garage"
             "admin.garage"
+            "budget"
           ] ++ lib.lists.optional config.services.firefly-iii.enable "firefly-iii";
           passwordFile = config.age.secrets.namecheapPassword.path;
         }

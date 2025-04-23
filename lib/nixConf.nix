@@ -27,9 +27,9 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
     };
     nix = {
       enable = true;
-      package = pkgs.nixVersions.git;
+      package = pkgs.nixVersions.latest;
       channel = {
-        enable = true;
+        enable = false;
       };
       settings = {
         substituters = [
@@ -69,7 +69,18 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
       systemPackages = [
         pkgs.gitMinimal # Needed to make Nix flakes work
         nix-alien.packages.${config.nixpkgs.hostPlatform.system}.nix-alien
+        pkgs.cachix
       ];
+      etc = {
+        "nix/system-packages.list" = {
+          text = let
+            packages = builtins.map (p: "${p.name}") config.environment.systemPackages;
+            sortedUnique = builtins.sort builtins.lessThan (pkgs.lib.lists.unique packages);
+          in
+            builtins.concatStringsSep "\n" sortedUnique
+          ;
+        };
+      };
     };
   };
 }
