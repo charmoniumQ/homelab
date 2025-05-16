@@ -29,10 +29,14 @@ in {
     ../../lib/loki.nix
     ../../lib/matomo.nix
     ../../lib/matrix.nix
+    ../../lib/mautrix/discord.nix
+    ../../lib/mautrix/gmessages.nix
+    ../../lib/mautrix/signal.nix
     ../../lib/mysql.nix
     ../../lib/networkedNode.nix
     ../../lib/nextcloud.nix
     ../../lib/nixConf.nix
+    ../../lib/ntfy.nix
     ../../lib/runtimeTests.nix
     ../../lib/paperless.nix
     ../../lib/postgres.nix
@@ -155,6 +159,10 @@ in {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
           hosts = [
+            "signal.mautrix"
+            "discord.mautrix"
+            "mautrix-gmessages"
+            "ntfy"
             "cloud"
             "jupyter"
             "grafana"

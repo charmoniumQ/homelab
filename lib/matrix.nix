@@ -1,16 +1,18 @@
 {config, pkgs, lib, ...}:
 let
   base-domain = "${config.networking.domain}";
-  server-config = {
-    "m.server" = "${base-domain}:443";
-  };
-  matrix-domain = "matrix.${base-domain}";
   port = lib.trace "Put this in a hash" 57261;
-  element-domain = "element.${base-domain}";
   element-webroot = pkgs.element-web.override {
     conf = {
-      default_server_config = server-config;
-      default_server_name = matrix-domain;
+      default_server_name = "${base-domain}";
+      default_theme = "dark";
+      show_labs_settings = true;
+      sso_redirect_options = {
+        immediate = true;
+        on_welcome_page = true;
+        on_login_page = true;
+      };
+      disable_custom_urls = true;
     };
   };
 in {
@@ -22,10 +24,10 @@ in {
         "postgres"
         "systemd"
         "url-preview"
+        "redis"
       ];
       settings = {
-        server_name = base-domain;
-        public_baseurl = "https://${matrix-domain}";
+        enable_metrics = true;
         enable_registration = false;
         database = {
           name = "psycopg2";
@@ -39,16 +41,24 @@ in {
             x_forwarded = true;
             resources = [
               {
-                names = [ "client" "federation" ];
+                names = [ "client" "federation" "metrics" ];
                 compress = true;
               }
             ];
           }
         ];
+        presence = {
+          enabled = true;
+        };
+        server_name = base-domain;
+        public_baseurl = "https://matrix.${base-domain}";
+        redis = {
+          enabled = true;
+        };
         oidc_providers = [
           {
             idp_id = "keycloak";
-            idp_name = "SSO";
+            idp_name = "Home SSO";
             issuer = "https://keycloak.samgrayson.me/realms/home";
             client_id = "synapse";
             client_secret = "dExxiSWUrx147ttWv7M90wh8ZNOd151K";
@@ -63,7 +73,9 @@ in {
             update_profile_information = true;
           }
         ];
+        suppress_key_server_warning = true;
       };
+      configureRedisLocally = true;
     };
     postgresql = {
       enable = true;
@@ -77,13 +89,13 @@ in {
     };
     caddy = {
       virtualHosts = {
-        "${matrix-domain}" = {
+        "matrix.${base-domain}" = {
           extraConfig = ''
             reverse_proxy /_matrix/* localhost:${builtins.toString port}
             reverse_proxy /_synapse/client/* localhost:${builtins.toString port}
           '';
         };
-        "${element-domain}" = {
+        "element.${base-domain}" = {
           extraConfig = ''
             root * ${element-webroot}
             file_server
