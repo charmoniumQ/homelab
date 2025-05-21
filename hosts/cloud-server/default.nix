@@ -30,15 +30,19 @@ in {
     ../../lib/matomo.nix
     ../../lib/matrix.nix
     ../../lib/mautrix/discord.nix
+    ../../lib/mautrix/double-puppetting.nix
     ../../lib/mautrix/gmessages.nix
+    ../../lib/mautrix/meta.nix
     ../../lib/mautrix/signal.nix
+    ../../lib/mautrix/telegram.nix
+    ../../lib/mautrix/whatsapp.nix
     ../../lib/mysql.nix
     ../../lib/networkedNode.nix
     ../../lib/nextcloud.nix
     ../../lib/nixConf.nix
     ../../lib/ntfy.nix
     ../../lib/runtimeTests.nix
-    ../../lib/paperless.nix
+    # ../../lib/paperless.nix
     ../../lib/postgres.nix
     ../../lib/plausible.nix
     ../../lib/prometheus.nix
@@ -96,7 +100,7 @@ in {
   };
   services = {
     paperless = {
-      enable = true;
+      enable = false;
       passwordFile = config.age.secrets.paperless-password.path;
     };
     keycloak = {
@@ -159,6 +163,12 @@ in {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
           hosts = [
+            "admin.matrix"
+            "slack.mautrix"
+            "whatsapp.mautrix"
+            "telegram.mautrix"
+            "instagram.mautrix"
+            "facebook.mautrix"
             "signal.mautrix"
             "discord.mautrix"
             "mautrix-gmessages"
@@ -242,6 +252,11 @@ in {
       };
       garage-env = {
         file = ../../secrets/garage-env.age;
+      };
+      "mautrix-secrets.env" = {
+        file = ../../secrets/mautrix-secrets.env.age;
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
       };
     } // lib.attrsets.optionalAttrs config.services.home-assistant.enable {
       homeAssistantSecretsYaml = {

@@ -101,6 +101,7 @@ in {
           User = "mautrix-gmessages";
           Group = "mautrix-gmessages";
           StateDirectory = baseNameOf dataDir;
+          EnvironmentFile = config.age.secrets."mautrix-secrets.env".path;
           WorkingDirectory = dataDir;
           ExecStart = "${package}/bin/mautrix-gmessages --config='${settingsFile}' --registration='${registrationFile}'";
           Restart = "on-failure";

@@ -150,7 +150,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgres:///mautrix-discord?host=/var/run/postgresql/
+    uri: postgres:///mautrix-signal?host=/var/run/postgresql/
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 1
@@ -207,7 +207,7 @@ appservice:
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 127.0.0.1
-    port: 29328
+    port: $appservicePort # customize
 
     # The unique ID of this appservice.
     id: signal
@@ -359,7 +359,7 @@ double_puppet:
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
     secrets:
-        example.com: as_token:foobar
+        samgraysone.me: as_token:$$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
 
 # End-to-bridge encryption support options.
 #

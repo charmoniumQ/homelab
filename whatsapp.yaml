@@ -1,36 +1,122 @@
-# cat gmessages.yaml | yj -yt > gmessages.toml
-
-# https://docs.mau.fi/bridges/general/initial-config.html
-
 # Network-specific config options
 network:
-    # Displayname template for SMS users.
-    # {{.FullName}} - Full name provided by the phone
-    # {{.FirstName}} - First name provided by the phone
-    # {{.PhoneNumber}} - Formatted phone number provided by the phone
-    displayname_template: "{{or .FullName .PhoneNumber}}"
-    # Settings for how the bridge appears to the phone.
-    device_meta:
-        # OS name to tell the phone. This is the name that shows up in the paired devices list.
-        os: mautrix-gmessages
-        # Browser type to tell the phone. This decides which icon is shown.
-        # Valid types: OTHER, CHROME, FIREFOX, SAFARI, OPERA, IE, EDGE
-        browser: OTHER
-        # Device type to tell the phone. This also affects the icon, as well as how many sessions are allowed simultaneously.
-        # One web, two tablets and one PWA should be able to connect at the same time.
-        # Valid types: WEB, TABLET, PWA
-        type: TABLET
-    # Should the bridge aggressively set itself as the active device if the user opens Google Messages in a browser?
-    # If this is disabled, the user must manually use the `set-active` command to reactivate the bridge.
-    aggressive_reconnect: false
-    # Number of chats to sync when connecting to Google Messages.
-    initial_chat_sync_count: 25
-
+    # Device name that's shown in the "WhatsApp Web" section in the mobile app.
+    os_name: Mautrix-WhatsApp bridge
+    # Browser name that determines the logo shown in the mobile app.
+    # Must be "unknown" for a generic icon or a valid browser name if you want a specific icon.
+    # List of valid browser names: https://github.com/tulir/whatsmeow/blob/efc632c008604016ddde63bfcfca8de4e5304da9/binary/proto/def.proto#L43-L64
+    browser_name: unknown
+    
+    # Proxy to use for all WhatsApp connections.
+    proxy: null
+    # Alternative to proxy: an HTTP endpoint that returns the proxy URL to use for WhatsApp connections.
+    get_proxy_url: null
+    # Whether the proxy options should only apply to the login websocket and not to authenticated connections.
+    proxy_only_login: false
+    
+    # Displayname template for WhatsApp users.
+    # {{.PushName}}     - nickname set by the WhatsApp user
+    # {{.BusinessName}} - validated WhatsApp business name
+    # {{.Phone}}        - phone number (international format)
+    # {{.FullName}}     - Name you set in the contacts list
+    displayname_template: "{{or .BusinessName .PushName .Phone}} (WA)"
+    
+    # Should incoming calls send a message to the Matrix room?
+    call_start_notices: true
+    # Should another user's cryptographic identity changing send a message to Matrix?
+    identity_change_notices: false
+    # Should the bridge mark you as online on WhatsApp when you send typing notifications?
+    # Full presence bridging is not supported.
+    send_presence_on_typing: false
+    # Should WhatsApp status messages be bridged into a Matrix room?
+    enable_status_broadcast: true
+    # Should sending WhatsApp status messages be allowed?
+    # This can cause issues if the user has lots of contacts, so it's disabled by default.
+    disable_status_broadcast_send: true
+    # Should the status broadcast room be muted and moved into low priority by default?
+    # This is only applied when creating the room, the user can unmute it later.
+    mute_status_broadcast: true
+    # Tag to apply to pinned chats on WhatsApp.
+    pinned_tag: m.favourite
+    # Tag to apply to archived chats on WhatsApp.
+    # Set to m.lowpriority to move them to low priority.
+    archive_tag:
+    # Tag to apply to the status broadcast room.
+    status_broadcast_tag: m.lowpriority
+    # Should the bridge use thumbnails from WhatsApp?
+    # They're disabled by default due to very low resolution.
+    whatsapp_thumbnail: false
+    # Should the bridge detect URLs in outgoing messages, ask the homeserver to generate a preview,
+    # and send it to WhatsApp? URL previews can always be sent using the `com.beeper.linkpreviews`
+    # key in the event content even if this is disabled.
+    url_previews: false
+    # Should polls be sent using unstable MSC3381 event types?
+    extev_polls: false
+    # Should view-once messages be disabled entirely?
+    disable_view_once: false
+    # Should the bridge always send "active" delivery receipts (two gray ticks on WhatsApp)
+    # even if the user isn't marked as online (e.g. when presence bridging isn't enabled)?
+    #
+    # By default, the bridge acts like WhatsApp web, which only sends active delivery
+    # receipts when it's in the foreground.
+    force_active_delivery_receipts: false
+    # When direct media is enabled and a piece of media isn't available on the WhatsApp servers,
+    # should it be automatically requested from the phone?
+    direct_media_auto_request: true
+    
+    # Settings for converting animated stickers.
+    animated_sticker:
+        # Format to which animated stickers should be converted.
+        # disable - No conversion, just unzip and send raw lottie JSON
+        # png - converts to non-animated png (fastest)
+        # gif - converts to animated gif
+        # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
+        # webp - converts to animated webp, requires ffmpeg executable with webp codec/container support
+        target: webp
+        # Arguments for converter. All converters take width and height.
+        args:
+            width: 320
+            height: 320
+            fps: 25 # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
+    
+    # Settings for handling history sync payloads.
+    history_sync:
+        # How many conversations should the bridge create after login?
+        # If -1, all conversations received from history sync will be bridged.
+        # Other conversations will be backfilled on demand when receiving a message.
+        max_initial_conversations: -1
+        # Should the bridge request a full sync from the phone when logging in?
+        # This bumps the size of history syncs from 3 months to 1 year.
+        request_full_sync: false
+        # Configuration parameters that are sent to the phone along with the request full sync flag.
+        # By default, (when the values are null or 0), the config isn't sent at all.
+        full_sync_config:
+            # Number of days of history to request.
+            # The limit seems to be around 3 years, but using higher values doesn't break.
+            days_limit: null
+            # This is presumably the maximum size of the transferred history sync blob, which may affect what the phone includes in the blob.
+            size_mb_limit: null
+            # This is presumably the local storage quota, which may affect what the phone includes in the history sync blob.
+            storage_quota_mb: null
+        # Settings for media requests. If the media expired, then it will not be on the WA servers.
+        # Media can always be requested by reacting with the ♻️ (recycle) emoji.
+        # These settings determine if the media requests should be done automatically during or after backfill.
+        media_requests:
+            # Should the expired media be automatically requested from the server as part of the backfill process?
+            auto_request_media: true
+            # Whether to request the media immediately after the media message is backfilled ("immediate")
+            # or at a specific time of the day ("local_time").
+            request_method: immediate
+            # If request_method is "local_time", what time should the requests be sent (in minutes after midnight)?
+            request_local_time: 120
+            # Maximum number of media request responses to handle in parallel per user.
+            max_async_handle: 2
+    
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: '!gm'
+    command_prefix: '!wa'
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -137,8 +223,9 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        "$domain": user
-        "admin@$domain": admin
+        "*": relay
+        "example.com": user
+        "@admin:example.com": admin
 
 # Config for the bridge's database.
 database:
@@ -149,7 +236,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgres:///mautrix-gmessages?host=/var/run/postgresql/
+    uri: postgres://user:password@host/database?sslmode=disable
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 1
@@ -163,9 +250,9 @@ homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: http://localhost:$homserverPort # customize
+    address: http://example.localhost:8008
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-    domain: $domain # customize
+    domain: example.com
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -197,28 +284,27 @@ appservice:
     # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
     # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
     # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
-    address: http://localhost:$appservicePort # customize
+    address: http://localhost:29318
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: https://mautrix-gmessages.$domain # customize
-    # TODO: replace this with https://gmessages.mautrix.$domain
+    public_address: https://bridge.example.com
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 127.0.0.1
-    port: $appservicePort # customize
+    port: 29318
 
     # The unique ID of this appservice.
-    id: gmessages
+    id: whatsapp
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: gmessagesbot
+        username: whatsappbot
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: Google Messages bridge bot
-        avatar: mxc://maunium.net/yGOdcrJcwqARZqdzbfuxfhzb
+        displayname: WhatsApp bridge bot
+        avatar: mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr
 
     # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: true
@@ -234,7 +320,7 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    username_template: gmessages_{{.}}
+    username_template: whatsapp_{{.}}
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
@@ -258,7 +344,7 @@ analytics:
     # API key to send with tracking requests. Tracking is disabled if this is null.
     token: null
     # Address to send tracking requests to.
-    #url: https://api.segment.io/v1/track
+    url: https://api.segment.io/v1/track
     # Optional user ID for tracking events. If null, defaults to using Matrix user ID.
     user_id: null
 
@@ -299,7 +385,7 @@ direct_media:
     # The server name to use for the custom mxc:// URIs.
     # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
     # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
-    server_name: discord-media.example.com  # customize
+    server_name: discord-media.example.com
     # Optionally a custom .well-known response. This defaults to `server_name:443`
     well_known_response:
     # Optionally specify a custom prefix for the media ID part of the MXC URI.
@@ -355,11 +441,11 @@ double_puppet:
     # Whether to allow client API URL discovery for other servers. When using this option,
     # users on other servers can use double puppeting even if their server URLs aren't
     # explicitly added to the servers map above.
-    allow_discovery: false # customize
+    allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {}
-        #samgraysone.me: as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
+    secrets:
+        example.com: as_token:foobar
 
 # End-to-bridge encryption support options.
 #
@@ -448,3 +534,9 @@ logging:
     writers:
         - type: stdout
           format: pretty-colored
+        - type: file
+          format: json
+          filename: ./logs/bridge.log
+          max_size: 100
+          max_backups: 10
+          compress: false

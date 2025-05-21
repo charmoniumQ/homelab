@@ -1,36 +1,47 @@
-# cat gmessages.yaml | yj -yt > gmessages.toml
-
-# https://docs.mau.fi/bridges/general/initial-config.html
-
 # Network-specific config options
 network:
-    # Displayname template for SMS users.
-    # {{.FullName}} - Full name provided by the phone
-    # {{.FirstName}} - First name provided by the phone
-    # {{.PhoneNumber}} - Formatted phone number provided by the phone
-    displayname_template: "{{or .FullName .PhoneNumber}}"
-    # Settings for how the bridge appears to the phone.
-    device_meta:
-        # OS name to tell the phone. This is the name that shows up in the paired devices list.
-        os: mautrix-gmessages
-        # Browser type to tell the phone. This decides which icon is shown.
-        # Valid types: OTHER, CHROME, FIREFOX, SAFARI, OPERA, IE, EDGE
-        browser: OTHER
-        # Device type to tell the phone. This also affects the icon, as well as how many sessions are allowed simultaneously.
-        # One web, two tablets and one PWA should be able to connect at the same time.
-        # Valid types: WEB, TABLET, PWA
-        type: TABLET
-    # Should the bridge aggressively set itself as the active device if the user opens Google Messages in a browser?
-    # If this is disabled, the user must manually use the `set-active` command to reactivate the bridge.
-    aggressive_reconnect: false
-    # Number of chats to sync when connecting to Google Messages.
-    initial_chat_sync_count: 25
-
+    # Which service is this bridge for? Available options:
+    # * unset - allow users to pick any service when logging in (except facebook-tor)
+    # * facebook - connect to FB Messenger via facebook.com
+    # * facebook-tor - connect to FB Messenger via facebookwkhpilnemxj7asaniu7vnjjbiltxjqhye3mhbshg7kx5tfyd.onion
+    #                  (note: does not currently proxy media downloads)
+    # * messenger - connect to FB Messenger via messenger.com (can be used with the facebook side deactivated)
+    # * instagram - connect to Instagram DMs via instagram.com
+    #
+    # Remember to change the appservice id, bot profile info, bridge username_template and management_room_text too.
+    mode: unset
+    
+    # When in Instagram mode, should the bridge connect to WhatsApp servers for encrypted chats?
+    # In FB/Messenger mode encryption is always enabled, this option only affects Instagram mode.
+    ig_e2ee: false
+    
+    # Displayname template for FB/IG users. Available variables:
+    #  .DisplayName - The display name set by the user.
+    #  .Username - The username set by the user.
+    #  .ID - The internal user ID of the user.
+    displayname_template: '{{or .DisplayName .Username "Unknown user"}}'
+    
+    # Static proxy address (HTTP or SOCKS5) for connecting to Meta.
+    proxy:
+    # HTTP endpoint to request new proxy address from, for dynamically assigned proxies.
+    # The endpoint must return a JSON body with a string field called proxy_url.
+    get_proxy_from:
+    # Should media be proxied too?
+    proxy_media: false
+    # Minimum interval between full reconnects in seconds, default is 1 hour
+    min_full_reconnect_interval_seconds: 3600
+    # Interval to force refresh the connection (full reconnect), default is 20 hours. Set 0 to disable force refreshes.
+    force_refresh_interval_seconds: 72000
+    # Disable fetching XMA media (reels, stories, etc) when backfilling.
+    disable_xma_backfill: true
+    # Disable fetching XMA media entirely.
+    disable_xma_always: false
+    
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: '!gm'
+    command_prefix: '!meta'
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -137,8 +148,9 @@ bridge:
     #   domain - All users on that homeserver
     #     mxid - Specific user
     permissions:
-        "$domain": user
-        "admin@$domain": admin
+        "*": relay
+        "example.com": user
+        "@admin:example.com": admin
 
 # Config for the bridge's database.
 database:
@@ -149,7 +161,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgres:///mautrix-gmessages?host=/var/run/postgresql/
+    uri: postgres:///mautrix-meta?host=/var/run/postgresql/
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 1
@@ -201,24 +213,23 @@ appservice:
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: https://mautrix-gmessages.$domain # customize
-    # TODO: replace this with https://gmessages.mautrix.$domain
+    public_address: https://meta.mautrix.$domain # customize
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 127.0.0.1
-    port: $appservicePort # customize
+    port: 29319
 
     # The unique ID of this appservice.
-    id: gmessages
+    id: meta
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: gmessagesbot
+        username: metabot
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: Google Messages bridge bot
-        avatar: mxc://maunium.net/yGOdcrJcwqARZqdzbfuxfhzb
+        displayname: Meta bridge bot
+        avatar: mxc://maunium.net/DxpVrwwzPUwaUSazpsjXgcKB
 
     # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: true
@@ -234,7 +245,7 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    username_template: gmessages_{{.}}
+    username_template: meta_{{.}}
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
@@ -258,7 +269,7 @@ analytics:
     # API key to send with tracking requests. Tracking is disabled if this is null.
     token: null
     # Address to send tracking requests to.
-    #url: https://api.segment.io/v1/track
+    url: https://api.segment.io/v1/track
     # Optional user ID for tracking events. If null, defaults to using Matrix user ID.
     user_id: null
 
@@ -299,7 +310,7 @@ direct_media:
     # The server name to use for the custom mxc:// URIs.
     # This server name will effectively be a real Matrix server, it just won't implement anything other than media.
     # You must either set up .well-known delegation from this domain to the bridge, or proxy the domain directly to the bridge.
-    server_name: discord-media.example.com  # customize
+    server_name: discord-media.example.com
     # Optionally a custom .well-known response. This defaults to `server_name:443`
     well_known_response:
     # Optionally specify a custom prefix for the media ID part of the MXC URI.
@@ -355,20 +366,20 @@ double_puppet:
     # Whether to allow client API URL discovery for other servers. When using this option,
     # users on other servers can use double puppeting even if their server URLs aren't
     # explicitly added to the servers map above.
-    allow_discovery: false # customize
+    allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {}
-        #samgraysone.me: as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
+    secrets:
+        example.com: as_token:foobar
 
 # End-to-bridge encryption support options.
 #
 # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
 encryption:
     # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
-    allow: false
+    allow: true
     # Whether to force-enable encryption in all bridged rooms.
-    default: false
+    default: true
     # Whether to require all messages to be encrypted and drop any unencrypted messages.
     require: false
     # Whether to use MSC3202/MSC4203 instead of /sync long polling for receiving encryption-related data.
@@ -448,3 +459,9 @@ logging:
     writers:
         - type: stdout
           format: pretty-colored
+        - type: file
+          format: json
+          filename: ./logs/bridge.log
+          max_size: 100
+          max_backups: 10
+          compress: false

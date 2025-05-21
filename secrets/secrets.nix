@@ -33,6 +33,7 @@ in {
   "synapse-registration.age" = { publicKeys = keys; };
   "keycloak-postgres.age" = { publicKeys = keys; };
   "garage-env.age" = { publicKeys = keys; };
+  "mautrix-secrets.env.age" = { publicKeys = keys; };
 }
 
 /*

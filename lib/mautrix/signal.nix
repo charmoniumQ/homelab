@@ -22,6 +22,7 @@ in {
         };
       });
       enable = true;
+      environmentFile = config.age.secrets."mautrix-secrets.env".path;
       registerToSynapse = true;
       settings = builtins.fromJSON (
         builtins.readFile (
@@ -29,7 +30,7 @@ in {
             appservicePort = builtins.toString appservicePort;
             homserverPort = builtins.toString homeserverPort;
             domain = config.networking.domain;
-          } "${pkgs.yq}/bin/yq . ${./signal.yaml} | ${pkgs.envsubst}/bin/envsubst > $out"
+          } "${pkgs.envsubst}/bin/envsubst -i ${./signal.yaml} '$appservicePort' '$homeserverPort' '$domain' | ${pkgs.yq}/bin/yq . > $out"
         )
       );
     };

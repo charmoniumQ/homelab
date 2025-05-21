@@ -5,11 +5,12 @@ in lib.mkIf config.services.paperless.enable {
   services = {
     paperless = {
       port = 37152;
-      package = (pkgs.paperless-ngx.override (paperless-ngx-old-attrs: {
-        python3 = paperless-ngx-old-attrs.python3.override {
-          packageOverrides = self: pypkgs-old: {
-            psycopg = pypkgs-old.psycopg.overridePythonAttrs {
-              pytestCheckPhase = ''true'';
+      package = (pkgs.paperless-ngx.override (super: {
+        python3 = super.python3.override {
+          packageOverrides = self: super: {
+            psycopg = super.psycopg.overridePythonAttrs {
+              doCheck = false;
+              checkPhase = "";
             };
           };
         };

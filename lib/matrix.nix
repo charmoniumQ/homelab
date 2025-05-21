@@ -1,4 +1,4 @@
-{config, pkgs, lib, ...}:
+{ config, pkgs, lib, ... }:
 let
   base-domain = "${config.networking.domain}";
   port = lib.trace "Put this in a hash" 57261;
@@ -99,6 +99,14 @@ in {
           extraConfig = ''
             root * ${element-webroot}
             file_server
+          '';
+        };
+        "admin.matrix.${base-domain}" = {
+          extraConfig = ''
+            root * ${pkgs.runCommand "copied-synapse-admin" {} ''
+              mkdir $out
+              cp -r ${pkgs.synapse-admin}/* $out/
+            ''}
           '';
         };
       };
