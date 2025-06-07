@@ -15,6 +15,10 @@ let
       disable_custom_urls = true;
     };
   };
+  synapse-admin = pkgs.runCommand "copied-synapse-admin" {} ''
+    mkdir $out
+    cp -r ${pkgs.synapse-admin}/* $out/
+  '';
 in {
   services = {
     matrix-synapse = {
@@ -103,10 +107,8 @@ in {
         };
         "admin.matrix.${base-domain}" = {
           extraConfig = ''
-            root * ${pkgs.runCommand "copied-synapse-admin" {} ''
-              mkdir $out
-              cp -r ${pkgs.synapse-admin}/* $out/
-            ''}
+            root * ${synapse-admin}
+            file_server
           '';
         };
       };

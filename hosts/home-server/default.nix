@@ -10,7 +10,9 @@ in {
     ../../lib/caddy.nix
     ../../lib/deployment.nix
     ../../lib/desktop/generic.nix
-    ../../lib/desktop/lxqt.nix
+    ../../lib/desktop/kde.nix
+    ../../lib/desktop/rdp.nix
+    # ../../lib/desktop/plasma-bigscreen.nix
     ../../lib/deployment.nix
     ../../lib/dns.nix
     ../../lib/dyndns.nix
@@ -35,11 +37,11 @@ in {
     ../../lib/zfs.nix
   ];
   deployment = {
-    hostName = "192.168.1.28";
+    hostName = "192.168.10.98";
     sudo = true;
   };
   sysadmin = {
-    hashedPassword = "$y$j9T$QfgpfZwUTsKsyhHUh71aD1$o9OuIHMYXkbUGOFbDaUOouJpnim9aRrX2YmQPYo.N67";
+    hashedPassword = "$y$j9T$UA/Vy6o5od9PWtcDjitpT.$z23m1U5Doj/pRiSlp..M0Kbmhh5Mzvw7k8svBGI8jg0";
   };
   externalSmtp = {
     enable = true;
@@ -69,6 +71,9 @@ in {
     };
   };
   services = {
+    displayManager = {
+      # defaultSession = "";
+    };
     nginx = {
       enable = false;
     };
@@ -101,6 +106,7 @@ in {
     systemPackages = [
       pkgs.speedtest-go
       pkgs.mtr
+      pkgs.firefox
     ];
   };
   backups = {

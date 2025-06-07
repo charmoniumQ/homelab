@@ -1,122 +1,71 @@
 # Network-specific config options
 network:
-    # Device name that's shown in the "WhatsApp Web" section in the mobile app.
-    os_name: Mautrix-WhatsApp bridge
-    # Browser name that determines the logo shown in the mobile app.
-    # Must be "unknown" for a generic icon or a valid browser name if you want a specific icon.
-    # List of valid browser names: https://github.com/tulir/whatsmeow/blob/efc632c008604016ddde63bfcfca8de4e5304da9/binary/proto/def.proto#L43-L64
-    browser_name: unknown
+    # Displayname template for Slack users. Available variables:
+    #  .Name - The username of the user
+    #  .Team.Name - The name of the team the channel is in
+    #  .Team.Domain - The Slack subdomain of the team the channel is in
+    #  .ID - The internal ID of the user
+    #  .IsBot - Whether the user is a bot
+    #  .Profile.DisplayName - The username or real name of the user (depending on settings)
+    # Variables only available for users (not bots):
+    #  .TeamID - The internal ID of the workspace the user is in
+    #  .TZ - The timezone region of the user (e.g. Europe/London)
+    #  .TZLabel - The label of the timezone of the user (e.g. Greenwich Mean Time)
+    #  .TZOffset - The UTC offset of the timezone of the user (e.g. 0)
+    #  .Profile.RealName - The real name of the user
+    #  .Profile.FirstName - The first name of the user
+    #  .Profile.LastName - The last name of the user
+    #  .Profile.Title - The job title of the user
+    #  .Profile.Pronouns - The pronouns of the user
+    #  .Profile.Email - The email address of the user
+    #  .Profile.Phone - The formatted phone number of the user
+    displayname_template: '{{or .Profile.DisplayName .Profile.RealName .Name}}{{if .IsBot}} (bot){{end}}'
+    # Channel name template for Slack channels (all types). Available variables:
+    #  .Name - The name of the channel
+    #  .Team.Name - The name of the team the channel is in
+    #  .Team.Domain - The Slack subdomain of the team the channel is in
+    #  .ID - The internal ID of the channel
+    #  .IsNoteToSelf - Whether the channel is a DM with yourself
+    #  .IsGeneral - Whether the channel is the #general channel
+    #  .IsChannel - Whether the channel is a channel (rather than a DM)
+    #  .IsPrivate - Whether the channel is private
+    #  .IsIM - Whether the channel is a one-to-one DM
+    #  .IsMpIM - Whether the channel is a group DM
+    #  .IsShared - Whether the channel is shared with another workspace.
+    #  .IsExtShared - Whether the channel is shared with an external organization.
+    #  .IsOrgShared - Whether the channel is shared with an organization in the same enterprise grid.
+    channel_name_template: '{{if and .IsChannel (not .IsPrivate)}}#{{end}}{{.Name}}{{if .IsNoteToSelf}} (you){{end}}'
+    # Displayname template for Slack workspaces. Available variables:
+    #  .Name - The name of the team
+    #  .Domain - The Slack subdomain of the team
+    #  .ID - The internal ID of the team
+    team_name_template: "{{ .Name }}"
     
-    # Proxy to use for all WhatsApp connections.
-    proxy: null
-    # Alternative to proxy: an HTTP endpoint that returns the proxy URL to use for WhatsApp connections.
-    get_proxy_url: null
-    # Whether the proxy options should only apply to the login websocket and not to authenticated connections.
-    proxy_only_login: false
+    # Should incoming custom emoji reactions be bridged as mxc:// URIs?
+    # If set to false, custom emoji reactions will be bridged as the shortcode instead, and the image won't be available.
+    custom_emoji_reactions: true
+    # Should channels and group DMs have the workspace icon as the Matrix room avatar?
+    workspace_avatar_in_rooms: false
+    # Number of participants to sync in channels (doesn't affect group DMs)
+    participant_sync_count: 5
+    # Should channel participants only be synced when creating the room?
+    # If you want participants to always be accurately synced, set participant_sync_count to a high value and this to false.
+    participant_sync_only_on_create: true
+    # Should channel portals be muted by default?
+    mute_channels_by_default: false
     
-    # Displayname template for WhatsApp users.
-    # {{.PushName}}     - nickname set by the WhatsApp user
-    # {{.BusinessName}} - validated WhatsApp business name
-    # {{.Phone}}        - phone number (international format)
-    # {{.FullName}}     - Name you set in the contacts list
-    displayname_template: "{{or .BusinessName .PushName .Phone}} (WA)"
-    
-    # Should incoming calls send a message to the Matrix room?
-    call_start_notices: true
-    # Should another user's cryptographic identity changing send a message to Matrix?
-    identity_change_notices: false
-    # Should the bridge mark you as online on WhatsApp when you send typing notifications?
-    # Full presence bridging is not supported.
-    send_presence_on_typing: false
-    # Should WhatsApp status messages be bridged into a Matrix room?
-    enable_status_broadcast: true
-    # Should sending WhatsApp status messages be allowed?
-    # This can cause issues if the user has lots of contacts, so it's disabled by default.
-    disable_status_broadcast_send: true
-    # Should the status broadcast room be muted and moved into low priority by default?
-    # This is only applied when creating the room, the user can unmute it later.
-    mute_status_broadcast: true
-    # Tag to apply to pinned chats on WhatsApp.
-    pinned_tag: m.favourite
-    # Tag to apply to archived chats on WhatsApp.
-    # Set to m.lowpriority to move them to low priority.
-    archive_tag:
-    # Tag to apply to the status broadcast room.
-    status_broadcast_tag: m.lowpriority
-    # Should the bridge use thumbnails from WhatsApp?
-    # They're disabled by default due to very low resolution.
-    whatsapp_thumbnail: false
-    # Should the bridge detect URLs in outgoing messages, ask the homeserver to generate a preview,
-    # and send it to WhatsApp? URL previews can always be sent using the `com.beeper.linkpreviews`
-    # key in the event content even if this is disabled.
-    url_previews: false
-    # Should polls be sent using unstable MSC3381 event types?
-    extev_polls: false
-    # Should view-once messages be disabled entirely?
-    disable_view_once: false
-    # Should the bridge always send "active" delivery receipts (two gray ticks on WhatsApp)
-    # even if the user isn't marked as online (e.g. when presence bridging isn't enabled)?
-    #
-    # By default, the bridge acts like WhatsApp web, which only sends active delivery
-    # receipts when it's in the foreground.
-    force_active_delivery_receipts: false
-    # When direct media is enabled and a piece of media isn't available on the WhatsApp servers,
-    # should it be automatically requested from the phone?
-    direct_media_auto_request: true
-    
-    # Settings for converting animated stickers.
-    animated_sticker:
-        # Format to which animated stickers should be converted.
-        # disable - No conversion, just unzip and send raw lottie JSON
-        # png - converts to non-animated png (fastest)
-        # gif - converts to animated gif
-        # webm - converts to webm video, requires ffmpeg executable with vp9 codec and webm container support
-        # webp - converts to animated webp, requires ffmpeg executable with webp codec/container support
-        target: webp
-        # Arguments for converter. All converters take width and height.
-        args:
-            width: 320
-            height: 320
-            fps: 25 # only for webm, webp and gif (2, 5, 10, 20 or 25 recommended)
-    
-    # Settings for handling history sync payloads.
-    history_sync:
-        # How many conversations should the bridge create after login?
-        # If -1, all conversations received from history sync will be bridged.
-        # Other conversations will be backfilled on demand when receiving a message.
-        max_initial_conversations: -1
-        # Should the bridge request a full sync from the phone when logging in?
-        # This bumps the size of history syncs from 3 months to 1 year.
-        request_full_sync: false
-        # Configuration parameters that are sent to the phone along with the request full sync flag.
-        # By default, (when the values are null or 0), the config isn't sent at all.
-        full_sync_config:
-            # Number of days of history to request.
-            # The limit seems to be around 3 years, but using higher values doesn't break.
-            days_limit: null
-            # This is presumably the maximum size of the transferred history sync blob, which may affect what the phone includes in the blob.
-            size_mb_limit: null
-            # This is presumably the local storage quota, which may affect what the phone includes in the history sync blob.
-            storage_quota_mb: null
-        # Settings for media requests. If the media expired, then it will not be on the WA servers.
-        # Media can always be requested by reacting with the ♻️ (recycle) emoji.
-        # These settings determine if the media requests should be done automatically during or after backfill.
-        media_requests:
-            # Should the expired media be automatically requested from the server as part of the backfill process?
-            auto_request_media: true
-            # Whether to request the media immediately after the media message is backfilled ("immediate")
-            # or at a specific time of the day ("local_time").
-            request_method: immediate
-            # If request_method is "local_time", what time should the requests be sent (in minutes after midnight)?
-            request_local_time: 120
-            # Maximum number of media request responses to handle in parallel per user.
-            max_async_handle: 2
+    # Options for backfilling messages from Slack.
+    backfill:
+        # Number of conversations to fetch from Slack when syncing workspace.
+        # This option applies even if message backfill is disabled below.
+        # If set to -1, all chats in the client.boot response will be bridged, and nothing will be fetched separately.
+        conversation_count: -1
     
 
 # Config options that affect the central bridge module.
 bridge:
     # The prefix for commands. Only required in non-management rooms.
-    command_prefix: '!wa'
+    command_prefix: '!slack'
     # Should the bridge create a space for each login containing the rooms that account is in?
     personal_filtering_spaces: true
     # Whether the bridge should set names and avatars explicitly for DM portals.
@@ -224,8 +173,8 @@ bridge:
     #     mxid - Specific user
     permissions:
         "*": relay
-        "example.com": user
-        "@admin:example.com": admin
+        "$domain": user
+        "admin@$domain": admin
 
 # Config for the bridge's database.
 database:
@@ -236,7 +185,7 @@ database:
     #           https://github.com/mattn/go-sqlite3#connection-string
     #   Postgres: Connection string. For example, postgres://user:password@host/database?sslmode=disable
     #             To connect via Unix socket, use something like postgres:///dbname?host=/var/run/postgresql
-    uri: postgres://user:password@host/database?sslmode=disable
+    uri: postgres:///mautrix-slack?host=/var/run/postgresql/
     # Maximum number of connections.
     max_open_conns: 5
     max_idle_conns: 1
@@ -250,9 +199,9 @@ homeserver:
     # The address that this appservice can use to connect to the homeserver.
     # Local addresses without HTTPS are generally recommended when the bridge is running on the same machine,
     # but https also works if they run on different machines.
-    address: http://example.localhost:8008
+    address: http://localhost:$homserverPort
     # The domain of the homeserver (also known as server_name, used for MXIDs, etc).
-    domain: example.com
+    domain: $domain
 
     # What software is the homeserver running?
     # Standard Matrix homeservers like Synapse, Dendrite and Conduit should just use "standard" here.
@@ -284,27 +233,27 @@ appservice:
     # Like the homeserver address, a local non-https address is recommended when the bridge is on the same machine.
     # If the bridge is elsewhere, you must secure the connection yourself (e.g. with https or wireguard)
     # If you want to use https, you need to use a reverse proxy. The bridge does not have TLS support built in.
-    address: http://localhost:29318
+    address: http://localhost:$appservicePort
     # A public address that external services can use to reach this appservice.
     # This is only needed for things like public media. A reverse proxy is generally necessary when using this field.
     # This value doesn't affect the registration file.
-    public_address: https://bridge.example.com
+    public_address: https://slack.mautrix.$domain
 
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 127.0.0.1
-    port: 29318
+    port: $appservicePort
 
     # The unique ID of this appservice.
-    id: whatsapp
+    id: slack
     # Appservice bot details.
     bot:
         # Username of the appservice bot.
-        username: whatsappbot
+        username: slackbot
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: WhatsApp bridge bot
-        avatar: mxc://maunium.net/NeXNQarUbrlYBiPCpprYsRqr
+        displayname: Slack bridge bot
+        avatar: mxc://maunium.net/pVtzLmChZejGxLqmXtQjFxem
 
     # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: true
@@ -320,7 +269,7 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    username_template: whatsapp_{{.}}
+    username_template: slack_{{.}}
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:
@@ -445,7 +394,7 @@ double_puppet:
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
     secrets:
-        example.com: as_token:foobar
+        samgraysone.me: as_token:$$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
 
 # End-to-bridge encryption support options.
 #

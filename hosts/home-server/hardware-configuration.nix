@@ -62,7 +62,8 @@ in
       # NVIDIA Corporation GT218 [GeForce 8400 GS Rev. 3] (rev a2)
       # https://www.nvidia.com/download/driverResults.aspx/89883/en-us/
       # https://nixos.wiki/wiki/Nvidia
-      package = config.boot.kernelPackages.nvidiaPackages.legacy_340;
+      # package = config.boot.kernelPackages.nvidiaPackages.legacy_340;
+      package = config.boot.kernelPackages.nvidiaPackages.beta;
     };
   };
   networking = {

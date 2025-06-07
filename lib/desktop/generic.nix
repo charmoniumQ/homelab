@@ -11,6 +11,7 @@
     xdg = {
       portal = {
         enable = true;
+        xdgOpenUsePortal = true;
       };
     };
     environment = {
@@ -23,6 +24,11 @@
     };
     security = {
       polkit = {
+        enable = true;
+      };
+      rtkit = {
+        # Possibly, needed for pipewire to get rt priority
+        # kde won't start without it
         enable = true;
       };
     };
@@ -55,6 +61,9 @@
       displayManager = {
         sddm = {
           enable = true;
+          wayland = {
+            enable = true;
+          };
         };
         autoLogin = {
           enable = true;

@@ -33,8 +33,6 @@
             enable = true;
           };
         };
-      };
-      displayManager = {
         defaultSession = "hyprland";
       };
     };

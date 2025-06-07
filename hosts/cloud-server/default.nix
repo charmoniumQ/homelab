@@ -32,8 +32,10 @@ in {
     ../../lib/mautrix/discord.nix
     ../../lib/mautrix/double-puppetting.nix
     ../../lib/mautrix/gmessages.nix
+    #../../lib/mautrix/hookshot.nix
     ../../lib/mautrix/meta.nix
     ../../lib/mautrix/signal.nix
+    ../../lib/mautrix/slack.nix
     ../../lib/mautrix/telegram.nix
     ../../lib/mautrix/whatsapp.nix
     ../../lib/mysql.nix
@@ -163,6 +165,8 @@ in {
           protocol = "namecheap";
           server = "dynamicdns.park-your-domain.com";
           hosts = [
+            "webhooks.hookshot.matrix"
+            "hookshot.matrix"
             "admin.matrix"
             "slack.mautrix"
             "whatsapp.mautrix"
