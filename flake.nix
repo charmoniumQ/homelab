@@ -5,7 +5,10 @@
     };
     agenix = {
       url = github:ryantm/agenix;
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        systems.follows = "flake-utils/systems";
+      };
     };
     nixos-generators = {
       url = github:nix-community/nixos-generators;

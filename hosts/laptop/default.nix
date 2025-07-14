@@ -24,6 +24,7 @@
     ../../lib/fwupd.nix
     ../../lib/nixConf.nix
     ../../lib/pia.nix
+    ../../lib/piv-auth.nix
     ../../lib/printing.nix
     ../../lib/virtualbox.nix
     ../../lib/sound.nix

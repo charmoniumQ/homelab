@@ -9,11 +9,11 @@
     sane = {
       enable = true;
       extraBackends = [
-        pkgs.hplipWithPlugin
+        (pkgs.epsonscan2.override { withNonFreePlugins = true; withGui = true; } )
+        # pkgs.hplipWithPlugin
         # Don't need the open-source drivers if I use the proprietary ones
         # pkgs.utsushi
         # pkgs.epkowa
-        (pkgs.epsonscan2.override { withNonFreePlugins = true; withGui = true; } )
       ];
     };
   };
@@ -29,9 +29,9 @@
       enable = true;
       drivers = [
         pkgs.gutenprint
-        pkgs.hplipWithPlugin
         pkgs.epson-escpr
         pkgs.epson-escpr2
+        # pkgs.hplipWithPlugin
       ];
       browsing = true;
     };
