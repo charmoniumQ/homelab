@@ -1,0 +1,9 @@
+keys:
+  - &cloud 7b2a98e55f6c2de14fb99003d84722bacc0617fb
+  - &sysadmin BD4496A020346A68C4F7AA4F27C6B277411E28CD
+creation_rules:
+  - path_regex: secrets/all.yaml
+    key_groups:
+    - pgp:
+      - *cloud
+      - *sysadmin

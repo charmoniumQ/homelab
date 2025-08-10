@@ -38,7 +38,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, agenix, flake-utils, disko, nixos-anywhere, nixos-generators, ... }@inputs:
+  outputs = { self, nixpkgs, agenix, flake-utils, disko, nixos-anywhere, nixos-generators, sops-nix, ... }@inputs:
     let
       hosts = [
          "home-server"
@@ -76,18 +76,22 @@
            devShells = {
              default = pkgs.mkShell {
                packages = [
-                 pkgs.pv # for flashing SD cards
-                 pkgs.pwgen
-                 pkgs.apacheHttpd # for htpasswd
                  pkgs.restic # for reading backups
                  pkgs.nixos-rebuild # latest version
-                 pkgs.nix-output-monitor
-                 pkgs.nh
-                 pkgs.openssl.bin # for openssl rand -hex 32
-                 disko.packages."${system}".default
-                 agenix.packages."${system}".default
-                 nixos-anywhere.packages."${system}".default
-                 nixos-generators.packages."${system}".default
+                 agenix.packages.${system}.default
+                 nixos-generators.packages.${system}.default
+                 sops-nix.packages.${system}.default
+               ];
+               sopsPGPKeyDirs = [
+                 "${toString ./.}/public_keys/hosts"
+                 "${toString ./.}/public_keys/users"
+               ];
+               nativeBuildInputs = [
+                 sops-nix.packages.${system}.sops-import-keys-hook
+               ];
+             };
+             python = pkgs.mkShell {
+               packages = [
                  (pkgs.python311.withPackages (pypkgs: [
                    pypkgs.mypy
                    pypkgs.types-retry
