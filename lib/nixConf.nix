@@ -27,6 +27,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
     };
     nix = {
       enable = true;
+      use-xdg-base-directories = true
       package = pkgs.nixVersions.latest;
       channel = {
         enable = false;

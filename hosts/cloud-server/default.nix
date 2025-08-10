@@ -32,8 +32,8 @@ in {
     ../../lib/mautrix/discord.nix
     ../../lib/mautrix/double-puppetting.nix
     ../../lib/mautrix/gmessages.nix
-    #../../lib/mautrix/hookshot.nix
-    ../../lib/mautrix/meta.nix
+    # ../../lib/mautrix/hookshot.nix
+    # ../../lib/mautrix/meta.nix
     ../../lib/mautrix/signal.nix
     ../../lib/mautrix/slack.nix
     ../../lib/mautrix/telegram.nix
@@ -46,7 +46,7 @@ in {
     ../../lib/runtimeTests.nix
     # ../../lib/paperless.nix
     ../../lib/postgres.nix
-    ../../lib/plausible.nix
+    # ../../lib/plausible.nix
     ../../lib/prometheus.nix
     ../../lib/promtail.nix
     ../../lib/reverseProxy.nix

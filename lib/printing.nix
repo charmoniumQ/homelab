@@ -9,11 +9,16 @@
     sane = {
       enable = true;
       extraBackends = [
-        (pkgs.epsonscan2.override { withNonFreePlugins = true; withGui = true; } )
+        # https://wiki.nixos.org/wiki/Scanners
+        pkgs.hplip
+        pkgs.utsushi
+        pkgs.sane-airscan
+        # List of supported scanners: https://gitlab.com/utsushi/utsushi
+        pkgs.epkowa
+        # List of supported scanners: https://www.gsp.com/cgi-bin/man.cgi?topic=sane-epkowa
+
+        # (pkgs.epsonscan2.override { withNonFreePlugins = true; withGui = true; } )
         # pkgs.hplipWithPlugin
-        # Don't need the open-source drivers if I use the proprietary ones
-        # pkgs.utsushi
-        # pkgs.epkowa
       ];
     };
   };
@@ -25,12 +30,23 @@
     };
   };
   services = {
+    udev = {
+      packages = [
+        pkgs.sane-airscan
+        pkgs.utsushi
+      ];
+    };
     printing = {
       enable = true;
       drivers = [
+        # See https://nixos.wiki/wiki/Printing
         pkgs.gutenprint
         pkgs.epson-escpr
         pkgs.epson-escpr2
+        pkgs.hplip
+
+        # Proprietary
+        # pkgs.gutenprintBin
         # pkgs.hplipWithPlugin
       ];
       browsing = true;

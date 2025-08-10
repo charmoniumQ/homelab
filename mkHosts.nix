@@ -35,7 +35,7 @@ in (flake-utils.lib.eachDefaultSystem (system: {
       program = let
         sudo = if cfg.deployment.sudo && cfg.deployment.hostName == "localhost" then "sudo" else "";
         targetHost = if cfg.deployment.hostName == "localhost" then "" else "--target-host ${cfg.deployment.username}@${cfg.deployment.hostName}";
-        useRemoteSudo = if cfg.deployment.sudo && cfg.deployment.hostName != "localhost" then "--use-remote-sudo" else "";
+        useRemoteSudo = if cfg.deployment.sudo && cfg.deployment.hostName != "localhost" then "--sudo" else "";
         p = pkgs.writeShellScriptBin "script" ''
           set -eux -o pipefail
           skip_nom=
