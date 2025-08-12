@@ -7,6 +7,13 @@
       url = github:Mic92/sops-nix;
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    selfhostblocks = {
+      url = "github:ibizaman/selfhostblocks";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
     agenix = {
       url = github:ryantm/agenix;
       inputs = {
@@ -38,7 +45,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, agenix, flake-utils, disko, nixos-anywhere, nixos-generators, sops-nix, ... }@inputs:
+  outputs = {
+    self
+    , nixpkgs
+    , agenix
+    , flake-utils
+    , disko
+    , nixos-anywhere
+    , nixos-generators
+    , sops-nix
+    , selfhostblocks
+    , ...
+  }@inputs:
     let
       hosts = [
          "home-server"

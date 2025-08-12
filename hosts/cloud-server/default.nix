@@ -27,7 +27,7 @@ in {
     ../../lib/keycloak.nix
     ../../lib/locale.nix
     ../../lib/loki.nix
-    ../../lib/matomo.nix
+    # ../../lib/matomo.nix
     ../../lib/matrix.nix
     ../../lib/mautrix/discord.nix
     ../../lib/mautrix/double-puppetting.nix

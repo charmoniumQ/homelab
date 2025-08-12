@@ -51,6 +51,12 @@
     };
   };
 
+  hardware = {
+    flipperzero = {
+      enable = true;
+    };
+  };
+
   sysadmin = {
     username ="sam";
     email = "sam@samgrayson.me";

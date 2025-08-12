@@ -27,12 +27,12 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
     };
     nix = {
       enable = true;
-      use-xdg-base-directories = true
       package = pkgs.nixVersions.latest;
       channel = {
         enable = false;
       };
       settings = {
+        use-xdg-base-directories = true;
         substituters = [
           "https://nix-community.cachix.org"
           "https://cache.nixos.org/"
