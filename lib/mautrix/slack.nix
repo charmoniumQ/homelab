@@ -1,5 +1,18 @@
 { pkgs, config, ... }:
 let
+  /*
+
+  ((function() {
+    // "Storage -> Cookies (HTTP-only) find d, should begin with 'xoxd-'
+    const cookie = "";
+    const loc = window.location.href.split("/");
+    const team = loc[loc.length - 2];
+    const localConfig = JSON.parse(localStorage.localConfig_v2);
+    const teamConfig = localConfig.teams[team];
+    console.log(teamConfig.name);
+    console.log("login token " + teamConfig.token + " " + cookie);
+  })());
+  */
   package = pkgs.mautrix-slack.override (super: {
     olm = super.olm.overrideAttrs {
       meta.knownVulnerabilities = [];

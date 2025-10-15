@@ -64,9 +64,14 @@
          "laptop"
          "tvpi"
        ];
+      nixlib = import ./nixlib.nix {
+        inherit (nixpkgs) lib;
+        inherit (nixpkgs) system;
+      };
+      inputs' = inputs // { inherit nixlib; };
     in
      nixpkgs.lib.attrsets.recursiveUpdate
-       ((import ./mkHosts.nix) inputs hosts)
+       ((import ./mkHosts.nix) inputs' hosts)
        (flake-utils.lib.eachDefaultSystem (system:
          let
            pkgs = nixpkgs.legacyPackages.${system};

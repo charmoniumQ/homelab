@@ -91,7 +91,16 @@
     };
   };
 
+  programs = {
+    mepo = {
+      enable = true;
+    };
+  };
   services = {
+    geoclue2 = {
+      enable = true;
+      enableWifi = true;
+    };
     pia = {
       authUserPassFile = config.age.secrets.pia-auth-user-pass.path;
       enable = true;
