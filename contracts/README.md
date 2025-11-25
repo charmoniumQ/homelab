@@ -1,0 +1,4 @@
+- [SHB docs](https://shb.skarabox.com/contracts.html)
+  - [SHB docs source](https://github.com/ibizaman/selfhostblocks/blob/main/docs/contracts.md?plain=1)
+- [NixOS RFC](https://github.com/ibizaman/rfcs/blob/contracts/rfcs/0189-contracts.md)
+- [NixOS Discourse](https://discourse.nixos.org/t/pre-rfc-decouple-services-using-structured-typing/58257/42)
