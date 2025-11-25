@@ -97,6 +97,7 @@ in {
           extraConfig = ''
             reverse_proxy /_matrix/* localhost:${builtins.toString port}
             reverse_proxy /_synapse/client/* localhost:${builtins.toString port}
+            reverse_proxy /_synapse/admin/* localhost:${builtins.toString port}
           '';
         };
         "element.${base-domain}" = {

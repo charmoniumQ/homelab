@@ -2,20 +2,33 @@
 let
   domain-name = ../nixlib/domain-name.nix lib;
 in {
-  options.shb.contracts.dns = lib.mkOption {
-    description = ''
-      Contract for assigning DNS records.
+  contracts = {
+    dns = {
+      meta = {
+        maintainers = [ lib.maintainers.charmoniumQ ];
+        description = ''
+          Contract for assigning DNS records.
 
-      This may be filled directly by the supplier, in the case of a self-hosted
-      authoritative name-server, or it may be simply a consolidate list of
-      records that need to be created before deployment.
+          Some examples of possible providers:
 
-      In the latter case, perhaps a script could enumerate the contract requests
-      and send API requests for any newly requested DNS records, impurely but at
-      least declaratively.
-    '';
-    type = lib.types.submodule {
-      # options =
+          - A self-hosted authoritative name-server configured to serve the requested records.
+
+          - A SystemD service that uses the extenral DNS registrar's client API to register the requested records.  
+
+          - A message that gets printed on-build, instructing the user to create the DNS records.
+
+        '';
+      };
+      input = {
+        options = {
+          records = null;
+        };
+      };
+      output = {
+        options = {
+          records = null;
+        };
+      };
     };
   };
 }

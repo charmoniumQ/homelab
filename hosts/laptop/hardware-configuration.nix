@@ -23,7 +23,7 @@ in {
   };
   environment = {
     systemPackages = with pkgs; [
-      glxinfo
+      mesa-demos
     ];
   };
   hardware = {

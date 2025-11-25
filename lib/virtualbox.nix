@@ -12,11 +12,6 @@
 
      libvirtd = {
        enable = true;
-       qemu = {
-         ovmf = {
-           enable = true;
-         };
-       };
      };
 
      spiceUSBRedirection = {

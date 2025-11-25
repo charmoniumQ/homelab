@@ -144,6 +144,22 @@ in
           mail_domain = config.externalSmtp.fromDomain;
           mail_smtpauth = if config.externalSmtp.authentication then 1 else 0;
           maintenance_window_start = 1;
+          # https://github.com/GeoArchive/nextcloud-S3-local-S3-migration
+          # objectstore = {
+          #   class = "OC\\Files\\ObjectStore\\S3";
+          #   arguments = {
+          #     bucket = "charmonium-nextcloud";
+          #     autocreate = false;
+          #     key = "";
+          #     secret = "";
+          #     region = "us-east-005";
+          #     hostname = "backblazeb2.com";
+          #     port = 443;
+          #     use_ssl = true;
+          #     use_path_style = false;
+          #     objectPrefix = "";
+          #   };
+          # };
         } // lib.attrsets.optionalAttrs config.externalSmtp.authentication {
           mail_smtpname = config.externalSmtp.username;
         };
