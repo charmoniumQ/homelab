@@ -37,10 +37,12 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
           "https://nix-community.cachix.org"
           "https://cache.nixos.org/"
           # "https://cache.flox.dev"
+          "https://selfhostblocks.cachix.org"
         ];
         trusted-public-keys = [
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
           # "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+          "selfhostblocks.cachix.org-1:H5h6Uj188DObUJDbEbSAwc377uvcjSFOfpxyCFP7cVs="
         ];
         experimental-features = [ "nix-command" "flakes" ];
         extra-platforms = config.boot.binfmt.emulatedSystems ++ [ config.nixpkgs.hostPlatform.system ];

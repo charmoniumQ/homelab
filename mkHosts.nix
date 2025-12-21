@@ -1,20 +1,24 @@
 /*
 Turns a simple object into QEMU VMs and nixosConfigurations.
 */
-{ nixpkgs, flake-utils, ... }@flake-inputs: hosts:
+{ nixpkgs, flake-utils, selfhostblocks, ... }@flake-inputs: hosts:
 let
   lib = nixpkgs.lib;
   importsForHost = host: [
     ./hosts/site.nix
     (./hosts + "/${host}")
   ];
-  nixosConfigurations = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host: {
-    name = "${host}";
-    value = nixpkgs.lib.nixosSystem {
-      specialArgs = flake-inputs;
-      modules = importsForHost host;
-    };
-  }));
+  nixosConfigurations = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host:
+    let
+      system = "x86_64-linux";
+    in {
+      name = "${host}";
+      value = selfhostblocks.lib."${system}".patchedNixpkgs.nixosSystem {
+        specialArgs = flake-inputs;
+        inherit system;
+        modules = importsForHost host;
+      };
+    }));
 in (flake-utils.lib.eachDefaultSystem (system: {
   packages = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host:
   let

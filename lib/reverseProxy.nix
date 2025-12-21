@@ -1,9 +1,9 @@
 { config, lib, ... }:
 {
   config = {
-    dns = {
-      localDomains = lib.debug.traceVal builtins.attrNames config.reverseProxy.domains;
-    };
+    # dns = {
+    #   localDomains = lib.debug.traceVal builtins.attrNames config.reverseProxy.domains;
+    # };
     networking = {
       firewall = {
         allowedTCPPorts = lib.lists.optionals

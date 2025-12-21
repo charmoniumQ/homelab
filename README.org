@@ -40,6 +40,11 @@ https://www.aliexpress.us/item/3256805458064966.html?spm=a2g0o.productlist.main.
 https://www.aliexpress.us/item/3256803485380436.html?spm=a2g0o.productlist.main.3.2f902CZC2CZCDB&algo_pvid=c9ae4550-2744-47c5-abc5-21edc75f7832&algo_exp_id=c9ae4550-2744-47c5-abc5-21edc75f7832-1&pdp_npi=4%40dis%21USD%215.40%214.86%21%21%215.40%21%21%402103247016965264673431643e9c86%2112000028906157905%21sea%21US%210%21AB&curPageLogUid=bOSRrbOgYZw6
 
 ** Other configs
+- https://github.com/vic/vix
+- https://github.com/vic/dendrix
+- https://dendrix.oeiuwq.com/index.html
+- https://github.com/mightyiam/dendritic
+- https://not-a-number.io/2025/refactoring-my-infrastructure-as-code-configurations/
 - https://github.com/gvolpe/nix-config/blob/master/flake.nix
 - https://github.com/Ex-32/nixos-config
 - https://github.com/ryan4yin/nix-config
@@ -75,3 +80,4 @@ Do they have 4099100042856?
   - https://github.com/NixOS/nixpkgs/pull/184362
 
 - https://github.com/DoTheEvo/selfhosted-apps-docker
+- https://unmovedcentre.com/posts/secrets-management/

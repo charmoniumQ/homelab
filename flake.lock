@@ -400,11 +400,11 @@
         "nmdsrc": "nmdsrc"
       },
       "locked": {
-        "lastModified": 1764021706,
-        "narHash": "sha256-RoEamJ2RyFAVxXUbNkErXCtAlqDKSFRkRQN2N5cD550=",
+        "lastModified": 1766036978,
+        "narHash": "sha256-frbK3Uz9OpBNL1kvMOYLlkuI2guulfiWuMxScS3TOSM=",
         "owner": "ibizaman",
         "repo": "selfhostblocks",
-        "rev": "d655655e0c07650546b81732d893397548993aed",
+        "rev": "32879c36b4ab8cbe718248bd8a64a6d936dccca4",
         "type": "github"
       },
       "original": {

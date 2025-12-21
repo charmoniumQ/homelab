@@ -1,13 +1,13 @@
-{ lib, nixlib, ... }:
+{ lib, nixlib, config, pkgs, shb, ... }:
 let
   cfg = config.namecheap-client;
 
   # This is a pretty good Python API wrapper for Namecheap's HTTP API
   # https://github.com/adriangalilea/namecheap-python
-  namecheap-python = pypkgs: pypkgs.python.buildPythonPackage rec {
+  namecheap-python = pypkgs: pypkgs.buildPythonPackage rec {
     pname = "namecheap-python";
     version = "1.0.4";
-    src = pkgs.fetchFromPypi {
+    src = pkgs.fetchPypi {
       pname = "namecheap_python";
       inherit version;
       sha256 = "a6c44fba607ab9f2a6ce0b8c26e0ec631e4583ae3deca231c4765fc7c9e9022c";
@@ -20,6 +20,7 @@ let
       pypkgs.xmltodict
       pypkgs.tldextract
     ];
+    pyproject = true;
     pythonImportsCheck = [ "namecheap" ];
   };
 
@@ -30,7 +31,7 @@ let
     pypkgs-fn = pypkgs: [
       (namecheap-python pypkgs)
     ];
-
+    inherit pkgs;
   };
 in {
   config = {
@@ -51,7 +52,7 @@ in {
           wantedBy = [ "multi-user.target" ];
           wants = [ "network-online.target" ];
           after = [ "network-online.target" ];
-          script = "${namecheap-client.py} ${pkgs.writeTextFile (builtins.toJson cfg)}";
+          script = "${namecheap-client.py} ${pkgs.writeTextFile (builtins.toJSON cfg)}";
           serviceConfig = {
             Type = "oneshot";
             User = cfg.systemd.user;
@@ -75,63 +76,45 @@ in {
   };
   options = {
     namecheap-client = {
-      systemd = {
-        user = lib.types.mkOption {
+      authentication = {
+        username = lib.mkOption {
           type = lib.types.str;
-          default = "namecheap-client";
         };
-        group = lib.types.mkOption {
+        api-user = lib.mkOption {
           type = lib.types.str;
-          default = "namecheap-client";
+        };
+        api-key-file = lib.mkOption {
+          type = lib.types.submodule {
+            options = shb.contracts.secret.mkRequester {
+              owner = cfg.user;
+              group = cfg.group;
+              restartUnits = [ "namecheap-client.service" ];
+            };
+          };
         };
       };
-      domains = lib.types.attrsOf (lib.types.listOf (lib.types.submodule {
-        options = {
-          type = lib.mkOption {
-            type = lib.types.oneOf [ "A" "AAAA" "CNAME" "TXT" "ALIAS" ];
-          };
-          name = lib.mkOption {
-            type = lib.types.str;
-          };
-          address = lib.mkOption {
-            type = lib.types.str;
-          };
-          ttl = lib.mkOption {
-            type = lib.types.nullOr lib.types.ints.unsigned;
-            default = null;
-          };
-          mx_priority = lib.mkOption {
-            type = lib.types.nullOr lib.types.ints.unsigned;
-            default = null;
-          };
-        };
-      }));
+      sandbox = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+      };
+      user = lib.mkOption {
+        type = lib.types.str;
+        default = "namecheap-client";
+      };
+      group = lib.mkOption {
+        type = lib.types.str;
+        default = "namecheap-client";
+      };
       delete-other-records = lib.mkOption {
         type = lib.types.bool;
         description = "Whether to delete records not described declaratively.";
+        default = false;
       };
       timer = lib.mkOption {
         type = lib.types.str;
         description = "See <https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html#Calendar%20Events>";
+        default = "1h";
       };
-      authentication = {
-        username = lib.mkOption {
-          types = lib.types.str;
-        };
-        api-user = lib.mkOption {
-          types = lib.types.str;
-        };
-        api-key-file = lib.mkOption {
-          type = lib.types.submodule {
-            options = selfhostblocks.lib.${system}.contracts.secret.mkRequester { };
-          };
-        };
-        sandbox = lib.mkOption {
-          type = lib.types.bool;
-          default = true;
-        };
-      };
-      # https://github.com/Bemmu/PyNamecheap
     };
   };
 }

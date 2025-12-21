@@ -22,17 +22,16 @@
     pname,
       script,
       pypkgs-fn,
-      system,
-      nixpkgs,
-      python ? nixpkgs.${system}.python313,
+      pkgs,
+      python ? pkgs.python313,
       other-pkgs ? [],
-  }: (nixpkgs.${system}.stdenv.mkDerivation {
+  }: (pkgs.stdenv.mkDerivation {
     pname = "${pname}";
     version = "only";
     src = script;
     checkInputs = [
       (python.withPackages (pypkgs: (pypkgs-fn pypkgs) ++ pypkgs.mypy))
-      nixpkgs.${system}.ruff
+      pkgs.ruff
     ] ++ other-pkgs;
     checkPhase = ''
       ruff format --check ${script}

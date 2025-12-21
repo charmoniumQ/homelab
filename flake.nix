@@ -59,11 +59,11 @@
   }@inputs:
     let
       hosts = [
-         "home-server"
-         "cloud-server"
-         "laptop"
-         "tvpi"
-       ];
+        "home-server"
+        "cloud-server"
+        "laptop"
+        "tvpi"
+      ];
       nixlib = import ./nixlib.nix {
         inherit (nixpkgs) lib;
         inherit (nixpkgs) system;
@@ -87,11 +87,6 @@
          in {
            apps = {
              image-tvpi   = mkApp "${pkgs.nom}/bin/nom build --verbose --show-trace .#nixosConfigurations.tvpi.config.system.build.sdImage";
-             edit-secret = mkApp ''
-               fname=$1
-               shift
-               env --chdir=secrets/ ${agenix.packages.x86_64-linux.default}/bin/agenix -e $fname $@
-             '';
              check = mkApp ''
                ${pkgs.statix}/bin/statix check .
              '';
@@ -104,6 +99,12 @@
                  agenix.packages.${system}.default
                  nixos-generators.packages.${system}.default
                  sops-nix.packages.${system}.default
+                 (pkgs.python311.withPackages (pypkgs: [
+                   pypkgs.mypy
+                   pypkgs.types-retry
+                   pypkgs.types-requests
+                   pypkgs.black
+                 ])) # for the scripts in this repo
                ];
                sopsPGPKeyDirs = [
                  "${toString ./.}/public_keys/hosts"
@@ -111,16 +112,6 @@
                ];
                nativeBuildInputs = [
                  sops-nix.packages.${system}.sops-import-keys-hook
-               ];
-             };
-             python = pkgs.mkShell {
-               packages = [
-                 (pkgs.python311.withPackages (pypkgs: [
-                   pypkgs.mypy
-                   pypkgs.types-retry
-                   pypkgs.types-requests
-                   pypkgs.black
-                 ])) # for the scripts in this repo
                ];
              };
            };

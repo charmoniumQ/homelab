@@ -56,7 +56,13 @@ in {
     ../../lib/sysadmin.nix
     ../../lib/sysadmin.nix
     ../../lib/vaultwarden.nix
+
+    # providers
+    ../../contracts/dns/namecheap-client.nix
+
   ];
+  
+
   users = {
     users = {
       restricted-ssh-user = {

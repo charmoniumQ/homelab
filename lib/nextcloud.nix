@@ -97,7 +97,7 @@ in
         };
         extraApps = {
           calendar = config.services.nextcloud.package.packages.apps.calendar;
-          notify_push = config.services.nextcloud.package.packages.apps.notify_push;
+          # notify_push = config.services.nextcloud.package.packages.apps.notify_push;
         };
         hostName = lib.mkDefault "nextcloud.${config.networking.domain}";
         https = true;
