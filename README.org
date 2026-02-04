@@ -81,3 +81,4 @@ Do they have 4099100042856?
 
 - https://github.com/DoTheEvo/selfhosted-apps-docker
 - https://unmovedcentre.com/posts/secrets-management/
+- https://github.com/ibizaman/skarabox

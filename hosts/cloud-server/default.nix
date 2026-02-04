@@ -45,6 +45,7 @@ in {
     ../../lib/ntfy.nix
     ../../lib/runtimeTests.nix
     # ../../lib/paperless.nix
+    ../../lib/plex.nix
     ../../lib/postgres.nix
     # ../../lib/plausible.nix
     ../../lib/prometheus.nix

@@ -139,10 +139,10 @@ in
           mail_sendmailmode = "smtp";
           mail_smtpsecure = config.externalSmtp.security;
           mail_smtphost = config.externalSmtp.host;
-          mail_smtpport = builtins.toString config.externalSmtp.port;
+          mail_smtpport = config.externalSmtp.port;
           mail_from_address = config.externalSmtp.fromUser;
           mail_domain = config.externalSmtp.fromDomain;
-          mail_smtpauth = if config.externalSmtp.authentication then 1 else 0;
+          mail_smtpauth = config.externalSmtp.authentication;
           maintenance_window_start = 1;
           # https://github.com/GeoArchive/nextcloud-S3-local-S3-migration
           # objectstore = {
