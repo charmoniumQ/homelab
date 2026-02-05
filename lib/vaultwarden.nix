@@ -79,16 +79,6 @@
   options = {
     services = {
       vaultwarden = {
-        domain = lib.mkOption {
-          type = lib.types.strMatching "[a-z0-9][a-z0-9.-]+[a-z0-9]";
-          description = ''
-            The domain must match the address from where you access the server
-            It's recommended to configure this value, otherwise certain functionality might not work,
-            like attachment downloads, email links and U2F.
-            For U2F to work, the server must use HTTPS, you can use Let's Encrypt for free certs
-          '';
-          default = "vaultwarden.${config.networking.domain}";
-        };
         address = lib.mkOption {
           description = "Address on which we will listen for HTTP requests.";
           type = lib.types.str;

@@ -59,7 +59,7 @@ in {
     ../../lib/vaultwarden.nix
 
     # providers
-    ../../contracts/dns/namecheap-client.nix
+    # ../../contracts/dns/namecheap-client.nix
 
   ];
   

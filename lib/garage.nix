@@ -2,7 +2,7 @@
   services = {
     garage = {
       enable = true;
-      package = pkgs.garage_1_x;
+      package = pkgs.garage_1;
       settings = {
         replication_factor = 1;
         rpc_bind_addr = "[::]:3901";

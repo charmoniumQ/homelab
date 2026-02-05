@@ -13,7 +13,8 @@ let
       system = "x86_64-linux";
     in {
       name = "${host}";
-      value = selfhostblocks.lib."${system}".patchedNixpkgs.nixosSystem {
+      value = nixpkgs.lib.nixosSystem {
+      # value = selfhostblocks.lib."${system}".patchedNixpkgs.nixosSystem {
         specialArgs = flake-inputs;
         inherit system;
         modules = importsForHost host;

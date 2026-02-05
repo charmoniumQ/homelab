@@ -34,6 +34,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
       settings = {
         use-xdg-base-directories = true;
         substituters = [
+          "https://hydra.lordofthelags.net"
           "https://nix-community.cachix.org"
           "https://cache.nixos.org/"
           # "https://cache.flox.dev"
@@ -43,6 +44,7 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
           # "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
           "selfhostblocks.cachix.org-1:H5h6Uj188DObUJDbEbSAwc377uvcjSFOfpxyCFP7cVs="
+          "hydra.lordofthelags.net:v3OFf3HWmShqFqJIYCBRDVGpFxyq9Pc8QMflK8hcOYE="
         ];
         experimental-features = [ "nix-command" "flakes" ];
         extra-platforms = config.boot.binfmt.emulatedSystems ++ [ config.nixpkgs.hostPlatform.system ];

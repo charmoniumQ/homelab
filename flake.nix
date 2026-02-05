@@ -1,10 +1,10 @@
 {
   inputs = {
     nixpkgs = {
-      url = github:NixOS/nixpkgs/nixos-unstable;
+      url = "github:NixOS/nixpkgs/nixos-unstable";
     };
     sops-nix = {
-      url = github:Mic92/sops-nix;
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     selfhostblocks = {
@@ -15,33 +15,33 @@
       };
     };
     agenix = {
-      url = github:ryantm/agenix;
+      url = "github:ryantm/agenix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         systems.follows = "flake-utils/systems";
       };
     };
     nixos-generators = {
-      url = github:nix-community/nixos-generators;
+      url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils = {
-      url = github:numtide/flake-utils;
+      url = "github:numtide/flake-utils";
     };
     disko = {
-      url = github:nix-community/disko;
+      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware = {
-      url = github:NixOS/nixos-hardware;
+      url = "github:NixOS/nixos-hardware";
     };
     nixos-anywhere = {
-      url = github:nix-community/nixos-anywhere;
+      url = "github:nix-community/nixos-anywhere";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.disko.follows = "disko";
     };
     nix-alien = {
-      url = github:thiagokokada/nix-alien;
+      url = "github:thiagokokada/nix-alien";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
