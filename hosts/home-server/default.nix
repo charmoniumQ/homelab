@@ -19,7 +19,6 @@ in {
     ../../lib/externalSmtp.nix
     ../../lib/fail2ban.nix
     ../../lib/fwupd.nix
-    ../../lib/generatedFiles.nix
     ../../lib/home-assistant.nix
     ../../lib/jellyfin.nix
     ../../lib/kodi.nix

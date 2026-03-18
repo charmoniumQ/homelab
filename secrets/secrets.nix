@@ -16,9 +16,7 @@ let
   ];
   keys = sysadminKeys ++ hostKeys;
 in {
-  "nextcloud-adminpass.age" = { publicKeys = keys; };
   "smtp-pass.age" = { publicKeys = keys; };
-  "vaultwarden-admin-token.age" = { publicKeys = keys; };
   "namecheapPassword.age" = { publicKeys = keys; };
   "resticPassword.age" = { publicKeys = keys; };
   "restic.env.age" = { publicKeys = keys; };

@@ -17,7 +17,6 @@ in {
     ../../lib/deployment.nix
     ../../lib/dyndns.nix
     ../../lib/externalSmtp.nix
-    ../../lib/generatedFiles.nix
     ../../lib/fail2ban.nix
     ../../lib/firefly-iii.nix
     ../../lib/grafana.nix
@@ -52,6 +51,7 @@ in {
     ../../lib/promtail.nix
     ../../lib/reverseProxy.nix
     ../../lib/restricted-ssh-user.nix
+    ../../lib/sops.nix
     ../../lib/ssh.nix
     ../../lib/sysrq.nix
     ../../lib/sysadmin.nix
@@ -141,11 +141,8 @@ in {
     };
     nextcloud = {
       enable = true;
-      package = pkgs.nextcloud31;
+      package = pkgs.nextcloud32;
       hostName = "nextcloud.samgrayson.me";
-      config = lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-        adminpassFile = config.age.secrets.nextcloudAdminpass.path;
-      };
     };
     jupyter = {
       enable = lib.trivial.warn "Fix this later" false;
@@ -153,7 +150,6 @@ in {
     vaultwarden = {
       enable = true;
       domain = "vaultwarden.samgrayson.me";
-      admin_token_file = config.age.secrets.vaultwarden-admin-token.path;
     };
     home-assistant = {
       enable = false;
@@ -223,6 +219,9 @@ in {
     systemPackages = [
       pkgs.speedtest-go
       pkgs.mtr
+      pkgs.gdu
+      pkgs.rclone
+      pkgs.emacs
     ];
   };
   backups = {
@@ -287,16 +286,6 @@ in {
         mode = "0400";
         owner = config.services.firefly-iii.user;
         group = config.services.firefly-iii.group;
-      };
-    } // lib.attrsets.optionalAttrs config.services.nextcloud.enable {
-      nextcloudAdminpass = {
-        file = ../../secrets/nextcloud-adminpass.age;
-        owner = config.services.phpfpm.pools.nextcloud.user;
-        group = config.services.phpfpm.pools.nextcloud.group;
-      };
-    } // lib.attrsets.optionalAttrs config.services.vaultwarden.enable {
-      vaultwarden-admin-token = {
-        file = ../../secrets/vaultwarden-admin-token.age;
       };
     } // lib.attrsets.optionalAttrs config.services.paperless.enable {
       paperless-password = {

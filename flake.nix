@@ -7,13 +7,13 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    selfhostblocks = {
-      url = "github:ibizaman/selfhostblocks";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
+    # selfhostblocks = {
+    #   url = "github:ibizaman/selfhostblocks";
+    #   inputs = {
+    #     nixpkgs.follows = "nixpkgs";
+    #     flake-utils.follows = "flake-utils";
+    #   };
+    # };
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
@@ -54,7 +54,6 @@
     , nixos-anywhere
     , nixos-generators
     , sops-nix
-    , selfhostblocks
     , ...
   }@inputs:
     let
@@ -85,6 +84,10 @@
              in "${package}/bin/script";
            };
          in {
+           # hydraJobs = import ./hydra.nix {
+           #   inherit inputs;
+           #   inherit (self) outputs;
+           # };
            apps = {
              image-tvpi   = mkApp "${pkgs.nom}/bin/nom build --verbose --show-trace .#nixosConfigurations.tvpi.config.system.build.sdImage";
              check = mkApp ''
@@ -99,7 +102,7 @@
                  agenix.packages.${system}.default
                  nixos-generators.packages.${system}.default
                  sops-nix.packages.${system}.default
-                 (pkgs.python311.withPackages (pypkgs: [
+                 (pkgs.python314.withPackages (pypkgs: [
                    pypkgs.mypy
                    pypkgs.types-retry
                    pypkgs.types-requests

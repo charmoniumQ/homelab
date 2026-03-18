@@ -75,6 +75,7 @@ in
   config = {
     services = {
       nextcloud = {
+
         # enable should be set by client
         enableImagemagick = true;
         # package shoudl be set by client
@@ -88,7 +89,7 @@ in
         };
         config = {
           adminuser = "root";
-          # adminpassfile should be set by client
+          adminpassFile = config.sops.secrets."nextcloud/adminpass".path;
           dbtype = "pgsql";
         };
         configureRedis = true;
@@ -114,11 +115,7 @@ in
           "opcache.interned_strings_buffer" = "16";
           # https://spot13.com/pmcalculator/
         };
-        secretFile =
-          if config.externalSmtp.enable && config.externalSmtp.authentication
-          then "/run/secrets/nextcloud-smtp.json"
-          else null
-        ;
+        secretFile = config.sops.templates."nextcloud/secrets.json".path;
         settings = {
           default_phone_region = "US";
           loglevel = 2 /* warning */;
@@ -145,21 +142,21 @@ in
           mail_smtpauth = config.externalSmtp.authentication;
           maintenance_window_start = 1;
           # https://github.com/GeoArchive/nextcloud-S3-local-S3-migration
-          # objectstore = {
-          #   class = "OC\\Files\\ObjectStore\\S3";
-          #   arguments = {
-          #     bucket = "charmonium-nextcloud";
-          #     autocreate = false;
-          #     key = "";
-          #     secret = "";
-          #     region = "us-east-005";
-          #     hostname = "backblazeb2.com";
-          #     port = 443;
-          #     use_ssl = true;
-          #     use_path_style = false;
-          #     objectPrefix = "";
-          #   };
-          # };
+          objectstore = {
+            class = "OC\\Files\\ObjectStore\\S3";
+            arguments = {
+              bucket = "charmonium-nextcloud";
+              autocreate = false;
+              key = "0058f03ee9861df0000000003";
+              secretFile = config.sops.secrets."nextcloud/backblaze".path;
+              region = "us-east-005";
+              hostname = "backblazeb2.com";
+              port = 443;
+              use_ssl = true;
+              use_path_style = false;
+              objectPrefix = "";
+            };
+          };
         } // lib.attrsets.optionalAttrs config.externalSmtp.authentication {
           mail_smtpname = config.externalSmtp.username;
         };
@@ -259,11 +256,11 @@ in
       volumes = {
         nextcloud = {
           # https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html
-          filesystem = {
-            paths = [ "${cfg.datadir}/data" ];
-          };
           postgresql = {
             databases = [ cfg.config.dbname ];
+          };
+          filesystem = {
+            paths = [];
           };
           services = [ ];
           enterMaintenanceMode = "${occ} maintenance:mode --on";
@@ -290,14 +287,6 @@ in
         pkgs.gzip
       ];
     };
-    generatedFiles = lib.attrsets.optionalAttrs (cfg.enable && config.externalSmtp.enable && config.externalSmtp.authentication) {
-      "nextcloud-smtp.json" = {
-        name = "nextcloud-smtp.json";
-        script = ''echo {\"mail_smtppassword\":\"$(cat ${config.externalSmtp.passwordFile} | tr --delete '\n')\"}'';
-        user = config.services.phpfpm.pools.nextcloud.user;
-        group = config.services.phpfpm.pools.nextcloud.group;
-      };
-    };
     # runtimeTests = {
     #   tests = {
     #     nextcloud-uses-redis = {
@@ -311,5 +300,29 @@ in
     #     };
     #   };
     # };
+    sops = {
+      secrets = {
+        "nextcloud/backblaze" = {
+          owner = config.services.phpfpm.pools.nextcloud.user;
+          group = config.services.phpfpm.pools.nextcloud.group; 
+        };
+        "nextcloud/adminpass" = {
+          owner = config.services.phpfpm.pools.nextcloud.user;
+          group = config.services.phpfpm.pools.nextcloud.group;
+        };
+        "smtp/password" = {};
+      };
+      templates = {
+        "nextcloud/secrets.json" = {
+          owner = config.services.phpfpm.pools.nextcloud.user;
+          group = config.services.phpfpm.pools.nextcloud.group;
+          content = ''
+            {
+              "mail_smtppassword": "${config.sops.placeholder."smtp/password"}"
+            }
+          '';
+        };
+      };
+    };
   };
 }

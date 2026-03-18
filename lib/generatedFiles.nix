@@ -17,6 +17,7 @@
   };
   options = {
     generatedFiles = lib.mkOption {
+      default = { };
       type = lib.types.attrsOf (lib.types.submodule (attrs:
         let
           elemConfig = attrs.config;

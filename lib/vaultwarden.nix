@@ -8,6 +8,7 @@
     services = {
       vaultwarden = {
         dbBackend = "postgresql";
+        admin_token_file = config.sops.secrets."vaultwarden/admin_token".path;
         config = rec {
           # https://github.com/dani-garcia/vaultwarden/blob/1.29.2/.env.template
           SIGNUPS_ALLOWED = cfg.signups_allowed;
@@ -29,7 +30,7 @@
           # DB
           DATABASE_URL = "postgresql://%2Frun%2Fpostgresql/${dbName}";
         };
-        environmentFile = config.generatedFiles."vaultwarden.env".path;
+        environmentFile = config.sops.templates."vaultwarden/main.env".path;
       };
       postgresql = lib.attrsets.optionalAttrs (cfg.dbBackend == "postgresql") {
         enable = true;
@@ -50,12 +51,23 @@
         };
       };
     };
-    generatedFiles = {
-      "vaultwarden.env" = {
-        name = "vaultwarden.env";
-        script = ''echo -e "SMTP_PASSWORD=$(cat ${smtpCfg.passwordFile})\nADMIN_TOKEN=$(cat ${cfg.admin_token_file} | tr --delete '\n')"'';
-        user = config.users.users.vaultwarden.name;
-        group = config.users.groups.vaultwarden.name;
+    sops = {
+      secrets = {
+        "vaultwarden/admin_token" = {
+          owner = config.users.users.vaultwarden.name;
+          group = config.users.groups.vaultwarden.name;
+        };
+        "smtp/password" = {};
+      };
+      templates = {
+        "vaultwarden/main.env" = {
+          owner = config.users.users.vaultwarden.name;
+          group = config.users.groups.vaultwarden.name;
+          content = ''
+            SMTP_PASSWORD=${config.sops.placeholder."smtp/password"}
+            ADMIN_TOKEN=${config.sops.placeholder."vaultwarden/admin_token"}
+          '';
+        };
       };
     };
     backups = {

@@ -116,11 +116,11 @@ in {
             port = mqttPort;
             users = {
               home-assistant = {
-                passwordFile = config.generatedFiles.mosquittoHAPassword.path;
+                passwordFile = throw "fixme"; # config.generatedFiles.mosquittoHAPassword.path;
                 acl = [ "readwrite ${mqttTopic}/#" ];
               };
               zigbee2mqtt = {
-                passwordFile = config.generatedFiles.mosquittoZMPassword.path;
+                passwordFile = throw "fixme"; # config.generatedFiles.mosquittoZMPassword.path;
                 acl = [ "readwrite ${mqttTopic}/#" ];
               };
             };
@@ -187,20 +187,20 @@ in {
         # };
       };
     };
-    generatedFiles = lib.attrsets.optionalAttrs (! cfg.zha) {
-      mosquittoHAPassword = {
-        name = "mosquittoHAPassword";
-        script = "${pkgs.yq}/bin/yq -r .mqtt_password ${cfg.secretsYaml}";
-        user = config.users.users.mosquitto.name;
-        group = config.users.users.mosquitto.group;
-      };
-      mosquittoZMPassword = {
-        name = "mosquittoZMPassword";
-        script = "${pkgs.yq}/bin/yq -r .mqtt_password ${cfg.zigbee2mqttSecretsYaml}";
-        user = config.users.users.mosquitto.name;
-        group = config.users.users.mosquitto.group;
-      };
-    };
+    # generatedFiles = lib.attrsets.optionalAttrs (! cfg.zha) {
+    #   mosquittoHAPassword = {
+    #     name = "mosquittoHAPassword";
+    #     script = "${pkgs.yq}/bin/yq -r .mqtt_password ${cfg.secretsYaml}";
+    #     user = config.users.users.mosquitto.name;
+    #     group = config.users.users.mosquitto.group;
+    #   };
+    #   mosquittoZMPassword = {
+    #     name = "mosquittoZMPassword";
+    #     script = "${pkgs.yq}/bin/yq -r .mqtt_password ${cfg.zigbee2mqttSecretsYaml}";
+    #     user = config.users.users.mosquitto.name;
+    #     group = config.users.users.mosquitto.group;
+    #   };
+    # };
     backups = {
       volumes = {
         home-assistant = {

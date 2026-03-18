@@ -12,6 +12,9 @@
           protocol = "http";
           http_addr = "127.0.0.1";
         };
+        security = {
+          secret_key = "$__file{${config.sops.secrets."grafana/secret".path}}";
+        };
       };
       provision = {
         datasources = {
@@ -62,4 +65,12 @@
       pkgs.grafana
     ];
   };
+    sops = {
+      secrets = {
+        "grafana/secret" = {
+          owner = "grafana";
+          group = config.users.users.grafana.group;
+        };
+      };
+    };
 }

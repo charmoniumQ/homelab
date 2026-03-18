@@ -13,7 +13,6 @@ in {
     ../../lib/dyndns.nix
     ../../lib/locale.nix
     ../../lib/fwupd.nix
-    #../../lib/generatedFiles.nix
     ../../lib/networkedNode.nix
     ../../lib/nixConf.nix
     ../../lib/reverseProxy.nix

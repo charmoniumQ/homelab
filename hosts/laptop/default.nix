@@ -67,6 +67,7 @@
     users = {
       sam = {
         shell = pkgs.zsh;
+        extraGroups = [ "dialout" ];
       };
     };
   };

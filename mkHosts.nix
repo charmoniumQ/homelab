@@ -1,7 +1,7 @@
 /*
 Turns a simple object into QEMU VMs and nixosConfigurations.
 */
-{ nixpkgs, flake-utils, selfhostblocks, ... }@flake-inputs: hosts:
+{ nixpkgs, flake-utils, ... }@flake-inputs: hosts:
 let
   lib = nixpkgs.lib;
   importsForHost = host: [

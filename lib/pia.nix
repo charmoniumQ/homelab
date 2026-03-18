@@ -12,7 +12,7 @@
             original = pkgs.fetchzip {
               name = "pia-vpn-config";
               url = "https://www.privateinternetaccess.com/openvpn/openvpn.zip";
-              hash = "sha256-ZA8RS6eIjMVQfBt+9hYyhaq8LByy5oJaO9Ed+x8KtW8=";
+              hash = "sha256-mhXV2CF8G7dAkXY9KI7g2qSOlxUzyqgJlidL1At46GU=";
               stripRoot = false;
             };
           in
