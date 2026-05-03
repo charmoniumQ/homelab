@@ -91,6 +91,20 @@ in
           adminuser = "root";
           adminpassFile = config.sops.secrets."nextcloud/adminpass".path;
           dbtype = "pgsql";
+          objectstore = {
+            s3 = {
+              enable = true;
+              bucket = "charmonium-nextcloud";
+              hostname = "s3.us-east-005.backblazeb2.com";
+              port = 443;
+              key = "0058f03ee9861df0000000003";
+              region = "us-east-005";
+              secretFile = config.sops.secrets."nextcloud/backblaze".path;
+              useSsl = true;
+              usePathStyle = true;
+              verify_bucket_exists = true;
+            };
+          };
         };
         configureRedis = true;
         database = {
@@ -141,22 +155,6 @@ in
           mail_domain = config.externalSmtp.fromDomain;
           mail_smtpauth = config.externalSmtp.authentication;
           maintenance_window_start = 1;
-          # https://github.com/GeoArchive/nextcloud-S3-local-S3-migration
-          objectstore = {
-            class = "OC\\Files\\ObjectStore\\S3";
-            arguments = {
-              bucket = "charmonium-nextcloud";
-              autocreate = false;
-              key = "0058f03ee9861df0000000003";
-              secretFile = config.sops.secrets."nextcloud/backblaze".path;
-              region = "us-east-005";
-              hostname = "backblazeb2.com";
-              port = 443;
-              use_ssl = true;
-              use_path_style = false;
-              objectPrefix = "";
-            };
-          };
         } // lib.attrsets.optionalAttrs config.externalSmtp.authentication {
           mail_smtpname = config.externalSmtp.username;
         };
