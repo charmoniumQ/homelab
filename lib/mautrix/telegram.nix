@@ -23,17 +23,17 @@ in {
       ];
     };
     mautrix-telegram = {
-      package = pkgs.mautrix-telegram.override {
-        python3 = pkgs.python3.override {
-          packageOverrides = self: super: {
-            python-olm = super.python-olm.override (super-olm: {
-              olm = super-olm.olm.overrideAttrs {
-                meta.knownVulnerabilities = [];
-              };
-            });
-          };
-        };
-      };
+      # package = pkgs.mautrix-telegram.override {
+      #   python3 = pkgs.python3.override {
+      #     packageOverrides = self: super: {
+      #       python-olm = super.python-olm.override (super-olm: {
+      #         olm = super-olm.olm.overrideAttrs {
+      #           meta.knownVulnerabilities = [];
+      #         };
+      #       });
+      #     };
+      #   };
+      # };
       enable = true;
       registerToSynapse = true;
       environmentFile = config.age.secrets."mautrix-secrets.env".path;

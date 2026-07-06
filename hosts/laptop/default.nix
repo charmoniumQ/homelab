@@ -21,7 +21,7 @@
     ../../lib/locale.nix
     ../../lib/podman.nix
     ../../lib/docker.nix
-    ../../lib/fwupd.nix
+    #../../lib/fwupd.nix
     ../../lib/nixConf.nix
     ../../lib/pia.nix
     ../../lib/piv-auth.nix
@@ -45,10 +45,6 @@
       enable = true;
     };
     enableIPv6 = true;
-    useDHCP = true;
-    dhcpcd = {
-      enable = false;
-    };
   };
 
   hardware = {
@@ -98,6 +94,9 @@
     };
   };
   services = {
+    fprintd = {
+      enable = false;
+    };
     geoclue2 = {
       enable = true;
       enableWifi = true;
