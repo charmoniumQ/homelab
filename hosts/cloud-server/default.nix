@@ -43,6 +43,7 @@ in {
     ../../lib/nixConf.nix
     ../../lib/ntfy.nix
     ../../lib/runtimeTests.nix
+    ../../lib/psutil-fix.nix
     # ../../lib/paperless.nix
     ../../lib/plex.nix
     ../../lib/postgres.nix
