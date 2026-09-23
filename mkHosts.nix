@@ -8,13 +8,18 @@ let
     ./hosts/site.nix
     (./hosts + "/${host}")
   ];
+  hostSystem = {
+    home-server = "x86_64-linux";
+    cloud-server = "aarch64-linux";
+    laptop = "x86_64-linux";
+    tvpi = "aarch64-linux";
+  };
   nixosConfigurations = builtins.listToAttrs ((lib.trivial.flip builtins.map) hosts (host:
     let
-      system = "x86_64-linux";
+      system = hostSystem.${host};
     in {
       name = "${host}";
       value = nixpkgs.lib.nixosSystem {
-      # value = selfhostblocks.lib."${system}".patchedNixpkgs.nixosSystem {
         specialArgs = flake-inputs;
         inherit system;
         modules = importsForHost host;

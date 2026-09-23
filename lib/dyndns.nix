@@ -2,7 +2,7 @@
 let
   cfg = config.services.dyndns;
   jsonCfg = (pkgs.formats.json {}).generate "cfg.json" cfg;
-  python_ = pkgs.python311.withPackages (pypkgs: [ pypkgs.requests pypkgs.retry ]);
+  python_ = pkgs.python3.withPackages (pypkgs: [ pypkgs.requests pypkgs.retry ]);
   python = "${python_}/bin/python";
   script = pkgs.writeText "script.py" (builtins.readFile ./dyndns.py);
 in {

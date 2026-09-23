@@ -11,7 +11,6 @@
       extraBackends = [
         # https://wiki.nixos.org/wiki/Scanners
         pkgs.hplip
-        pkgs.utsushi
         pkgs.sane-airscan
         # List of supported scanners: https://gitlab.com/utsushi/utsushi
         pkgs.epkowa
@@ -33,7 +32,6 @@
     udev = {
       packages = [
         pkgs.sane-airscan
-        pkgs.utsushi
       ];
     };
     printing = {

@@ -1,18 +1,6 @@
 { config, lib, pkgs, ... }:
 {
   config = {
-    environment = {
-      systemPackages = [
-        # Bare minimum
-        # Most stuff should actually be defined in home-manager
-        pkgs.emacs
-        pkgs.htop
-        pkgs.tmux
-        pkgs.curl
-        pkgs.coreutils
-        pkgs.bash
-      ];
-    };
     programs = {
       atop = {
         enable = true;

@@ -36,7 +36,6 @@
         gnome-contacts
         gnome-initial-setup
         gnome-music
-        gnome-photos
         gnome-terminal
         gnome-tour
         hitori # sudoku game

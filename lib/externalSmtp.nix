@@ -2,7 +2,7 @@
 let
   cfg = config.externalSmtp;
   jsonCfg = (pkgs.formats.json {}).generate "cfg.json" cfg;
-  python_ = pkgs.python311.withPackages (pypkgs: [ pypkgs.retry ]);
+  python_ = pkgs.python3.withPackages (pypkgs: [ pypkgs.retry ]);
   python = "${python_}/bin/python";
   script = pkgs.writeText "script.py" (builtins.readFile ./externalSmtp.py);
 in {

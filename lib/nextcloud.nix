@@ -124,9 +124,9 @@ in
         #   all.php-systemd
         # ];
         phpOptions = {
-          "opcache.jit" = "1255";
-          "opcache.jit_buffer_size" = "128M";
-          "opcache.interned_strings_buffer" = "16";
+          # "opcache.jit" = "1255";
+          # "opcache.jit_buffer_size" = "128M";
+          # "opcache.interned_strings_buffer" = "16";
           # https://spot13.com/pmcalculator/
         };
         secretFile = config.sops.templates."nextcloud/secrets.json".path;

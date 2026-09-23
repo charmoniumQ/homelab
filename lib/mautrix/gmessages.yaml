@@ -358,8 +358,8 @@ double_puppet:
     allow_discovery: false # customize
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets: {}
-        #samgraysone.me: as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
+    secrets:
+      samgraysone.me: as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
 
 # End-to-bridge encryption support options.
 #

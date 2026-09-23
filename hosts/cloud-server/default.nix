@@ -43,7 +43,6 @@ in {
     ../../lib/nixConf.nix
     ../../lib/ntfy.nix
     ../../lib/runtimeTests.nix
-    ../../lib/psutil-fix.nix
     # ../../lib/paperless.nix
     ../../lib/plex.nix
     ../../lib/postgres.nix
@@ -142,7 +141,7 @@ in {
     };
     nextcloud = {
       enable = true;
-      package = pkgs.nextcloud32;
+      package = pkgs.nextcloud34;
       hostName = "nextcloud.samgrayson.me";
     };
     jupyter = {
