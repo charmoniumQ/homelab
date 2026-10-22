@@ -23,7 +23,15 @@
         enable = lib.mkDefault true;
       };
     };
+    users = {
+      users = {
+        "${config.sysadmin.username}" = {
+          extraGroups = [ "networkmanager" ];
+        };
+      };
+    };
   };
+  
   options = {
     localIP = lib.mkOption {
       type = lib.types.nullOr (lib.types.strMatching "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}");

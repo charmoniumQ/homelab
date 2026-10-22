@@ -71,7 +71,8 @@ Configures NixOS system updates, Nixpkgs channel, and Nix command.
     environment = {
       systemPackages = [
         pkgs.gitMinimal # Needed to make Nix flakes work
-        nix-alien.packages.${config.nixpkgs.hostPlatform.system}.nix-alien
+        # TODO: uncomment nix-alien
+        # nix-alien.packages.${config.nixpkgs.hostPlatform.system}.nix-alien
         pkgs.cachix
       ];
       etc = {

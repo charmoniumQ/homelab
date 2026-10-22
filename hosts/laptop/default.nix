@@ -35,6 +35,10 @@
     # ../../lib/tracing.nix # enable temporarily with `sudo sysctl -w kernel.perf_event_paranoid=1
   ];
 
+  #hardware.framework.enableKmod = false; # TODO: delete
+  # https://github.com/NixOS/nixos-hardware/issues/2078
+  # https://github.com/NixOS/nixpkgs/issues/575192
+
   deployment = {
     sudo = true;
     hostName = "localhost";
@@ -45,6 +49,11 @@
       enable = true;
     };
     enableIPv6 = true;
+    networkmanager = {
+      plugins = with pkgs; [
+        networkmanager-openvpn
+      ];
+    };
   };
 
   hardware = {
@@ -56,7 +65,7 @@
   sysadmin = {
     username ="sam";
     email = "sam@samgrayson.me";
-    hashedPassword = "$y$j9T$Ts4yey8oYBzEtUHuQh2F1.$n5LCsPQzaQ9YEsmOdHJtu3unhqPDHZHrAuAU.4ZzkY2";
+    hashedPassword = "$y$j9T$/QW6l0na0zrPG8D4VaR9c.$X43GGx58NS.BZyLLlL0gD9pNoKMn5ERiums7.KRTWX";
   };
 
   users = {

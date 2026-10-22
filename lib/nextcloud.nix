@@ -88,8 +88,6 @@ in
           memcached = false;
         };
         config = {
-          adminuser = "root";
-          adminpassFile = config.sops.secrets."nextcloud/adminpass".path;
           dbtype = "pgsql";
           objectstore = {
             s3 = {
@@ -303,10 +301,6 @@ in
         "nextcloud/backblaze" = {
           owner = config.services.phpfpm.pools.nextcloud.user;
           group = config.services.phpfpm.pools.nextcloud.group; 
-        };
-        "nextcloud/adminpass" = {
-          owner = config.services.phpfpm.pools.nextcloud.user;
-          group = config.services.phpfpm.pools.nextcloud.group;
         };
         "smtp/password" = {};
       };

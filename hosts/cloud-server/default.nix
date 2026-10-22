@@ -13,6 +13,7 @@ in {
     ../../lib/backups.nix
     ../../lib/caddy.nix
     ../../lib/cli.nix
+    ../../lib/dawarich.nix
     ../../lib/dns.nix
     ../../lib/deployment.nix
     ../../lib/dyndns.nix
