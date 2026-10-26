@@ -10,6 +10,7 @@
         pkgs.tmux
         pkgs.rsync
         pkgs.curl
+        pkgs.rsync
       ];
     };
     programs = {

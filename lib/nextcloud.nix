@@ -153,6 +153,11 @@ in
           mail_domain = config.externalSmtp.fromDomain;
           mail_smtpauth = config.externalSmtp.authentication;
           maintenance_window_start = 1;
+          # Nextcloud's default object store prefix. The old manual
+          # `settings.objectstore` block left `objectPrefix = ""` in
+          # config.php, which made new uploads use bare numeric keys while
+          # every pre-existing object was stored under `urn:oid:`.
+          objectstore.arguments.objectPrefix = "urn:oid:";
         } // lib.attrsets.optionalAttrs config.externalSmtp.authentication {
           mail_smtpname = config.externalSmtp.username;
         };
