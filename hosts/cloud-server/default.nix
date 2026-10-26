@@ -198,6 +198,7 @@ in {
             "*.web.garage"
             "admin.garage"
             "budget"
+            "dawarich"
           ] ++ lib.lists.optional config.services.firefly-iii.enable "firefly-iii";
           passwordFile = config.age.secrets.namecheapPassword.path;
         }
