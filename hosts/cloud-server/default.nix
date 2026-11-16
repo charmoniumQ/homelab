@@ -20,13 +20,13 @@ in {
     ../../lib/externalSmtp.nix
     ../../lib/fail2ban.nix
     ../../lib/firefly-iii.nix
-    ../../lib/grafana.nix
-    ../../lib/grocy.nix
-    ../../lib/garage.nix
+    #../../lib/grafana.nix
+    #../../lib/grocy.nix
+    #../../lib/garage.nix
     ../../lib/jupyter.nix
     ../../lib/keycloak.nix
     ../../lib/locale.nix
-    ../../lib/loki.nix
+    #../../lib/loki.nix
     # ../../lib/matomo.nix
     ../../lib/matrix.nix
     ../../lib/mautrix/discord.nix
@@ -43,13 +43,15 @@ in {
     ../../lib/nextcloud.nix
     ../../lib/nixConf.nix
     ../../lib/ntfy.nix
+    #../../lib/onlyoffice.nix
+    #../../lib/collabora.nix
     ../../lib/runtimeTests.nix
-    # ../../lib/paperless.nix
-    ../../lib/plex.nix
+     ../../lib/paperless.nix
+    #../../lib/plex.nix
     ../../lib/postgres.nix
     # ../../lib/plausible.nix
-    ../../lib/prometheus.nix
-    ../../lib/promtail.nix
+    #../../lib/prometheus.nix
+    #../../lib/promtail.nix
     ../../lib/reverseProxy.nix
     ../../lib/restricted-ssh-user.nix
     ../../lib/sops.nix
@@ -137,7 +139,7 @@ in {
       enable = lib.trivial.warn "Fix this when prometheus blackbox is restored" false;
     };
     grafana = {
-      enable = true;
+      enable = false;
       # TODO: make alerting-contact-points.json private
     };
     nextcloud = {
@@ -183,6 +185,8 @@ in {
             "ntfy"
             "cloud"
             "jupyter"
+            "collabora"
+            "onlyoffice"
             "grafana"
             "nextcloud"
             "vaultwarden"

@@ -3,29 +3,6 @@ TODO: TOTP
 */
 { config, pkgs, lib, ... }:
 let
-  makeNextcloudApp = lib.trivial.warn "Compile Nextcloud plugins with composer and NPM instead of this external repository" ({
-    pname
-    , version
-    , hash
-    , url
-  }:
-    # TODO: Compile these with Composer and NPM by hand instead of relying on external repository.
-    pkgs.stdenv.mkDerivation {
-      src = pkgs.fetchurl { inherit url hash; };
-      inherit pname;
-      inherit version;
-      buildPhase = ''
-        mkdir $out
-        cp --recursive * $out
-      '';
-      checkPhase = ''
-      if [ ! -f "$out/appinfo/info.xml" ]; then
-        echo "appinfo/info.xml doesn't exist in $out, aborting!"
-        exit 2
-      fi
-    '';
-    });
-
   # Copied from
   # https://github.com/NixOS/nixpkgs/blob/nixos-24.05/nixos/modules/services/web-apps/nextcloud.nix#L47
 
@@ -75,11 +52,7 @@ in
   config = {
     services = {
       nextcloud = {
-
-        # enable should be set by client
         enableImagemagick = true;
-        # package shoudl be set by client
-        appstoreEnable = false;
         caching = {
           # https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/caching_configuration.html
           # Unless you have a memcached cluster, I think just apcu + redis is recommended
@@ -109,7 +82,18 @@ in
           createLocally = true;
         };
         extraApps = {
-          calendar = config.services.nextcloud.package.packages.apps.calendar;
+          inherit (config.services.nextcloud.package.packages.apps)
+            calendar
+            contacts
+            drawio
+            forms
+            notes
+            onlyoffice
+            user_oidc
+            previewgenerator
+            whiteboard
+          ;
+          
           # notify_push = config.services.nextcloud.package.packages.apps.notify_push;
         };
         hostName = lib.mkDefault "nextcloud.${config.networking.domain}";
@@ -162,7 +146,7 @@ in
           mail_smtpname = config.externalSmtp.username;
         };
       };
-      phpfpm = lib.attrsets.optionalAttrs cfg.enable {
+      phpfpm = {
         pools = {
           nextcloud = {
             settings = {
@@ -175,7 +159,7 @@ in
       nginx = {
         enable = lib.mkForce false;
       };
-      caddy = lib.attrsets.optionalAttrs cfg.enable {
+      caddy = {
         virtualHosts = {
           "${cfg.hostName}" = {
             extraConfig = ''

@@ -44,6 +44,27 @@
     hostName = "localhost";
   };
 
+  # Allow aarch64 builds to run natively on cloud-server instead of local binfmt.
+  nix = {
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "cloud.samgrayson.me";
+        sshUser = "sysadmin";
+        protocol = "ssh-ng";
+        system = "aarch64-linux";
+        sshKey = "/home/sam/.ssh/id_ed25519";
+        # base64 -w0 of the cloud-server SSH host public key
+        publicHostKey = "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSU02d284TEtXMVVxYUNDcmFkY0NRcTl4cktUQWtyNExuK1ZNaE5vczQ1TTc=";
+        maxJobs = 8;
+        supportedFeatures = [ "big-parallel" ];
+      }
+    ];
+    settings = {
+      builders-use-substitutes = true;
+    };
+  };
+
   networking = {
     firewall = {
       enable = true;
