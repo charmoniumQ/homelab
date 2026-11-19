@@ -1,10 +1,6 @@
 { pkgs, config, ... }:
 let
-  package = pkgs.mautrix-discord.override (super: {
-    olm = super.olm.overrideAttrs {
-      meta.knownVulnerabilities = [];
-    };
-  });
+  package = pkgs.mautrix-discord;
   settings = builtins.fromJSON (
     builtins.readFile (
       pkgs.runCommand "yaml-to-json" {} "${pkgs.yq}/bin/yq . ${./discord.yaml} > $out"

@@ -16,11 +16,6 @@ in {
       ];
     };
     mautrix-signal = {
-      package = pkgs.mautrix-signal.override (super: {
-        olm = super.olm.overrideAttrs {
-          meta.knownVulnerabilities = [];
-        };
-      });
       enable = true;
       environmentFile = config.age.secrets."mautrix-secrets.env".path;
       registerToSynapse = true;

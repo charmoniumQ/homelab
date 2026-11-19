@@ -13,11 +13,7 @@ let
     console.log("login token " + teamConfig.token + " " + cookie);
   })());
   */
-  package = pkgs.mautrix-slack.override (super: {
-    olm = super.olm.overrideAttrs {
-      meta.knownVulnerabilities = [];
-    };
-  });
+  package = pkgs.mautrix-slack;
   settings = builtins.fromJSON (
     builtins.readFile (
       pkgs.runCommand "yaml-to-json" {} "${pkgs.yq}/bin/yq . ${./slack.yaml} > $out"

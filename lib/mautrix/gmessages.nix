@@ -1,10 +1,6 @@
 { pkgs, config, ... }:
 let
-  package = pkgs.mautrix-gmessages.override (super: {
-    olm = super.olm.overrideAttrs {
-      meta.knownVulnerabilities = [];
-    };
-  });
+  package = pkgs.mautrix-gmessages;
   settings = builtins.fromJSON (
     builtins.readFile (
       pkgs.runCommand "yaml-to-json" {} "${pkgs.yq}/bin/yq . ${./gmessages.yaml} > $out"

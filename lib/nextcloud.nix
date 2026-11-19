@@ -113,6 +113,7 @@ in
         };
         secretFile = config.sops.templates."nextcloud/secrets.json".path;
         settings = {
+          hide_login_form = true; # because we use SSO. 
           default_phone_region = "US";
           loglevel = 2 /* warning */;
           logfile = "nextcloud.log";

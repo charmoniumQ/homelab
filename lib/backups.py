@@ -21,6 +21,9 @@ if command == "prepare":
     subprocess.run(volume_cfg["enterMaintenanceMode"], shell=True, check=True)
     for service in volume_cfg["services"]:
         subprocess.run(["systemctl", "stop", service], check=True)
+    post_stop = volume_cfg.get("postStop", "")
+    if post_stop:
+        subprocess.run(post_stop, shell=True, check=True)
     for db_name in volume_cfg["postgresql"]["databases"]:
         db_dir = snapshot_dir / db_name
         db_dir.mkdir(parents=True)

@@ -16,11 +16,6 @@ in {
       ];
     };
     mautrix-whatsapp = {
-      package = pkgs.mautrix-whatsapp.override (super: {
-        olm = super.olm.overrideAttrs {
-          meta.knownVulnerabilities = [];
-        };
-      });
       enable = true;
       registerToSynapse = true;
       environmentFile = config.age.secrets."mautrix-secrets.env".path;
@@ -36,7 +31,8 @@ in {
           public_address = "https://whatsapp.mautrix.${config.networking.domain}";
         };
         database = {
-          uri = "postgres:///mautrix-meta?host=/var/run/postgresql/";
+          type = "postgres";
+          uri = "postgres:///${user}?host=/var/run/postgresql/";
         };
         public_media = {
           enabled = true;
@@ -51,6 +47,7 @@ in {
         encryption = {
           allow = true;
           default = true;
+          pickle_key = "generate";
         };
         double_puppet = {
           servers = {

@@ -401,9 +401,9 @@ double_puppet:
 # See https://docs.mau.fi/bridges/general/end-to-bridge-encryption.html for more info.
 encryption:
     # Whether to enable encryption at all. If false, the bridge will not function in encrypted rooms.
-    allow: false
+    allow: true
     # Whether to force-enable encryption in all bridged rooms.
-    default: false
+    default: true
     # Whether to require all messages to be encrypted and drop any unencrypted messages.
     require: false
     # Whether to use MSC3202/MSC4203 instead of /sync long polling for receiving encryption-related data.

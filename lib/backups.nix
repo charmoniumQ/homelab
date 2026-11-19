@@ -156,6 +156,11 @@ in {
               default = [ ];
               type = lib.types.listOf lib.types.str;
             };
+            postStop = lib.mkOption {
+              description = "Commands to run after stopping `services` and before dumping databases";
+              default = "";
+              type = lib.types.lines;
+            };
             keep_daily = lib.mkOption {
               description = "How many daily backups to keep";
               type = lib.types.ints.unsigned;

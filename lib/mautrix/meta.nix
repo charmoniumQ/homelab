@@ -20,11 +20,6 @@ in {
       ];
     };
     mautrix-meta = {
-      package = pkgs.mautrix-meta.override (super: {
-        olm = super.olm.overrideAttrs {
-          meta.knownVulnerabilities = [];
-        };
-      });
       instances = {
         facebook = {
           enable = true;

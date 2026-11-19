@@ -5,18 +5,6 @@ in lib.mkIf config.services.paperless.enable {
   services = {
     paperless = {
       port = 37152;
-      package = (pkgs.paperless-ngx.override (super: {
-        python3 = super.python3.override {
-          packageOverrides = self: super: {
-            psycopg = super.psycopg.overridePythonAttrs {
-              doCheck = false;
-              checkPhase = "";
-            };
-          };
-        };
-      })).overrideAttrs (self: super: {
-        doCheck = false;
-      });
       settings = {
         PAPERLESS_DBENGINE = "postgresql";
         PAPERLESS_DBHOST = "/run/postgresql";

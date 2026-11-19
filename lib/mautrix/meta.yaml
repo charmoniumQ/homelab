@@ -218,7 +218,7 @@ appservice:
     # The hostname and port where this appservice should listen.
     # For Docker, you generally have to change the hostname to 0.0.0.0.
     hostname: 127.0.0.1
-    port: 29319
+    port: $appservicePort
 
     # The unique ID of this appservice.
     id: meta
@@ -369,8 +369,8 @@ double_puppet:
     allow_discovery: false
     # Shared secrets for automatic double puppeting.
     # See https://docs.mau.fi/bridges/general/double-puppeting.html for instructions.
-    secrets:
-        example.com: as_token:foobar
+    secrets: {}
+        samgraysone.me: as_token:$$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN
 
 # End-to-bridge encryption support options.
 #
