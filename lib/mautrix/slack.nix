@@ -110,6 +110,7 @@ in {
           EnvironmentFile = [
             config.age.secrets."mautrix-secrets.env".path
             config.sops.templates."mautrix-pickle-keys.env".path
+            config.sops.templates."mautrix-double-puppet.env".path
           ];
           User = "mautrix-slack";
           Group = "mautrix-slack";

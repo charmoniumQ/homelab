@@ -50,7 +50,7 @@ in {
           };
         };
         double_puppet = {
-          servers = {
+          secrets = {
             "samgrayson.me" = "as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN";
           };
         };
@@ -66,6 +66,7 @@ in {
   systemd.services.mautrix-telegram.serviceConfig.EnvironmentFile = lib.mkForce [
     config.age.secrets."mautrix-secrets.env".path
     config.sops.templates."mautrix-pickle-keys.env".path
+    config.sops.templates."mautrix-double-puppet.env".path
   ];
   reverseProxy = {
     domains = {

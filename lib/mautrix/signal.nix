@@ -33,6 +33,7 @@ in {
   systemd.services.mautrix-signal.serviceConfig.EnvironmentFile = lib.mkForce [
     config.age.secrets."mautrix-secrets.env".path
     config.sops.templates."mautrix-pickle-keys.env".path
+    config.sops.templates."mautrix-double-puppet.env".path
   ];
   reverseProxy = {
     domains = {

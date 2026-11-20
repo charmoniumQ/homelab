@@ -33,7 +33,7 @@ in {
               address = "http://localhost:${builtins.toString homeserverPort}";
               domain = config.networking.domain;
             };
-            appserves = {
+            appservice = {
               address = "http://localhost:${builtins.toString facebookAppservicePort}";
               public_address = "https://meta.mautrix.${config.networking.domain}";
               hostname = "127.0.0.1";
@@ -60,7 +60,7 @@ in {
               pickle_key = "$MAUTRIX_META_PICKLE_KEY";
             };
             double_puppet = {
-              servers = {
+              secrets = {
                 "samgrayson.me" = "as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN";
               };
             };
@@ -79,14 +79,14 @@ in {
               address = "http://localhost:${builtins.toString homeserverPort}";
               domain = config.networking.domain;
             };
-            appserves = {
+            appservice = {
               address = "http://localhost:${builtins.toString instagramAppservicePort}";
               public_address = "https://meta.mautrix.${config.networking.domain}";
               hostname = "127.0.0.1";
               port = instagramAppservicePort;
               id = "instagram";
               bot = {
-                username = "instagram";
+                username = "instagrambot";
               };
             };
             database = {
@@ -106,7 +106,7 @@ in {
               pickle_key = "$MAUTRIX_META_PICKLE_KEY";
             };
             double_puppet = {
-              servers = {
+              secrets = {
                 "samgrayson.me" = "as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN";
               };
             };
@@ -124,6 +124,7 @@ in {
     serviceConfig.EnvironmentFile = lib.mkForce [
       config.age.secrets."mautrix-secrets.env".path
       config.sops.templates."mautrix-pickle-keys.env".path
+      config.sops.templates."mautrix-double-puppet.env".path
     ];
   });
   reverseProxy = {

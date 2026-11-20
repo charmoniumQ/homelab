@@ -20,11 +20,9 @@ in {
           Type = "oneshot";
           User = "matrix-synapse";
           Group = "matrix-synapse";
-          EnvironmentFile = config.age.secrets."mautrix-secrets.env".path;
+          EnvironmentFile = config.sops.templates."mautrix-double-puppet.env".path;
           ExecStart = "${(pkgs.writeShellScriptBin "exec-start.sh" ''
-            if [ ! -f ${file} ]; then
-              ${pkgs.envsubst}/bin/envsubst -i ${./double-puppetting.yaml} -o ${file}
-            fi
+            ${pkgs.envsubst}/bin/envsubst -i ${./double-puppetting.yaml} -o ${file}
           '')}/bin/exec-start.sh";
         };
         restartTriggers = [ ./double-puppetting.yaml ];

@@ -27,7 +27,7 @@ Options:
   -h, --help     Show this help.
 
 Supported bridges:
-  slack, whatsapp, gmessages, signal
+  slack, whatsapp, gmessages, signal, meta-facebook, meta-instagram
 
 Environment overrides:
   BACKUP_DIR     backup directory (default: /var/backups/mautrix)
@@ -38,6 +38,7 @@ Examples:
   sudo ./reset-mautrix-crypto.sh
   sudo ./reset-mautrix-crypto.sh whatsapp
   sudo ./reset-mautrix-crypto.sh gmessages signal
+  sudo ./reset-mautrix-crypto.sh meta-facebook meta-instagram
   sudo ./reset-mautrix-crypto.sh --no-start slack whatsapp
 EOF
 }
@@ -78,9 +79,9 @@ fi
 
 for bridge in "${BRIDGES[@]}"; do
   case "$bridge" in
-    slack|whatsapp|gmessages|signal) ;;
+    slack|whatsapp|gmessages|signal|meta-facebook|meta-instagram) ;;
     *)
-      echo "Unsupported bridge: $bridge (supported: slack, whatsapp, gmessages, signal)" >&2
+      echo "Unsupported bridge: $bridge (supported: slack, whatsapp, gmessages, signal, meta-facebook, meta-instagram)" >&2
       exit 1
       ;;
   esac
@@ -115,7 +116,17 @@ failures=()
 for bridge in "${BRIDGES[@]}"; do
   service="mautrix-$bridge"
   db="mautrix-$bridge"
-  env_var="MAUTRIX_$(printf '%s' "$bridge" | tr '[:lower:]' '[:upper:]')_PICKLE_KEY"
+  case "$bridge" in
+    meta-facebook|meta-instagram)
+      # Both Meta instances share the single mautrix.meta.pickle_key secret.
+      env_var=MAUTRIX_META_PICKLE_KEY
+      sops_bridge=meta
+      ;;
+    *)
+      env_var="MAUTRIX_$(printf '%s' "$bridge" | tr '[:lower:]' '[:upper:]')_PICKLE_KEY"
+      sops_bridge="$bridge"
+      ;;
+  esac
 
   echo
   echo "=== $bridge ==="
@@ -185,7 +196,7 @@ for bridge in "${BRIDGES[@]}"; do
     pickle_env_ok=1
   else
     echo "WARNING: $pickle_env does not contain $env_var." >&2
-    echo "         Set sops > mautrix > $bridge > pickle_key and deploy it." >&2
+    echo "         Set sops > mautrix > $sops_bridge > pickle_key and deploy it." >&2
   fi
 
   echo "Note: the old Matrix device may still exist on the homeserver."

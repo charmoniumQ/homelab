@@ -65,12 +65,13 @@ in {
             idp_name = "Home SSO";
             issuer = "https://keycloak.samgrayson.me/realms/home";
             client_id = "synapse";
-            client_secret = "dExxiSWUrx147ttWv7M90wh8ZNOd151K";
+            client_secret_path = config.sops.secrets."matrix-synapse/oidc_client_secret".path;
             scopes = ["openid" "profile"];
             user_mapping_provider = {
               config = {
                 localpart_template = "{{ user.preferred_username }}";
                 display_name_template = "{{ user.name }}";
+                picture_claim = "picture";
               };
             };
             backchannel_logout_enabled = true;
@@ -173,6 +174,17 @@ in {
   #     };
   #   };
   # };
+
+  sops = {
+    secrets = {
+      "matrix-synapse/oidc_client_secret" = {
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
+      };
+    };
+  };
+
+
   # get a certificate
   # security = {
   #   acme = {
