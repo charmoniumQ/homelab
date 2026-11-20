@@ -94,6 +94,10 @@ in {
         '';
 
         serviceConfig = {
+          EnvironmentFile = [
+            config.age.secrets."mautrix-secrets.env".path
+            config.sops.templates."mautrix-pickle-keys.env".path
+          ];
           User = "mautrix-discord";
           Group = "mautrix-discord";
           StateDirectory = baseNameOf dataDir;

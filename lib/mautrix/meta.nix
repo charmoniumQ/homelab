@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 let
   facebookAppservicePort = 29321;
   instagramAppservicePort = 29320;
@@ -57,6 +57,7 @@ in {
             encryption = {
               allow = true;
               default = true;
+              pickle_key = "$MAUTRIX_META_PICKLE_KEY";
             };
             double_puppet = {
               servers = {
@@ -102,6 +103,7 @@ in {
             encryption = {
               allow = true;
               default = true;
+              pickle_key = "$MAUTRIX_META_PICKLE_KEY";
             };
             double_puppet = {
               servers = {
@@ -113,6 +115,17 @@ in {
       };
     };
   };
+  systemd.services = lib.genAttrs [
+    "mautrix-meta-facebook"
+    "mautrix-meta-instagram"
+    "mautrix-meta-facebook-registration"
+    "mautrix-meta-instagram-registration"
+  ] (name: {
+    serviceConfig.EnvironmentFile = lib.mkForce [
+      config.age.secrets."mautrix-secrets.env".path
+      config.sops.templates."mautrix-pickle-keys.env".path
+    ];
+  });
   reverseProxy = {
     domains = {
       "facebook.mautrix.samgrayson.me" = {

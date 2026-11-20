@@ -29,11 +29,12 @@ in {
     #../../lib/loki.nix
     # ../../lib/matomo.nix
     ../../lib/matrix.nix
+    ../../lib/mautrix/secrets.nix
     ../../lib/mautrix/discord.nix
     ../../lib/mautrix/double-puppetting.nix
     ../../lib/mautrix/gmessages.nix
     # ../../lib/mautrix/hookshot.nix
-    #../../lib/mautrix/meta.nix
+    ../../lib/mautrix/meta.nix
     ../../lib/mautrix/signal.nix
     ../../lib/mautrix/slack.nix
     ../../lib/mautrix/telegram.nix

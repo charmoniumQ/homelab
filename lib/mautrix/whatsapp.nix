@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   homeserverPort = 57261;
   appservicePort = 29318;
@@ -47,7 +47,7 @@ in {
         encryption = {
           allow = true;
           default = true;
-          pickle_key = "generate";
+          pickle_key = "$MAUTRIX_WHATSAPP_PICKLE_KEY";
         };
         double_puppet = {
           servers = {
@@ -57,6 +57,10 @@ in {
       };
     };
   };
+  systemd.services.mautrix-whatsapp.serviceConfig.EnvironmentFile = lib.mkForce [
+    config.age.secrets."mautrix-secrets.env".path
+    config.sops.templates."mautrix-pickle-keys.env".path
+  ];
   reverseProxy = {
     domains = {
       "whatsapp.mautrix.samgrayson.me" = {

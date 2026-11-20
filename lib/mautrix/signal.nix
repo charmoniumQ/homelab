@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   homeserverPort = 57261;
   appservicePort = 29328;
@@ -30,6 +30,10 @@ in {
       );
     };
   };
+  systemd.services.mautrix-signal.serviceConfig.EnvironmentFile = lib.mkForce [
+    config.age.secrets."mautrix-secrets.env".path
+    config.sops.templates."mautrix-pickle-keys.env".path
+  ];
   reverseProxy = {
     domains = {
       "signal.mautrix.samgrayson.me" = {

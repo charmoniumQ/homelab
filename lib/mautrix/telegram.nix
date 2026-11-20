@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
   homeserverPort = 57261;
   appservicePort = 29317;
@@ -54,9 +54,19 @@ in {
             "samgrayson.me" = "as_token:$MATRIX_DOUBLE_PUPPETTING_AS_TOKEN";
           };
         };
+        encryption = {
+          allow = true;
+          default = true;
+          require = false;
+          pickle_key = "$MAUTRIX_TELEGRAM_PICKLE_KEY";
+        };
       };
     };
   };
+  systemd.services.mautrix-telegram.serviceConfig.EnvironmentFile = lib.mkForce [
+    config.age.secrets."mautrix-secrets.env".path
+    config.sops.templates."mautrix-pickle-keys.env".path
+  ];
   reverseProxy = {
     domains = {
       "telegram.mautrix.samgrayson.me" = {

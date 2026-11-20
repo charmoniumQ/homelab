@@ -97,7 +97,10 @@ in {
           User = "mautrix-gmessages";
           Group = "mautrix-gmessages";
           StateDirectory = baseNameOf dataDir;
-          EnvironmentFile = config.age.secrets."mautrix-secrets.env".path;
+          EnvironmentFile = [
+            config.age.secrets."mautrix-secrets.env".path
+            config.sops.templates."mautrix-pickle-keys.env".path
+          ];
           WorkingDirectory = dataDir;
           ExecStart = "${package}/bin/mautrix-gmessages --config='${settingsFile}' --registration='${registrationFile}'";
           Restart = "on-failure";

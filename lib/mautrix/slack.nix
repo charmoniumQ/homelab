@@ -107,6 +107,10 @@ in {
         '';
 
         serviceConfig = {
+          EnvironmentFile = [
+            config.age.secrets."mautrix-secrets.env".path
+            config.sops.templates."mautrix-pickle-keys.env".path
+          ];
           User = "mautrix-slack";
           Group = "mautrix-slack";
           StateDirectory = baseNameOf dataDir;
