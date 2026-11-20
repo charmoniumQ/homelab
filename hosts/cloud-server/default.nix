@@ -111,10 +111,6 @@ in {
     enableIPv6 = true;
   };
   services = {
-    paperless = {
-      enable = false;
-      passwordFile = config.age.secrets.paperless-password.path;
-    };
     keycloak = {
       database = {
         passwordFile = config.age.secrets.keycloak-postgres.path;
@@ -293,10 +289,6 @@ in {
         mode = "0400";
         owner = config.services.firefly-iii.user;
         group = config.services.firefly-iii.group;
-      };
-    } // lib.attrsets.optionalAttrs config.services.paperless.enable {
-      paperless-password = {
-        file = ../../secrets/paperless.age;
       };
     };
   };
